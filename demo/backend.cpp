@@ -2,7 +2,7 @@
 #include <cmath>
 
 const double step = 0.01;
-const gravity = 9.8;
+const double gravity = 9.8;
 double theta;
 double velocity;
 double length;
