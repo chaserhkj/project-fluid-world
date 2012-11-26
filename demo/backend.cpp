@@ -1,4 +1,3 @@
-#include <iostream>
 #include <cmath>
 
 const double step = 0.01;
