@@ -1,5 +1,8 @@
 TEMPLATE = app
-CONFIG = warn_on debug
+CONFIG = warn_on debug qt
 
-HEADERS = backend.h
-SOURCES = backend.cpp
+HEADERS = backend.h \
+	  configwidget.h
+SOURCES = backend.cpp \
+	  configwidget.cpp \
+	  main.cpp

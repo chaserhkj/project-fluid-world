@@ -3,8 +3,10 @@
 class pendulum
 {
 private:
-    double theta, velocity, length, step;
+    double theta, velocity, length;
     static const double gravity;
+protected:
+    double step;
 public:
     pendulum(double t = 0, double v = 0, double l = 1, double s=0.1):\
         theta(t), velocity(v), length(l), step(s){}

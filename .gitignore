@@ -1,3 +1,5 @@
 *.o
 *.swp
 *~
+/demo/demo
+Makefile
