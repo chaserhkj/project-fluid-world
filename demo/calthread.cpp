@@ -17,6 +17,6 @@ void CalThread::run()
     {
 	this->pendulum::run();
 	emit valueChanged(this->getAngle(),this->getVelocity());
-	QThread::msleep(step*1000);
+	QThread::usleep(step*1000000);
     }
 }
