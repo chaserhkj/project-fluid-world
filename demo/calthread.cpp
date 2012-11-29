@@ -1,6 +1,6 @@
 #include "calthread.h"
 
-const int freshTime = 10;
+const int CalThread::freshTime = 10;
 
 void CalThread::quit()
 {
