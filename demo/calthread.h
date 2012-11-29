@@ -21,6 +21,7 @@ protected:
     virtual void run();
 private:
     bool quitCalled;
+    static const int freshTime;
 };
 
 #endif /* _CALTHREAD_H_ */

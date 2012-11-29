@@ -1,5 +1,7 @@
 #include "calthread.h"
 
+const int freshTime = 10;
+
 void CalThread::quit()
 {
     quitCalled = true;
@@ -13,10 +15,14 @@ void CalThread::start(Priority p)
 
 void CalThread::run()
 {
+    int i, times = freshTime/(step*1000);
     while(!quitCalled)
     {
-	this->pendulum::run();
+	for (i = 0; i < times; ++i)
+	{
+	    this->pendulum::run();
+	}
 	emit valueChanged(this->getAngle(),this->getVelocity());
-	QThread::usleep(step*1000000);
+	QThread::msleep(freshTime);
     }
 }
