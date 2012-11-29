@@ -9,7 +9,7 @@ DisplayWidget::DisplayWidget(QWidget *parent, double position):\
     
     lo.addWidget(&view);
     this->setLayout(&lo);
-    this->setGeometry(0, 0, 500, 500);
+    this->setGeometry(200, 200, 500, 500);
 
     view.setScene(&scene);
     view.centerOn(0, 0);
