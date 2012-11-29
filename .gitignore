@@ -3,3 +3,4 @@
 *~
 /demo/demo
 Makefile
+moc_*.cpp
