@@ -10,11 +10,11 @@ ConfigWidget::ConfigWidget(QWidget *parent) : QWidget(parent,Qt::Window)
     mainlo = new QVBoxLayout;
     plabel = new QLabel(tr("Position:(rad)"));
     pedit = new QLineEdit;
-    vlabel = new QLabel(tr("Velocity:(rad)"));
+    vlabel = new QLabel(tr("Velocity:(rad/s)"));
     vedit = new QLineEdit;
     llabel = new QLabel(tr("Length:(m)"));
     ledit = new QLineEdit;
-    slabel = new QLabel(tr("Calculation Step:(sec)"));
+    slabel = new QLabel(tr("Calculation Step:(ms)"));
     sedit = new QLineEdit;
     btnlo = new QHBoxLayout;
     submitbtn = new QPushButton(tr("&Submit"));
@@ -36,7 +36,7 @@ ConfigWidget::ConfigWidget(QWidget *parent) : QWidget(parent,Qt::Window)
     this->setWindowTitle(tr("Config"));
 
     //Set default value
-    sedit->setText("0.01");
+    sedit->setText("10");
     
     //Connect signals
     QObject::connect(quitbtn,SIGNAL(clicked()),this,SLOT(close()));
@@ -63,10 +63,11 @@ void ConfigWidget::start()
 {
     //Passing arguments from line edits to CalThread
     //And initialize CalThread object
-    double p=pedit->text().toDouble();
-    double v=vedit->text().toDouble();
-    double l=ledit->text().toDouble();
-    double s=sedit->text().toDouble();
+    double p = pedit->text().toDouble();
+    double v = vedit->text().toDouble();
+    double l = ledit->text().toDouble();
+    double s = sedit->text().toDouble();
+    s = s / 1000;
     cal = new CalThread(p,v,l,s,this);
     QObject::connect(cal, SIGNAL(finished()), this, SLOT(autoDeleteThread()));
     
