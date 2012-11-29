@@ -8,5 +8,6 @@ void pendulum::run()
     double acceleration = -gravity*sin(theta);
     theta += (velocity * step + acceleration * step * step/2)/length;
     velocity += acceleration * step;
+    time += step;
 }
 
