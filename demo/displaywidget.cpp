@@ -12,7 +12,7 @@ DisplayWidget::DisplayWidget(QWidget *parent, double position):\
     this->setGeometry(100, 100, 500, 500);
 
     view.setScene(&scene);
-    view.centerOn(0, 0);
+    view.setSceneRect(-200,-200,400,400);
     double x = sin(position) * 150;
     double y = cos(position) * 150;
     line = scene.addLine(0, 0, x, y);
