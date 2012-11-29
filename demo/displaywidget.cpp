@@ -5,6 +5,8 @@
 DisplayWidget::DisplayWidget(QWidget *parent, double position):\
     QWidget(parent, Qt::Window), closeFlag(false), view(this)
 {
+    this->setWindowTitle(tr("Graph"));
+    
     lo.addWidget(&view);
     this->setLayout(&lo);
     this->setGeometry(0, 0, 500, 500);

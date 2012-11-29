@@ -3,6 +3,8 @@
 
 StatWidget::StatWidget(QWidget *parent) : QWidget(parent, Qt::Window), closeFlag(false)
 {
+    this->setWindowTitle(tr("Status"));
+    
     mainlo = new QVBoxLayout();
     lposition = new QLabel(tr("Position:"));
     vposition = new QLabel;
