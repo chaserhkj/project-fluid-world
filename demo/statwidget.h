@@ -17,7 +17,9 @@ public:
     ~StatWidget();
     void setCloseFlag();
 public slots:
-    void setStatus(double position, double velocity);
+    void setPosition(double value);
+    void setVelocity(double value);
+    void setTime(double value);
 protected:
     void closeEvent(QCloseEvent *event);
 private:
@@ -26,6 +28,8 @@ private:
     QLabel *vposition;
     QLabel *lvelocity;
     QLabel *vvelocity;
+    QLabel *ltime;
+    QLabel *vtime;
     QPushButton *stopbtn;
     bool closeFlag;
 signals:

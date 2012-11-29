@@ -22,7 +22,9 @@ void CalThread::run()
 	{
 	    this->pendulum::run();
 	}
-	emit valueChanged(this->getAngle(),this->getVelocity());
+	emit positionChanged(this->getAngle());
+	emit velocityChanged(this->getVelocity());
+	emit timeChanged(this->getTime());
 	QThread::msleep(freshTime);
     }
 }

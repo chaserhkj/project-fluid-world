@@ -8,12 +8,16 @@ class QObject;
 
 class CalThread : public QThread, public pendulum
 {
-Q_OBJECT   
+
+    Q_OBJECT   
+
 public:
     CalThread(double t = 0, double v = 0, double l = 1, double s = 0.1, QObject *parent = 0): \
 	QThread(parent),pendulum(t,v,l,s),quitCalled(false){}
 signals:
-    void valueChanged(double position, double velocity);
+    void positionChanged(double value);
+    void velocityChanged(double value);
+    void timeChanged(double value);
 public slots:
     void quit();
     void start(Priority p = InheritPriority);

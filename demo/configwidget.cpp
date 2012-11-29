@@ -74,8 +74,10 @@ void ConfigWidget::start()
     dw = new DisplayWidget(this,p);
     sw = new StatWidget(this);
 
-    QObject::connect(cal, SIGNAL(valueChanged(double, double)), dw, SLOT(changeGraph(double, double)));
-    QObject::connect(cal, SIGNAL(valueChanged(double, double)), sw, SLOT(setStatus(double,double)));
+    QObject::connect(cal, SIGNAL(positionChanged(double)), dw, SLOT(changeGraph(double)));
+    QObject::connect(cal, SIGNAL(positionChanged(double)), sw, SLOT(setPosition(double)));
+    QObject::connect(cal, SIGNAL(velocityChanged(double)), sw, SLOT(setVelocity(double)));
+    QObject::connect(cal, SIGNAL(timeChanged(double)), sw, SLOT(setTime(double)));
     QObject::connect(sw, SIGNAL(stopRequest()), this, SLOT(stop()));
     
     this->setBlocked(false);

@@ -6,16 +6,20 @@ StatWidget::StatWidget(QWidget *parent) : QWidget(parent, Qt::Window), closeFlag
     this->setWindowTitle(tr("Status"));
     
     mainlo = new QVBoxLayout();
-    lposition = new QLabel(tr("Position:"));
+    lposition = new QLabel(tr("Position:(rad)"));
     vposition = new QLabel;
-    lvelocity = new QLabel(tr("Velocity:"));
+    lvelocity = new QLabel(tr("Velocity:(rad/s)"));
     vvelocity = new QLabel;
+    ltime = new QLabel(tr("Time:(sec)"));
+    vtime = new QLabel;
     stopbtn = new QPushButton(tr("&Stop"));
 
     mainlo->addWidget(lposition);
     mainlo->addWidget(vposition);
     mainlo->addWidget(lvelocity);
     mainlo->addWidget(vvelocity);
+    mainlo->addWidget(ltime);
+    mainlo->addWidget(vtime);
     mainlo->addWidget(stopbtn);
     this->setLayout(mainlo);
 
@@ -31,13 +35,25 @@ StatWidget::~StatWidget()
     delete vposition;
     delete lvelocity;
     delete vvelocity;
+    delete ltime;
+    delete vtime;
     delete stopbtn;
 }
 
-void StatWidget::setStatus(double position, double velocity)
+void StatWidget::setPosition(double value)
 {
-    vposition->setText(QString::number(position));
-    vvelocity->setText(QString::number(velocity));
+    vposition->setText(QString::number(value));
+
+}
+
+void StatWidget::setVelocity(double value)
+{
+    vvelocity->setText(QString::number(value));
+}
+
+void StatWidget::setTime(double value)
+{
+    vtime->setText(QString::number(value));
 }
 
 void StatWidget::setCloseFlag()

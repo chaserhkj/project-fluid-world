@@ -18,7 +18,7 @@ DisplayWidget::DisplayWidget(QWidget *parent, double position):\
     line = scene.addLine(0, 0, x, y);
 }
 
-void DisplayWidget::changeGraph(double position, double velocity)
+void DisplayWidget::changeGraph(double position)
 {
     delete line;
     double x = sin(position) * 150;

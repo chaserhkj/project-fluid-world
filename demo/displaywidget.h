@@ -18,7 +18,7 @@ public:
     DisplayWidget(QWidget *parent = 0, double position = 0);
     void setCloseFlag();
 public slots:
-    void changeGraph(double positon,double velocity = 0);
+    void changeGraph(double positon);
 protected:
     void closeEvent(QCloseEvent *event);
 private:
