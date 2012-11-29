@@ -4,7 +4,7 @@
 #include "statwidget.h"
 #include <QtGui>
 
-ConfigWidget::ConfigWidget(QWidget *parent) : QWidget(parent)
+ConfigWidget::ConfigWidget(QWidget *parent) : QWidget(parent,Qt::Window)
 {
     //Initialize UI objects
     mainlo = new QVBoxLayout;
@@ -65,15 +65,16 @@ void ConfigWidget::start()
     double l=ledit->text().toDouble();
     double s=sedit->text().toDouble();
     cal = new CalThread(p,v,l,s,this);
+    QObject::connect(cal, SIGNAL(finished()), this, SLOT(autoDeleteThread()));
     
     dw = new DisplayWidget(this,p);
     sw = new StatWidget(this);
 
-    QObject::connect(cal, SIGNAL(valueChanged(double p, double v)), dw, SLOT(changeGraph(double p)));
-    QObject::connect(cal, SIGNAL(valueChanged(double p, double v)), sw, SLOT(setStatus(double p, double v)));
-    QObject::connect(dw, SIGNAL(closeRequest()), this, SLOT(stop()));
-
-    this->setEnabled(false);
+    QObject::connect(cal, SIGNAL(valueChanged(double, double)), dw, SLOT(changeGraph(double, double)));
+    QObject::connect(cal, SIGNAL(valueChanged(double, double)), sw, SLOT(setStatus(double,double)));
+    QObject::connect(sw, SIGNAL(stopRequest()), this, SLOT(stop()));
+    
+    this->setBlocked(false);
     dw->show();
     sw->show();
 
@@ -83,9 +84,7 @@ void ConfigWidget::start()
 void ConfigWidget::stop()
 {
     cal->quit();
-    delete cal;
-    cal = 0;
-    
+
     dw->setCloseFlag();
     dw->close();
     delete dw;
@@ -96,5 +95,26 @@ void ConfigWidget::stop()
     delete sw;
     sw = 0;
 
-    this->setEnabled(true);
+    this->setBlocked(true);
+}
+
+void ConfigWidget::setBlocked(bool b)
+{
+    plabel->setEnabled(b);
+    pedit->setEnabled(b);
+    vlabel->setEnabled(b);
+    vedit->setEnabled(b);
+    llabel->setEnabled(b);
+    ledit->setEnabled(b);
+    slabel->setEnabled(b);
+    sedit->setEnabled(b);
+    submitbtn->setEnabled(b);
+    quitbtn->setEnabled(b);
+
+}
+
+void ConfigWidget::autoDeleteThread()
+{
+    delete cal;
+    cal = 0;
 }

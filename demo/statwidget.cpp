@@ -1,7 +1,7 @@
 #include "statwidget.h"
 #include <QtGui>
 
-StatWidget::StatWidget(QWidget *parent = 0) : QWidget(parent), closeFlag(false)
+StatWidget::StatWidget(QWidget *parent) : QWidget(parent, Qt::Window), closeFlag(false)
 {
     mainlo = new QVBoxLayout();
     lposition = new QLabel(tr("Position:"));
@@ -34,8 +34,8 @@ StatWidget::~StatWidget()
 
 void StatWidget::setStatus(double position, double velocity)
 {
-    vposition->setText(position);
-    vvelocity->setText(velocity);
+    vposition->setText(QString::number(position));
+    vvelocity->setText(QString::number(velocity));
 }
 
 void StatWidget::setCloseFlag()

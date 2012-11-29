@@ -2,24 +2,26 @@
 #include <QtGui>
 #include <cmath>
 
-DisplayWidget::DisplayWidget(QWidget *parent, double position) : QWidget(parent), closeFlag(false)
+DisplayWidget::DisplayWidget(QWidget *parent, double position):\
+    QWidget(parent, Qt::Window), closeFlag(false), view(this)
 {
-    this->setGeometry(0, 0, 300, 300);
-    QPainter ptr(this);
-    double x = 150 + sin(position) * 140;
-    double y = 150 + cos(position) * 140;
-    ptr.drawLine(150, 150, x, y);
-    ptr.end();
+    lo.addWidget(&view);
+    this->setLayout(&lo);
+    this->setGeometry(0, 0, 500, 500);
+
+    view.setScene(&scene);
+    view.centerOn(0, 0);
+    double x = sin(position) * 150;
+    double y = cos(position) * 150;
+    line = scene.addLine(0, 0, x, y);
 }
 
-void DisplayWidget::changeGraph(double position)
+void DisplayWidget::changeGraph(double position, double velocity)
 {
-    QPainter ptr(this);
-    ptr.erase(0, 0, 300, 300);
-    double x = 150 + sin(position) * 140;
-    double y = 150 + cos(position) * 140;
-    ptr.drawLine(150, 150, x, y);
-    ptr.end();
+    delete line;
+    double x = sin(position) * 150;
+    double y = cos(position) * 150;
+    line = scene.addLine(0, 0, x, y);
 }
 
 void DisplayWidget::setCloseFlag()

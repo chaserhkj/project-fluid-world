@@ -14,10 +14,14 @@ class StatWidget;
 
 class ConfigWidget : public QWidget
 {
-Q_OBJECT
+
+    Q_OBJECT
+    
 public:
     ConfigWidget(QWidget *parent = 0);
     virtual ~ConfigWidget();
+public slots:
+    void setBlocked(bool b);
 private:
     QVBoxLayout *mainlo;
     QLabel *plabel;
@@ -37,6 +41,7 @@ private:
 private slots:
     void start();
     void stop();
+    void autoDeleteThread();
 };
 
 #endif /* _CONFIGWIDGET_H_ */
