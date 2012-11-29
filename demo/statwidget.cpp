@@ -19,7 +19,7 @@ StatWidget::StatWidget(QWidget *parent) : QWidget(parent, Qt::Window), closeFlag
     mainlo->addWidget(stopbtn);
     this->setLayout(mainlo);
 
-    this->setGeometry(600, 100, 200, 200);
+    this->setGeometry(700, 200, 200, 200);
 
     QObject::connect(stopbtn, SIGNAL(clicked()), this, SIGNAL(stopRequest()));
 }
