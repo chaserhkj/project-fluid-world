@@ -34,6 +34,9 @@ ConfigWidget::ConfigWidget(QWidget *parent) : QWidget(parent,Qt::Window)
     mainlo->addLayout(btnlo);
     this->setLayout(mainlo);
     this->setWindowTitle(tr("Config"));
+
+    //Set default value
+    sedit->setText("0.01");
     
     //Connect signals
     QObject::connect(quitbtn,SIGNAL(clicked()),this,SLOT(close()));
