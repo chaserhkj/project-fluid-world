@@ -18,7 +18,7 @@ ConfigWidget::ConfigWidget(QWidget *parent) : QWidget(parent,Qt::Window)
     sedit = new QLineEdit;
     pck = new QCheckBox(tr("Pause at beginning"));
     btnlo = new QHBoxLayout;
-    submitbtn = new QPushButton(tr("&Submit"));
+    submitbtn = new QPushButton(tr("&Start"));
     quitbtn = new QPushButton(tr("&Quit"));
 
     //Set up UI
