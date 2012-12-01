@@ -12,9 +12,7 @@ void CalThread::start(Priority p)
 {
     quitCalled = false;
     paused = defaultPaused;
-    emit positionChanged(this->getAngle());
-    emit velocityChanged(this->getVelocity());
-    emit timeChanged(this->getTime());
+    emit statusChanged();
     this->QThread::start(p);
 }
 
@@ -40,9 +38,14 @@ void CalThread::run()
 	{
 	    this->pendulum::run();
 	}
-	emit positionChanged(this->getAngle());
-	emit velocityChanged(this->getVelocity());
-	emit timeChanged(this->getTime());
+	emit statusChanged();
 	QThread::msleep(freshTime);
     }
+}
+
+void CalThread::emitChangeSignals()
+{
+    emit positionChanged(this->getAngle());
+    emit velocityChanged(this->getVelocity());
+    emit timeChanged(this->getTime());
 }

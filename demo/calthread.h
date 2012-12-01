@@ -14,11 +14,13 @@ class CalThread : public QThread, public pendulum
 public:
     CalThread(double t = 0, double v = 0, double l = 1, double s = 0.1,	\
 	      bool p = false, QObject *parent = 0):					\
-	QThread(parent), pendulum(t,v,l,s), quitCalled(false), paused(p), defaultPaused(p){}
+	QThread(parent), pendulum(t,v,l,s), quitCalled(false), paused(p), defaultPaused(p)
+	{QObject::connect(this, SIGNAL(statusChanged()), this, SLOT(emitChangeSignals()));}
 signals:
     void positionChanged(double value);
     void velocityChanged(double value);
     void timeChanged(double value);
+    void statusChanged();
 public slots:
     void quit();
     void togglePause();
@@ -30,6 +32,8 @@ private:
     bool paused;
     bool defaultPaused;
     static const int freshTime;
+private slots:
+    void emitChangeSignals();
 };
 
 #endif /* _CALTHREAD_H_ */
