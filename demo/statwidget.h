@@ -31,9 +31,11 @@ private:
     QLabel *ltime;
     QLabel *vtime;
     QPushButton *stopbtn;
+    QPushButton *pausebtn;
     bool closeFlag;
 signals:
     void stopRequest();
+    void togglePauseRequest();
 };
 
 #endif /* _STATWIDGET_H_ */

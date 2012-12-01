@@ -7,6 +7,7 @@ class QLabel;
 class QVBoxLayout;
 class QHBoxLayout;
 class QLineEdit;
+class QCheckBox;
 class QPushButton;
 class CalThread;
 class DisplayWidget;
@@ -32,6 +33,7 @@ private:
     QLineEdit *ledit;
     QLabel *slabel;
     QLineEdit *sedit;
+    QCheckBox *pck;
     QHBoxLayout *btnlo;
     QPushButton *submitbtn;
     QPushButton *quitbtn;

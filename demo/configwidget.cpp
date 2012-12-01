@@ -16,6 +16,7 @@ ConfigWidget::ConfigWidget(QWidget *parent) : QWidget(parent,Qt::Window)
     ledit = new QLineEdit;
     slabel = new QLabel(tr("Calculation Step:(ms)"));
     sedit = new QLineEdit;
+    pck = new QCheckBox(tr("Pause at beginning"));
     btnlo = new QHBoxLayout;
     submitbtn = new QPushButton(tr("&Submit"));
     quitbtn = new QPushButton(tr("&Quit"));
@@ -29,6 +30,7 @@ ConfigWidget::ConfigWidget(QWidget *parent) : QWidget(parent,Qt::Window)
     mainlo->addWidget(ledit);
     mainlo->addWidget(slabel);
     mainlo->addWidget(sedit);
+    mainlo->addWidget(pck);
     btnlo->addWidget(submitbtn);
     btnlo->addWidget(quitbtn);
     mainlo->addLayout(btnlo);
@@ -54,6 +56,7 @@ ConfigWidget::~ConfigWidget()
     delete ledit;
     delete slabel;
     delete sedit;
+    delete pck;
     delete btnlo;
     delete submitbtn;
     delete quitbtn;
@@ -68,7 +71,7 @@ void ConfigWidget::start()
     double l = ledit->text().toDouble();
     double s = sedit->text().toDouble();
     s = s / 1000;
-    cal = new CalThread(p,v,l,s,this);
+    cal = new CalThread(p,v,l,s,pck->isChecked(),this);
     QObject::connect(cal, SIGNAL(finished()), this, SLOT(autoDeleteThread()));
     
     dw = new DisplayWidget(this,p);
@@ -79,6 +82,7 @@ void ConfigWidget::start()
     QObject::connect(cal, SIGNAL(velocityChanged(double)), sw, SLOT(setVelocity(double)));
     QObject::connect(cal, SIGNAL(timeChanged(double)), sw, SLOT(setTime(double)));
     QObject::connect(sw, SIGNAL(stopRequest()), this, SLOT(stop()));
+    QObject::connect(sw, SIGNAL(togglePauseRequest()), cal, SLOT(togglePause()));
     
     this->setBlocked(false);
     dw->show();
