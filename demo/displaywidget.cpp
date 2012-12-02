@@ -16,14 +16,17 @@ DisplayWidget::DisplayWidget(QWidget *parent, double position):\
     double x = sin(position) * 150;
     double y = cos(position) * 150;
     line = scene.addLine(0, 0, x, y);
+    ellipse = scene.addEllipse(x - 5, y - 5, 10, 10, QPen(), QBrush(QColor("Black")));
 }
 
 void DisplayWidget::changeGraph(double position)
 {
     delete line;
+    delete ellipse;
     double x = sin(position) * 150;
     double y = cos(position) * 150;
     line = scene.addLine(0, 0, x, y);
+    ellipse = scene.addEllipse(x - 5, y - 5, 10, 10, QPen(), QBrush(QColor("Black")));
 }
 
 void DisplayWidget::setCloseFlag()

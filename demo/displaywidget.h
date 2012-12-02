@@ -8,6 +8,7 @@
 
 class QCloseEvent;
 class QGraphicsLineItem;
+class QGraphicsEllipseItem;
 
 class DisplayWidget : public QWidget
 {
@@ -27,6 +28,7 @@ private:
     QGraphicsView view;
     QGraphicsScene scene;
     QGraphicsLineItem *line;
+    QGraphicsEllipseItem *ellipse;
 };
 
 #endif /* _DISPLAYWIDGET_H_ */
