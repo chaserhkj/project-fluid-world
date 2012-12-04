@@ -64,12 +64,27 @@ ConfigWidget::~ConfigWidget()
 
 void ConfigWidget::start()
 {
-    //Passing arguments from line edits to CalThread
-    //And initialize CalThread object
+    //Converting arguments and check if they are valid.
     double p = pedit->text().toDouble();
     double v = vedit->text().toDouble();
     double l = ledit->text().toDouble();
     double s = sedit->text().toDouble();
+    if (l <= 0)
+    {
+	QMessageBox::warning(this, tr("Warning"), tr("Length must be greater than zero."));
+	return;
+    }
+    if (s > 10)
+    {
+	QMessageBox::warning(this, tr("Warning"), tr("Calculation step must be lesser than 10 ms."));
+	return;
+    }
+    if (s <= 0)
+    {
+	QMessageBox::warning(this, tr("Warning"), tr("Calculation step must be greater than 0 ms"));
+	return;
+    }
+    //Passing arguments and initialize CalThread object
     s = s / 1000;
     cal = new CalThread(p,v,l,s,pck->isChecked(),this);
     QObject::connect(cal, SIGNAL(finished()), this, SLOT(autoDeleteThread()));
