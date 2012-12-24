@@ -53,6 +53,6 @@ public:
     virtual void calculateX() = 0; /* Calculate X position from xi and eta */ 
     virtual void calculateY() = 0; /* Calculate Y position from xi and eta */ 
  
-}
+};
 
 #endif /*_commontypes*/
