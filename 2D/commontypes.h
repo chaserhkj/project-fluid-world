@@ -5,13 +5,14 @@ class Node{
 private:
     double zeta;  /* vorticity */
     double psi;   /* stream */ 
+    double newzeta; /* vorticity after one recursion */
+    double newpsi;
     double xi;    /* X-position in the transformed cordination */
     double eta;   /* Y-position in the transformed cordination */
     double x;     /* X-position in the physics world */
     double y;     /* Y-position in the physics world */
-    bool isBoundary;
 public:
-    Node(double z, double p, double x,double e, bool b):zeta(z), psi(p), xi(x), eta(e), isBoundary(b)
+    Node(double z, double p, double x,double e):zeta(z), psi(p), xi(x), eta(e)
     {}
 
     void setZeta(double z){
@@ -30,28 +31,31 @@ public:
         eta = e;
         return;
     }
-    double getZeta(){
+    double getZeta() const{
         return zeta;
     }
-    double getPsi(){
+    double getPsi() const{
         return psi;
     }
-    double getXi(){
+    double getXi() const{
         return xi;
-    }
-    double getEta(){
+    } 
+    double getEta() const{
         return eta;
     }
-    double getX(){ /* Do not use before calculate X! */
+    double getX() const{ /* Do not use before calculate X! */
         return x;
     }
-    double getY(){ /* Do not use before calculate Y! */
+    double getY() const{ /* Do not use before calculate Y! */
         return y;
     }
 
-    virtual void run() = 0; /* Do one recursive calculation */
-    virtual void calculateX() = 0; /* Calculate X position from xi and eta */ 
-    virtual void calculateY() = 0; /* Calculate Y position from xi and eta */ 
+    virtual void run(double psi1, double psi2, double psi3, double psi4) = 0; /* Do one recursive calculation, psi1=psi(i+1,j), psi2=psi(i-1,j), psi3=psi(i,j+1), psi4=psi(i,j-1) */
+    virtual void calculateXY() = 0; /* Calculate X and Y position from xi and eta */ 
+    void flush()/* flush zeta and psi */{
+        zeta = newzeta;
+        psi = newpsi;
+    }
  
 };
 
