@@ -34,5 +34,7 @@ void cylinderNode::run(double psi1, double psi2, double psi3, double psi4)
     b4 = g2 / (deltaeta * deltaeta) - g4 / (2 * deltaeta);
     double omega = 1.618; /* relaxation coefficient */
     newpsi = (1 - omega) * psi + omega * (b1 * psi1 + b2 * psi2 + b3 * psi3 + b4 * psi4 + zeta) / b0;
-    //TODO: newzeta
+
+    //recursive calculation of Zeta
+    
 }

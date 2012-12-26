@@ -11,8 +11,9 @@ private:
     double eta;   /* Y-position in the transformed cordination */
     double x;     /* X-position in the physics world */
     double y;     /* Y-position in the physics world */
+    static double Re; /* 2 * Physical Re */
 public:
-    Node(double z, double p, double x,double e):zeta(z), psi(p), xi(x), eta(e)
+    Node(double z, double p, double x,double e, double r):zeta(z), psi(p), xi(x), eta(e), Re(r)
     {}
 
     void setZeta(double z){
