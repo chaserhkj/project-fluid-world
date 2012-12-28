@@ -12,7 +12,7 @@ private:
     double x;     /* X-position in the physics world */
     double y;     /* Y-position in the physics world */
 public:
-    Node(double z, double p, double x,double e):zeta(z), psi(p), xi(x), eta(e)
+    Node(double z=0, double p=0, double x=0,double e=0):zeta(z), psi(p), xi(x), eta(e)
     {}
 
     void setZeta(double z){

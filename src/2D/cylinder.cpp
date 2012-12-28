@@ -1,6 +1,19 @@
 #include <math.h>
 #include "cylinder.h"
 
+void cylinderProject::initialize()
+{
+    int i,j;
+    for (i = downboundary; i <= upboundary; i++){
+        for (j = leftboundary; j <= rightboundary; j++){
+            coordination->access(j,i).setXi(j * deltaxi);
+            coordination->access(j,i).seteta(j * deltaeta);
+            coordination->access(j,i).calculateXY();
+        }
+    }
+    return;
+}
+
 void cylinderNode::calculateXY()
 {
     double delta = xi * xi - eta * eta - 1;
