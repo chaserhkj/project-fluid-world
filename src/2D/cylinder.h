@@ -36,9 +36,11 @@ protected:
     const double deltaxi; /* delta xi and delta eta */
     const double deltaeta; /* delta xi and delta eta */
     const double deltat; /* time step */
+    const double Re; /* 2 * physical Reynolds */
 public:
-    cylinderProject(int l, int r, int u, int d, double dxi = 0.1, double deta = 0.1, double dt = 0.1):deltaxi(dxi), deltaeta(deta), deltat(dt), leftboundary(l), rightboundary(r), upboundary(u), downboundary(d){
+    cylinderProject(int l, int r, int u, int d, double dxi = 0.1, double deta = 0.1, double dt = 0.1, double rey):deltaxi(dxi), deltaeta(deta), deltat(dt), leftboundary(l), rightboundary(r), upboundary(u), downboundary(d){
         t = 0;
+        Re = 2 * rey;
         coordination = new cylinderCoordinate(l, r, u, d);
     }
     ~cylinderProject(){
@@ -46,7 +48,7 @@ public:
     }
 
     void initialize();
-
+    void run();
 }
     
 
