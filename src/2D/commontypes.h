@@ -11,9 +11,8 @@ private:
     double eta;   /* Y-position in the transformed cordination */
     double x;     /* X-position in the physics world */
     double y;     /* Y-position in the physics world */
-    static double Re; /* 2 * Physical Re */
 public:
-    Node(double z, double p, double x,double e, double r):zeta(z), psi(p), xi(x), eta(e), Re(r)
+    Node(double z, double p, double x,double e):zeta(z), psi(p), xi(x), eta(e)
     {}
 
     void setZeta(double z){
@@ -22,6 +21,14 @@ public:
     }
     void setPsi(double p){
         psi = p;
+        return;
+    }
+    void newZeta(double z){
+        newzeta = z;
+        return;
+    }
+    void newPsi(double p){
+        newpsi = p;
         return;
     }
     void setXi(double x){
@@ -51,7 +58,6 @@ public:
         return y;
     }
 
-    virtual void run(double psi1, double psi2, double psi3, double psi4) = 0; /* Do one recursive calculation, psi1=psi(i+1,j), psi2=psi(i-1,j), psi3=psi(i,j+1), psi4=psi(i,j-1) */
     virtual void calculateXY() = 0; /* Calculate X and Y position from xi and eta */ 
     void flush()/* flush zeta and psi */{
         zeta = newzeta;

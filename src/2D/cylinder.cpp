@@ -19,7 +19,7 @@ void cylinderNode::calculateXY()
     y = eta + fabs(eta) * mid * fabs(sin(theta / 2));
 }
 
-void cylinderNode::run(double psi1, double psi2, double psi3, double psi4)
+void cylinderNode::run(double psi1, double psi2, double psi3, double psi4/* Do one recursive calculation, psi1=psi(i+1,j), psi2=psi(i-1,j), psi3=psi(i,j+1), psi4=psi(i,j-1) */)
 {
     //recursive calcultion of Psi
     double hxi, heta; /* lame coefficient */

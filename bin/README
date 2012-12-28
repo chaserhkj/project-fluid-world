@@ -1,0 +1,2 @@
+Dir /bin :
+This is the dir to store generated executable binary files.
