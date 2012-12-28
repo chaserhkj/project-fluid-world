@@ -42,7 +42,7 @@ void cylinderProject::run(/*double psi1, double psi2, double psi3, double psi4 D
     double g1, g2, g3, g4;
     double b0, b1, b2, b3, b4;
     double x, y;
-    double omega = 1.618; /* relaxation coefficient */
+    //double omega = 1.618; /* relaxation coefficient */
     int i,j;
     for (i = downboundary + 1; i < upboundary; i++){
         for (j = leftboundary + 1; j < rightboundary; j++){
@@ -57,8 +57,14 @@ void cylinderProject::run(/*double psi1, double psi2, double psi3, double psi4 D
             b2 = g1 / (deltaxi * deltaxi) - g3 / (2 * deltaxi);
             b3 = g2 / (deltaeta * deltaeta) + g4 / (2 * deltaeta);
             b4 = g2 / (deltaeta * deltaeta) - g4 / (2 * deltaeta);
-            newpsi = (1 - omega) * psi + omega * (b1 * psi1 + b2 * psi2 + b3 * psi3 + b4 * psi4 + zeta) / b0;
-
+            //newpsi = (1 - omega) * psi + omega * (b1 * psi1 + b2 * psi2 + b3 * psi3 + b4 * psi4 + zeta) / b0;
+            //More to do here...
+        }
+    }
     //recursive calculation of Zeta
-    
+    double vxi, veta;
+    double uxi, ueta;
+    double lambdaxi, lambdaeta;
+    t += deltat;
+
 }
