@@ -346,6 +346,12 @@ void cylinderProject::run()
 
         converge -= 1;
     }
+    /* flush zetat back to zeta*/
+    for (j = downboundary + 2; j < upboundary - 1; j++){
+        for (i = leftboundary + 2; i < rightboundary - 1; i++){
+            coordination->access(i ,j).zeta = coordination->access(i ,j).zetat;
+        }
+    }
 
 
     /* Calculating new psi */
