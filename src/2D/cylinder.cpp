@@ -32,17 +32,19 @@ void cylinderNode::calculateXY()
 
 void cylinderProject::initialize()
 {
-    int i,j;
+    int i, j;
     double g1, g2, g3, g4;
     double x, y;
     cylinderNode& node;
     for (i = downboundary; i <= upboundary; i++){
         for (j = leftboundary; j <= rightboundary; j++){
             if ((i == 0) && (j >= -1 / deltaxi) && (j <= 1 / deltaxi)){
-                /* On the cylinder, do nothing */
+                /* On the cylinder, do nothing but initialize zeta for future use*/
+                coordination->access(j, i).zeta = 0;
+                coordination->access(j, i).zetat = 0;
                 continue;
             }
-            node = coordination->access(j,i);
+            node = coordination->access(j, i);
             node.xi = j * deltaxi;
             node.eta = i * deltaeta;
             node.calculateXY();
@@ -69,17 +71,27 @@ void cylinderProject::initialize()
     }
     //Boundary conditions: left boundary
     for (i = downboundary; i <= upboundary; i++){
-        coordination->access(leftboundary,i).psi = coordination->access(leftboundary,i).y;
+        coordination->access(leftboundary + 1, i).psi = coordination->access(leftboundary + 1, i).y;
         /* zeta is already 0 */
+        coordination->access(leftboundary, i).zetat = 0;
+        coordination->access(leftboundary + 1, i).zetat = 0;
     }
     //Boundary conditions: right boundary TODO:differential restrict
     for (i = downboundary; i <= upboundary; i++){
-        coordination->access(rightboundary,i).psi = coordination->access(rightboundary,i).y;
+        coordination->access(rightboundary - 1, i).psi = coordination->access(rightboundary - 1, i).y;
         /* zeta is already 0 */
+        coordination->access(rightboundary, i).zetat = 0;
+        coordination->access(rightboundary - 1, i).zetat = 0;
     }
     //Boundary conditions: up and down boundary
     /* psi is already given */
     /* zeta is already 0 */
+    for (i = leftboundary; i <= rightboundary; i++){
+        coordination->access(i, upboundary).zetat = 0;
+        coordination->access(i, upboundary - 1).zetat = 0;
+        coordination->access(i, downboundary).zetat =0;
+        coordination->access(i, downboundary + 1).zetat =0;
+    }
 
     //Boundary conditions: cylinder
     for (j = -1 / deltaxi; j <= 1 /deltaxi; j++){
@@ -105,6 +117,9 @@ void cylinderProject::initialize()
         node.psi = 0;
         node.zeta = 0;
     }
+    /* For convenience, set psi at these two points to 0 */
+    coordination->access(-1 / deltaxi, 0).psi = 0;
+    coordination->access(1 / deltaxi, 0).psi = 0;
     
     return;
 }
@@ -113,23 +128,42 @@ void cylinderProject::run()
 {
     double vxi, veta;
     double uxi, ueta;
+    double hxi, heta;
     double lambdaxi, lambdaeta;
     int i,j;
+    int converge;
+    cylinderNode& node;
 
     /* Calculating boundary conditions of zeta */
     for (j = -1 / deltaxi; j <= 1 /deltaxi; j++){
-        coordination->access(j, 0).zeta = -2 * (coordination->access(j, 1).psi - coordination->access(j, 0).psi) / (
+        /* upper half */
+        cylinderBoundary->access(j, 1).zeta = -2 * (coordination->access(j, 1).psi - 0 /* cylinderBoundary->access(j, 1).psi) */ / (cylinderBoundary->access(j, 1).heta * cylinderBoundary->access(j, 1).heta * deltaeta * deltaeta);
+        cylinderBoundary->access(j, 1).zetat = cylinderBoundary->access(j, 1).zeta;
+        /* lower half */
+        cylinderBoundary->access(j, 0).zeta = -2 * (coordination->access(j, -1).psi - 0 /* cylinderBoundary->access(j, 0).psi) */ / (cylinderBoundary->access(j, 0).heta * cylinderBoundary->access(j, 0).heta * deltaeta * deltaeta);
+        cylinderBoundary->access(j, 0).zetat = cylinderBoundary->access(j, 0).zeta;
+    }
+    /* For convenience, set zeta at these two points */
+    coordination->access(-1 / deltaxi, 0).zeta = (cylinderBoundary->access(-1 / deltaxi, 1).zeta + cylinderBoundary->access(-1 / deltaxi, 0).zeta) / 2;
+    coordination->access(1 / deltaxi, 0).zeta = (cylinderBoundary->access(1 / deltaxi, 1).zeta + cylinderBoundary->access(1 / deltaxi, 0).zeta) / 2;
 
-    for (i = downboundary + 1; i < upboundary; i++){
-        for (j = leftboundary + 1; j < rightboundary; j++){
-            //recursive calcultion of Psi
-            //TODO: Boundary conditions
-            //newpsi = (1 - omega) * psi + omega * (b1 * psi1 + b2 * psi2 + b3 * psi3 + b4 * psi4 + zeta) / b0;
-            //FIXME:More to do here...
+    /* Time step */
+    t += deltat;
 
-            //recursive calculation of Zeta
-            vxi = (coordination->access(j, i + 1).getPsi() - coordination->access(j, i - 1).getPsi()) / (2 * heta * deltaeta);
-            veta = -(coordination->access(j + 1, i).getPsi() - coordination->access(j + 1, i).getPsi()) / (2 * hxi * deltaxi);
+    /* Calculating new zeta at t + deltat on inner nodes */
+     /* Calculating coefficients */
+    for (i = downboundary + 2; i < upboundary - 1; i++){
+        for (j = leftboundary + 2; j < rightboundary - 1; j++){
+            if ((i <= 1) && (i >= -1) && (j >= -1 / deltaxi) && (j <= 1 / deltaxi)){
+                /* Near or on the cylinder, do nothing here*/
+                continue;
+            }
+
+            node = coordination->access(j, i);
+            hxi = node.hxi;
+            heta = node.heta;
+            vxi = (coordination->access(j, i + 1).psi - coordination->access(j, i - 1).psi) / (2 * heta * deltaeta);
+            veta = -(coordination->access(j + 1, i).psi - coordination->access(j - 1, i).psi) / (2 * hxi * deltaxi);
             uxi = vxi / hxi;
             ueta = veta / heta;
             if (Re < 1000) {
@@ -139,23 +173,205 @@ void cylinderProject::run()
                 lambdaxi = 1;
                 lambdaeta = 1;
             }
-            c1 = -2 / deltat - lambdaxi * abs(uxi) / (2 * deltaxi) - lambdaeta * abs(ueta) / (2 * deltaeta) - 4 / (hxi * hxi * deltaxi * deltaxi * Re) - 4 / (heta * heta * deltaeta * deltaeta * Re);
-            c2 = -2 / deltat + lambdaxi * abs(uxi) / (2 * deltaxi) + lambdaeta * abs(ueta) / (2 * deltaeta) + 4 / (hxi * hxi * deltaxi * deltaxi * Re) + 4 / (heta * heta * deltaeta * deltaeta * Re);
-            c3 = - (ueta - lambdaeta * abs(ueta)) / (12 * deltaeta);
-            c4 = (2 * ueta - lambdaeta * abs(ueta)) / (3 * deltaeta) - 2 / (heta * heta * deltaeta * deltaeta * Re);
-            c5 = -(2 * ueta + lambdaeta * abs(ueta)) / (3 * deltaeta) - 2 / (heta * heta * deltaeta * deltaeta * Re);
-            c6 = (ueta + lambdaeta * abs(ueta)) / (12 * deltaeta);
-            c7 = - (uxi - lambdaxi * abs(uxi)) / (12 * deltaxi);
-            c8 = (2 * uxi - lambdaxi * abs(uxi)) / (3 * deltaxi) - 2 / (hxi * hxi * deltaxi * deltaxi * Re);
-            c9 = -(2 * uxi + lambdaxi * abs(uxi)) / (3 * deltaxi) - 2 / (hxi * hxi * deltaxi * deltaxi * Re);
-            c10 = (uxi + lambdaxi * abs(uxi)) / (12 * deltaxi);
+            node.c1 = -2 / deltat - lambdaxi * abs(uxi) / (2 * deltaxi) - lambdaeta * abs(ueta) / (2 * deltaeta) - 4 / (hxi * hxi * deltaxi * deltaxi * Re) - 4 / (heta * heta * deltaeta * deltaeta * Re);
+            node.c2 = -2 / deltat + lambdaxi * abs(uxi) / (2 * deltaxi) + lambdaeta * abs(ueta) / (2 * deltaeta) + 4 / (hxi * hxi * deltaxi * deltaxi * Re) + 4 / (heta * heta * deltaeta * deltaeta * Re);
+            node.c3 = - (ueta - lambdaeta * abs(ueta)) / (12 * deltaeta);
+            node.c4 = (2 * ueta - lambdaeta * abs(ueta)) / (3 * deltaeta) - 2 / (heta * heta * deltaeta * deltaeta * Re);
+            node.c5 = -(2 * ueta + lambdaeta * abs(ueta)) / (3 * deltaeta) - 2 / (heta * heta * deltaeta * deltaeta * Re);
+            node.c6 = (ueta + lambdaeta * abs(ueta)) / (12 * deltaeta);
+            node.c7 = - (uxi - lambdaxi * abs(uxi)) / (12 * deltaxi);
+            node.c8 = (2 * uxi - lambdaxi * abs(uxi)) / (3 * deltaxi) - 2 / (hxi * hxi * deltaxi * deltaxi * Re);
+            node.c9 = -(2 * uxi + lambdaxi * abs(uxi)) / (3 * deltaxi) - 2 / (hxi * hxi * deltaxi * deltaxi * Re);
+            node.c10 = (uxi + lambdaxi * abs(uxi)) / (12 * deltaxi);
+        }
+    }
+    for (j = -1 / deltaxi; j <= 1 / deltaxi; j++){
+        /* Upper half */
+        node = coordination->access(j, 1);
+        hxi = node.hxi;
+        heta = node.heta;
+        vxi = (coordination->access(j, 2).psi - cylinderBoundary->access(j, 1).psi) / (2 * heta * deltaeta);
+        veta = -(coordination->access(j + 1, 1).psi - coordination->access(j - 1, 1).psi) / (2 * hxi * deltaxi);
+        uxi = vxi / hxi;
+        ueta = veta / heta;
+        if (Re < 1000) {
+            lambdaxi = 1 - 1 / exp(abs(uxi));
+            lambdaeta = 1 - 1 / exp(abs(ueta));
+        } else {
+            lambdaxi = 1;
+            lambdaeta = 1;
+        }
+        node.c1 = -2 / deltat - lambdaxi * abs(uxi) / (2 * deltaxi) - (-ueta) / (2 * deltaeta) - 4 / (hxi * hxi * deltaxi * deltaxi * Re) - 4 / (heta * heta * deltaeta * deltaeta * Re);
+        node.c2 = -2 / deltat + lambdaxi * abs(uxi) / (2 * deltaxi) + (-ueta) / (2 * deltaeta) + 4 / (hxi * hxi * deltaxi * deltaxi * Re) + 4 / (heta * heta * deltaeta * deltaeta * Re);
+        node.c3 = - (ueta - (-ueta)) / (12 * deltaeta);
+        node.c4 = (2 * ueta - (-ueta)) / (3 * deltaeta) - 2 / (heta * heta * deltaeta * deltaeta * Re);
+        node.c5 = -(2 * ueta + (-ueta)) / (3 * deltaeta) - 2 / (heta * heta * deltaeta * deltaeta * Re);
+        node.c6 = (ueta + (-ueta)) / (12 * deltaeta);
+        node.c7 = - (uxi - lambdaxi * abs(uxi)) / (12 * deltaxi);
+        node.c8 = (2 * uxi - lambdaxi * abs(uxi)) / (3 * deltaxi) - 2 / (hxi * hxi * deltaxi * deltaxi * Re);
+        node.c9 = -(2 * uxi + lambdaxi * abs(uxi)) / (3 * deltaxi) - 2 / (hxi * hxi * deltaxi * deltaxi * Re);
+        node.c10 = (uxi + lambdaxi * abs(uxi)) / (12 * deltaxi);
+
+        /* Lower half */
+        node = coordination->access(j, -1);
+        hxi = node.hxi;
+        heta = node.heta;
+        vxi = (cylinderBoundary->access(j, 0).psi - coordination->access(j, -2).psi) / (2 * heta * deltaeta);
+        veta = -(coordination->access(j + 1, -1).psi - coordination->access(j - 1, -1).psi) / (2 * hxi * deltaxi);
+        uxi = vxi / hxi;
+        ueta = veta / heta;
+        if (Re < 1000) {
+            lambdaxi = 1 - 1 / exp(abs(uxi));
+            lambdaeta = 1 - 1 / exp(abs(ueta));
+        } else {
+            lambdaxi = 1;
+            lambdaeta = 1;
+        }
+        node.c1 = -2 / deltat - lambdaxi * abs(uxi) / (2 * deltaxi) - ueta / (2 * deltaeta) - 4 / (hxi * hxi * deltaxi * deltaxi * Re) - 4 / (heta * heta * deltaeta * deltaeta * Re);
+        node.c2 = -2 / deltat + lambdaxi * abs(uxi) / (2 * deltaxi) + ueta / (2 * deltaeta) + 4 / (hxi * hxi * deltaxi * deltaxi * Re) + 4 / (heta * heta * deltaeta * deltaeta * Re);
+        node.c3 = - (ueta - ueta) / (12 * deltaeta);
+        node.c4 = (2 * ueta - ueta) / (3 * deltaeta) - 2 / (heta * heta * deltaeta * deltaeta * Re);
+        node.c5 = -(2 * ueta + ueta) / (3 * deltaeta) - 2 / (heta * heta * deltaeta * deltaeta * Re);
+        node.c6 = (ueta + ueta) / (12 * deltaeta);
+        node.c7 = - (uxi - lambdaxi * abs(uxi)) / (12 * deltaxi);
+        node.c8 = (2 * uxi - lambdaxi * abs(uxi)) / (3 * deltaxi) - 2 / (hxi * hxi * deltaxi * deltaxi * Re);
+        node.c9 = -(2 * uxi + lambdaxi * abs(uxi)) / (3 * deltaxi) - 2 / (hxi * hxi * deltaxi * deltaxi * Re);
+        node.c10 = (uxi + lambdaxi * abs(uxi)) / (12 * deltaxi);
+    }
+    /* left stagnation point */
+    j = -1 / deltaxi - 1;
+    i = 0
+    node = coordination->access(j, i);
+    hxi = node.hxi;
+    heta = node.heta;
+    vxi = (coordination->access(j, i + 1).psi - coordination->access(j, i - 1).psi) / (2 * heta * deltaeta);
+    veta = -(coordination->access(j + 1, i).psi - coordination->access(j - 1, i).psi) / (2 * hxi * deltaxi);
+    uxi = vxi / hxi;
+    ueta = veta / heta;
+    if (Re < 1000) {
+        lambdaxi = 1 - 1 / exp(abs(uxi));
+        lambdaeta = 1 - 1 / exp(abs(ueta));
+    } else {
+        lambdaxi = 1;
+        lambdaeta = 1;
+    }
+    node.c1 = -2 / deltat - uxi / (2 * deltaxi) - lambdaeta * abs(ueta) / (2 * deltaeta) - 4 / (hxi * hxi * deltaxi * deltaxi * Re) - 4 / (heta * heta * deltaeta * deltaeta * Re);
+    node.c2 = -2 / deltat + uxi / (2 * deltaxi) + lambdaeta * abs(ueta) / (2 * deltaeta) + 4 / (hxi * hxi * deltaxi * deltaxi * Re) + 4 / (heta * heta * deltaeta * deltaeta * Re);
+    node.c3 = - (ueta - lambdaeta * abs(ueta)) / (12 * deltaeta);
+    node.c4 = (2 * ueta - lambdaeta * abs(ueta)) / (3 * deltaeta) - 2 / (heta * heta * deltaeta * deltaeta * Re);
+    node.c5 = -(2 * ueta + lambdaeta * abs(ueta)) / (3 * deltaeta) - 2 / (heta * heta * deltaeta * deltaeta * Re);
+    node.c6 = (ueta + lambdaeta * abs(ueta)) / (12 * deltaeta);
+    node.c7 = - (uxi - uxi) / (12 * deltaxi);
+    node.c8 = (2 * uxi - uxi) / (3 * deltaxi) - 2 / (hxi * hxi * deltaxi * deltaxi * Re);
+    node.c9 = -(2 * uxi + uxi) / (3 * deltaxi) - 2 / (hxi * hxi * deltaxi * deltaxi * Re);
+    node.c10 = (uxi + uxi) / (12 * deltaxi);
+    /* right stagnation point */
+    j = 1 / deltaxi + 1;
+    i = 0
+    node = coordination->access(j, i);
+    hxi = node.hxi;
+    heta = node.heta;
+    vxi = (coordination->access(j, i + 1).psi - coordination->access(j, i - 1).psi) / (2 * heta * deltaeta);
+    veta = -(coordination->access(j + 1, i).psi - coordination->access(j - 1, i).psi) / (2 * hxi * deltaxi);
+    uxi = vxi / hxi;
+    ueta = veta / heta;
+    if (Re < 1000) {
+        lambdaxi = 1 - 1 / exp(abs(uxi));
+        lambdaeta = 1 - 1 / exp(abs(ueta));
+    } else {
+        lambdaxi = 1;
+        lambdaeta = 1;
+    }
+    node.c1 = -2 / deltat - (-uxi) / (2 * deltaxi) - lambdaeta * abs(ueta) / (2 * deltaeta) - 4 / (hxi * hxi * deltaxi * deltaxi * Re) - 4 / (heta * heta * deltaeta * deltaeta * Re);
+    node.c2 = -2 / deltat + (-uxi) / (2 * deltaxi) + lambdaeta * abs(ueta) / (2 * deltaeta) + 4 / (hxi * hxi * deltaxi * deltaxi * Re) + 4 / (heta * heta * deltaeta * deltaeta * Re);
+    node.c3 = - (ueta - lambdaeta * abs(ueta)) / (12 * deltaeta);
+    node.c4 = (2 * ueta - lambdaeta * abs(ueta)) / (3 * deltaeta) - 2 / (heta * heta * deltaeta * deltaeta * Re);
+    node.c5 = -(2 * ueta + lambdaeta * abs(ueta)) / (3 * deltaeta) - 2 / (heta * heta * deltaeta * deltaeta * Re);
+    node.c6 = (ueta + lambdaeta * abs(ueta)) / (12 * deltaeta);
+    node.c7 = - (uxi - (-uxi)) / (12 * deltaxi);
+    node.c8 = (2 * uxi - (-uxi)) / (3 * deltaxi) - 2 / (hxi * hxi * deltaxi * deltaxi * Re);
+    node.c9 = -(2 * uxi + (-uxi)) / (3 * deltaxi) - 2 / (hxi * hxi * deltaxi * deltaxi * Re);
+    node.c10 = (uxi + (-uxi)) / (12 * deltaxi);
+
+     /* copy zeta to zetat to use as guessing solve */
+    for (j = downboundary + 2; j < upboundary - 1; j++){
+        for (i = leftboundary + 2; i < rightboundary - 1; i++){
+            coordination->access(i, j).zetat = coordination->access(i, j).zeta;
         }
     }
 
-    /* Calculating new zeta at t + deltat on inner nodes */
+
+     /* recursive calculation */
+    converge = 10;
+    while ( converge ){ //TODO:converge
+        /* One step */
+        for (j = downboundary + 2; j < upboundary - 1; j++){
+            for (i = leftboundary + 2; i < rightboundary - 1; i++){
+                if ((j <= 2) && (j >= -2) && (i >= -1 / deltaxi) && (i <= 1 / deltaxi)){
+                    /* Near or on the cylinder, do nothing here*/
+                    continue;
+                }
+                node = coordination->access(i, j);
+                node.newzetat = (node.c2 * node.zeta + node.c3 * (coordination->access(i, j + 2).zetat + coordination->access(i, j + 2).zeta) + node.c4 * (coordination->access(i, j + 1).zetat + coordination->access(i, j + 1).zeta) + node.c5 * (coordination->access(i, j - 1).zetat + coordination->access(i, j - 1).zeta) + node.c6 * (coordination->access(i, j - 2).zetat + coordination->access(i, j - 2).zeta) + node.c7 * (coordination->access(i + 2, j).zetat + coordination->access(i + 2, j).zeta) + node.c8 * (coordination->access(i + 1, j).zetat + coordination->access(i + 1, j).zeta) + node.c9 * (coordination->access(i - 1, j).zetat + coordination->access(i - 1, j).zeta) + node.c10 * (coordination->access(i - 2, j).zetat + coordination->access(i - 2, j).zeta)) / node.c1;
+            }
+        }
+        /* j == +-2 */
+        for (i = -1 / deltaxi; i <= 1 / deltaxi; i++){
+            j = 2;
+            node = coordination->access(i, j);
+            node.newzetat = (node.c2 * node.zeta + node.c3 * (coordination->access(i, j + 2).zetat + coordination->access(i, j + 2).zeta) + node.c4 * (coordination->access(i, j + 1).zetat + coordination->access(i, j + 1).zeta) + node.c5 * (coordination->access(i, j - 1).zetat + coordination->access(i, j - 1).zeta) + node.c6 * (cylinderBoundary->access(i, 1).zetat + cylinderBoundary->access(i, 1).zeta) + node.c7 * (coordination->access(i + 2, j).zetat + coordination->access(i + 2, j).zeta) + node.c8 * (coordination->access(i + 1, j).zetat + coordination->access(i + 1, j).zeta) + node.c9 * (coordination->access(i - 1, j).zetat + coordination->access(i - 1, j).zeta) + node.c10 * (coordination->access(i - 2, j).zetat + coordination->access(i - 2, j).zeta)) / node.c1;
+             
+            j = -2;
+            node = coordination->access(i, j);
+            node.newzetat = (node.c2 * node.zeta + node.c3 * (cylinderBoundary->access(i, 0).zetat + cylinderBoundary->access(i, 0).zeta) + node.c4 * (coordination->access(i, j + 1).zetat + coordination->access(i, j + 1).zeta) + node.c5 * (coordination->access(i, j - 1).zetat + coordination->access(i, j - 1).zeta) + node.c6 * (coordination->access(i, j - 2).zetat + coordination->access(i, j - 2).zeta) + node.c7 * (coordination->access(i + 2, j).zetat + coordination->access(i + 2, j).zeta) + node.c8 * (coordination->access(i + 1, j).zetat + coordination->access(i + 1, j).zeta) + node.c9 * (coordination->access(i - 1, j).zetat + coordination->access(i - 1, j).zeta) + node.c10 * (coordination->access(i - 2, j).zetat + coordination->access(i - 2, j).zeta)) / node.c1;
+        }
+        /* j == +- 1 */
+        for (i = -1 / deltaxi; i <= 1 / deltaxi; i++){
+            j = 1;
+            node = coordination->access(i, j);
+            node.newzetat = (node.c2 * node.zeta + node.c3 * (cylinderBoundary->access(i, 1).zetat + cylinderBoundary->access(i, 1).zeta) + node.c4 * (coordination->access(i, j + 1).zetat + coordination->access(i, j + 1).zeta) + node.c5 * (coordination->access(i, j - 1).zetat + coordination->access(i, j - 1).zeta) + node.c7 * (coordination->access(i + 2, j).zetat + coordination->access(i + 2, j).zeta) + node.c8 * (coordination->access(i + 1, j).zetat + coordination->access(i + 1, j).zeta) + node.c9 * (coordination->access(i - 1, j).zetat + coordination->access(i - 1, j).zeta) + node.c10 * (coordination->access(i - 2, j).zetat + coordination->access(i - 2, j).zeta)) / node.c1;
+
+            j = -1;
+            node = coordination->access(i, j);
+            node.newzetat = (node.c2 * node.zeta + node.c4 * (cylinderBoundary->access(i, 0).zetat + cylinderBoundary->access(i, 0).zeta) + node.c5 * (coordination->access(i, j - 1).zetat + coordination->access(i, j - 1).zeta) + node.c6 * (coordination->access(i, j - 2).zetat + coordination->access(i, j - 2).zeta) + node.c7 * (coordination->access(i + 2, j).zetat + coordination->access(i + 2, j).zeta) + node.c8 * (coordination->access(i + 1, j).zetat + coordination->access(i + 1, j).zeta) + node.c9 * (coordination->access(i - 1, j).zetat + coordination->access(i - 1, j).zeta) + node.c10 * (coordination->access(i - 2, j).zetat + coordination->access(i - 2, j).zeta)) / node.c1;
+        }
+        /* End of one step */
+
+        /* flush */
+        for (j = downboundary + 2; j < upboundary - 1; j++){
+            for (i = leftboundary + 2; i < rightboundary - 1; i++){
+                coordination->access(i ,j).zetat = coordination->access(i ,j).newzetat;
+            }
+        }
+
+        converge -= 1;
+    }
+
 
     /* Calculating new psi */
+    converge = 10;
+    while (converge) {
+        /* One step */
+        for (j = downboundary + 2; j < upboundary - 1; j++){
+            for (i = leftboundary + 2; i < rightboundary - 1; i++){
+                if ((j == 0) && (i >= -1 / deltaxi) && (i <= 1 / deltaxi)){
+                    /* On the cylinder, do nothing here */
+                    continue;
+                }
+                node = coordination->access(i, j);
+                node.newpsi = (1 - omega) * node.psi + omega * (node.b1 * coordination->access(i + 1, j).psi + node.b2 * coordination->access(i - 1, j).psi + node.b3 * coordination->access(i, j + 1).psi + b4 * coordination->access(i, j - 1) + node.zeta) / node.b0;
+            }
+        }
+        /* End of one step */
 
-    /* Time step */
-    t += deltat;
+        /* flush */
+        for (j = downboundary + 2; j < upboundary - 1; j++){
+            for (i = leftboundary + 2; i < rightboundary - 1; i++){
+                coordination->access(i ,j).psi = coordination->access(i ,j).newpsi;
+            }
+        }
+
+        converge -= 1;
+    }
+
 }

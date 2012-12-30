@@ -5,7 +5,8 @@ class Node{
 public:
     double zeta;  /* vorticity */
     double psi;   /* stream */ 
-    double newzeta; /* vorticity after one recursion */
+    double zetat; /* vorticity after one recursion */
+    double newzetat; /* used for recursive calculation */
     double newpsi;
     double xi;    /* X-position in the transformed cordination */
     double eta;   /* Y-position in the transformed cordination */
