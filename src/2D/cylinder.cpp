@@ -48,20 +48,26 @@ void cylinderProject::initialize()
             node.b2 = g1 / (deltaxi * deltaxi) - g3 / (2 * deltaxi);
             node.b3 = g2 / (deltaeta * deltaeta) + g4 / (2 * deltaeta);
             node.b4 = g2 / (deltaeta * deltaeta) - g4 / (2 * deltaeta);
+
+            /* Initial conditions */
+            node.psi = y * (1 - 1 / (x * x + y * y));
+            node.zeta = 0;
         }
     }
     //TODO: Boundary conditions
     return;
 }
 
-void cylinderProject::run(/*double psi1, double psi2, double psi3, double psi4 Do one recursive calculation, psi1=psi(i+1,j), psi2=psi(i-1,j), psi3=psi(i,j+1), psi4=psi(i,j-1) */)
+void cylinderProject::run()
 {
-    //double omega = 1.618; /* relaxation coefficient */
+    double omega = 1.618; /* relaxation coefficient */
     double vxi, veta;
     double uxi, ueta;
     double lambdaxi, lambdaeta;
-    double c1, c2, c3, c4, c5, c6, c7, c8, c9, c10;
     int i,j;
+
+    /* Calculating boundary conditions of zeta */
+
     for (i = downboundary + 1; i < upboundary; i++){
         for (j = leftboundary + 1; j < rightboundary; j++){
             //recursive calcultion of Psi
@@ -91,10 +97,13 @@ void cylinderProject::run(/*double psi1, double psi2, double psi3, double psi4 D
             c8 = (2 * uxi - lambdaxi * fabs(uxi)) / (3 * deltaxi) - 2 / (hxi * hxi * deltaxi * deltaxi * Re);
             c9 = -(2 * uxi + lambdaxi * fabs(uxi)) / (3 * deltaxi) - 2 / (hxi * hxi * deltaxi * deltaxi * Re);
             c10 = (uxi + lambdaxi * fabs(uxi)) / (12 * deltaxi);
-            //TODO: equation solver here...
         }
     }
 
+    /* Calculating new zeta at t + deltat on inner nodes */
 
+    /* Calculating new psi */
+
+    /* Time step */
     t += deltat;
 }
