@@ -147,9 +147,6 @@ void cylinderProject::run()
     coordination->access(-1 / deltaxi, 0).zeta = (cylinderBoundary->access(-1 / deltaxi, 1).zeta + cylinderBoundary->access(-1 / deltaxi, 0).zeta) / 2;
     coordination->access(1 / deltaxi, 0).zeta = (cylinderBoundary->access(1 / deltaxi, 1).zeta + cylinderBoundary->access(1 / deltaxi, 0).zeta) / 2;
 
-    /* Time step */
-    t += deltat;
-
     /* Calculating new zeta at t + deltat on inner nodes */
      /* Calculating coefficients */
     for (i = downboundary + 2; i < upboundary - 1; i++){
@@ -353,6 +350,8 @@ void cylinderProject::run()
         }
     }
 
+    /* Time step */
+    t += deltat;
 
     /* Calculating new psi */
     converge = 10;
