@@ -30,7 +30,7 @@ public:
     cylinderNode& access(int x, int y){
         return coordinate[x - l + (y - d) * (r - l + 1)];
     }
-}
+};
         
 
 class cylinderProject{
@@ -55,7 +55,7 @@ public:
 
     void initialize();
     void run();
-}
+};
     
 
 #endif /* _cylinder */

@@ -12,10 +12,13 @@ public:
     double x;     /* X-position in the physics world */
     double y;     /* Y-position in the physics world */
 
+    virtual void calculateXY() = 0; /* Calculate X and Y position from xi and eta */ 
+
+/*
     Node(double z=0, double p=0, double x=0,double e=0):zeta(z), psi(p), xi(x), eta(e)
     {}
 
-/*    void setZeta(double z){
+    void setZeta(double z){
         zeta = z;
         return;
     }
@@ -57,10 +60,9 @@ public:
     double getY() const{  Do not use before calculate Y! 
         return y;
     }
-*/
-    virtual void calculateXY() = 0; /* Calculate X and Y position from xi and eta */ 
 
-/*    void flush() flush zeta and psi {
+
+    void flush() flush zeta and psi {
         zeta = newzeta;
         psi = newpsi;
     }
