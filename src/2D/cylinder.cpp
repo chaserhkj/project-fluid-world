@@ -1,4 +1,4 @@
-#include <math.h> //TODO:Change to cmath?
+#include <cmath> 
 #include "cylinder.h"
 
 void cylinderNode::calculateXY()
@@ -15,8 +15,8 @@ void cylinderNode::calculateXY()
         }
     }
     double mid = sqrt(sqrt(delta * delta + 4 * xi * xi * eta * eta));
-    x = xi + fabs(xi) * mid * fabs(cos(theta / 2));
-    y = eta + fabs(eta) * mid * fabs(sin(theta / 2));
+    x = xi + xi * mid * abs(cos(theta / 2) / xi);
+    y = eta + eta * mid * abs(sin(theta / 2) / eta);
     return;
 }
 
@@ -54,13 +54,31 @@ void cylinderProject::initialize()
             node.zeta = 0;
         }
     }
-    //TODO: Boundary conditions
+    //Boundary conditions: left boundary
+    for (i = downboundary; i <= upboundary; i++){
+        coordination->access(leftboundary,i).psi = coordination->access(leftboundary,i).y;
+        /* zeta is already 0 */
+    }
+    //Boundary conditions: right boundary TODO:differential restrict
+    for (i = downboundary; i <= upboundary; i++){
+        coordination->access(rightboundary,i).psi = coordination->access(rightboundary,i).y;
+        /* zeta is already 0 */
+    }
+    //Boundary conditions: up and down boundary
+    /* psi is already given */
+    /* zeta is already 0 */
+
+    //Boundary conditions: cylinder
+    for (j = -1 / deltaxi; j <= 1 /deltaxi; j++){
+        coordination->access(j,0).psi = 0;
+        /* zeta is already 0 */ 
+    }
+    
     return;
 }
 
 void cylinderProject::run()
 {
-    double omega = 1.618; /* relaxation coefficient */
     double vxi, veta;
     double uxi, ueta;
     double lambdaxi, lambdaeta;
@@ -81,22 +99,22 @@ void cylinderProject::run()
             uxi = vxi / hxi;
             ueta = veta / heta;
             if (Re < 1000) {
-                lambdaxi = 1 - 1 / exp(fabs(uxi));
-                lambdaeta = 1 - 1 / exp(fabs(ueta));
+                lambdaxi = 1 - 1 / exp(abs(uxi));
+                lambdaeta = 1 - 1 / exp(abs(ueta));
             } else {
                 lambdaxi = 1;
                 lambdaeta = 1;
             }
-            c1 = -2 / deltat - lambdaxi * fabs(uxi) / (2 * deltaxi) - lambdaeta * fabs(ueta) / (2 * deltaeta) - 4 / (hxi * hxi * deltaxi * deltaxi * Re) - 4 / (heta * heta * deltaeta * deltaeta * Re);
-            c2 = -2 / deltat + lambdaxi * fabs(uxi) / (2 * deltaxi) + lambdaeta * fabs(ueta) / (2 * deltaeta) + 4 / (hxi * hxi * deltaxi * deltaxi * Re) + 4 / (heta * heta * deltaeta * deltaeta * Re);
-            c3 = - (ueta - lambdaeta * fabs(ueta)) / (12 * deltaeta);
-            c4 = (2 * ueta - lambdaeta * fabs(ueta)) / (3 * deltaeta) - 2 / (heta * heta * deltaeta * deltaeta * Re);
-            c5 = -(2 * ueta + lambdaeta * fabs(ueta)) / (3 * deltaeta) - 2 / (heta * heta * deltaeta * deltaeta * Re);
-            c6 = (ueta + lambdaeta * fabs(ueta)) / (12 * deltaeta);
-            c7 = - (uxi - lambdaxi * fabs(uxi)) / (12 * deltaxi);
-            c8 = (2 * uxi - lambdaxi * fabs(uxi)) / (3 * deltaxi) - 2 / (hxi * hxi * deltaxi * deltaxi * Re);
-            c9 = -(2 * uxi + lambdaxi * fabs(uxi)) / (3 * deltaxi) - 2 / (hxi * hxi * deltaxi * deltaxi * Re);
-            c10 = (uxi + lambdaxi * fabs(uxi)) / (12 * deltaxi);
+            c1 = -2 / deltat - lambdaxi * abs(uxi) / (2 * deltaxi) - lambdaeta * abs(ueta) / (2 * deltaeta) - 4 / (hxi * hxi * deltaxi * deltaxi * Re) - 4 / (heta * heta * deltaeta * deltaeta * Re);
+            c2 = -2 / deltat + lambdaxi * abs(uxi) / (2 * deltaxi) + lambdaeta * abs(ueta) / (2 * deltaeta) + 4 / (hxi * hxi * deltaxi * deltaxi * Re) + 4 / (heta * heta * deltaeta * deltaeta * Re);
+            c3 = - (ueta - lambdaeta * abs(ueta)) / (12 * deltaeta);
+            c4 = (2 * ueta - lambdaeta * abs(ueta)) / (3 * deltaeta) - 2 / (heta * heta * deltaeta * deltaeta * Re);
+            c5 = -(2 * ueta + lambdaeta * abs(ueta)) / (3 * deltaeta) - 2 / (heta * heta * deltaeta * deltaeta * Re);
+            c6 = (ueta + lambdaeta * abs(ueta)) / (12 * deltaeta);
+            c7 = - (uxi - lambdaxi * abs(uxi)) / (12 * deltaxi);
+            c8 = (2 * uxi - lambdaxi * abs(uxi)) / (3 * deltaxi) - 2 / (hxi * hxi * deltaxi * deltaxi * Re);
+            c9 = -(2 * uxi + lambdaxi * abs(uxi)) / (3 * deltaxi) - 2 / (hxi * hxi * deltaxi * deltaxi * Re);
+            c10 = (uxi + lambdaxi * abs(uxi)) / (12 * deltaxi);
         }
     }
 
