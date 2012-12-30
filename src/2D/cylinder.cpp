@@ -1,6 +1,15 @@
 #include <cmath> 
 #include "cylinder.h"
 
+inline double unitfy(double v)
+{
+    if (v == 0){
+        return 0;
+    } else {
+        return v>0?1:-1;
+    }
+}
+
 void cylinderNode::calculateXY()
 {
     double delta = xi * xi - eta * eta - 1;
@@ -15,8 +24,8 @@ void cylinderNode::calculateXY()
         }
     }
     double mid = sqrt(sqrt(delta * delta + 4 * xi * xi * eta * eta));
-    x = xi + xi * mid * abs(cos(theta / 2) / xi);
-    y = eta + eta * mid * abs(sin(theta / 2) / eta);
+    x = xi + unitfy(xi) * mid * abs(cos(theta / 2));
+    y = eta + unitfy(eta) * mid * abs(sin(theta / 2));
     return;
 }
 
@@ -29,6 +38,10 @@ void cylinderProject::initialize()
     cylinderNode& node;
     for (i = downboundary; i <= upboundary; i++){
         for (j = leftboundary; j <= rightboundary; j++){
+            if ((i == 0) && (j >= -1 / deltaxi) && (j <= 1 / deltaxi)){
+                /* On the cylinder, do nothing */
+                continue;
+            }
             node = coordination->access(j,i);
             node.xi = j * deltaxi;
             node.eta = i * deltaeta;
@@ -70,8 +83,27 @@ void cylinderProject::initialize()
 
     //Boundary conditions: cylinder
     for (j = -1 / deltaxi; j <= 1 /deltaxi; j++){
-        coordination->access(j,0).psi = 0;
-        /* zeta is already 0 */ 
+        /* upper half */
+        node = cylinderBoundary->access(j, 1);
+        node.xi = j * deltaxi;
+        node.x = node.xi;
+        node.eta = 0;
+        node.y = sqrt(1 - node.x * node.x); 
+        node.hxi = sqrt(1 + 2 * node.x * node.x) / 2;
+        node.heta = node.hxi;
+        node.psi = 0;
+        node.zeta = 0;
+
+        /* lower half */
+        node = cylinderBoundary->access(j, 0);
+        node.xi = j * deltaxi;
+        node.x = node.xi;
+        node.eta = 0;
+        node.y = -sqrt(1 - node.x * node.x); 
+        node.hxi = sqrt(1 + 2 * node.x * node.x) / 2;
+        node.heta = node.hxi;
+        node.psi = 0;
+        node.zeta = 0;
     }
     
     return;
@@ -85,6 +117,8 @@ void cylinderProject::run()
     int i,j;
 
     /* Calculating boundary conditions of zeta */
+    for (j = -1 / deltaxi; j <= 1 /deltaxi; j++){
+        coordination->access(j, 0).zeta = -2 * (coordination->access(j, 1).psi - coordination->access(j, 0).psi) / (
 
     for (i = downboundary + 1; i < upboundary; i++){
         for (j = leftboundary + 1; j < rightboundary; j++){

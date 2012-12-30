@@ -31,12 +31,12 @@ public:
         return coordinate[x - l + (y - d) * (r - l + 1)];
     }
 };
-        
 
 class cylinderProject{
 private:
     double t; /* Physical time */
     cylinderCoordinate* coordination; /* transformed coordination */
+    cylinderCoordinate* cylinderBoundary; /* Boundary nodes on the cylinder, 1 means upper half and 0 means lower half */
     int leftboundary, rightboundary, upboundary, downboundary;
 protected:
     const double deltaxi; /* delta xi and delta eta */
@@ -45,13 +45,15 @@ protected:
     const double Re; /* 2 * physical Reynolds */
     const double omega; /* relaxation coefficient */
 public:
-    cylinderProject(int l, int r, int u, int d, double dxi = 0.1, double deta = 0.1, double dt = 0.1, double rey = 40, double o = 1.618):deltaxi(dxi), deltaeta(deta), deltat(dt), leftboundary(l), rightboundary(r), upboundary(u), downboundary(d), omega(o){
+    cylinderProject(int l = -100, int r = 400, int u = 100, int d = -100, double dxi = 0.1, double deta = 0.1, double dt = 0.1, double rey = 40, double o = 1.618):deltaxi(dxi), deltaeta(deta), deltat(dt), leftboundary(l), rightboundary(r), upboundary(u), downboundary(d), omega(o){
         t = 0;
         Re = 2 * rey;
         coordination = new cylinderCoordinate(l, r, u, d);
+        cylinderBoundary = new cylinderCoordinate(-1 / deltaxi, 1 / deltaxi, 1, 0);
     }
     ~cylinderProject(){
         delete coordination;
+        delete cylinderBoundary;
     }
 
     void initialize();
