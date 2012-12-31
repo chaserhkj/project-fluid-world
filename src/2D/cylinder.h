@@ -9,6 +9,7 @@ public:
     double heta;
     double b0, b1, b2, b3, b4; /* for calculating psi */
     double c1, c2, c3, c4, c5, c6, c7, c8, c9, c10; /* for calculating zeta */
+    void calculateXY();
 };
 
 /* Simulation of 2D coordination */
@@ -28,7 +29,7 @@ public:
         delete [] coordinate;
     }
     cylinderNode& access(int x, int y){
-        return coordinate[x - l + (y - d) * (r - l + 1)];
+        return coordinate[x - leftboundary + (y - downboundary) * (rightboundary - leftboundary + 1)];
     }
 };
 
@@ -42,7 +43,7 @@ protected:
     const double deltaxi; /* delta xi and delta eta */
     const double deltaeta; /* delta xi and delta eta */
     const double deltat; /* time step */
-    const double Re; /* 2 * physical Reynolds */
+    double Re; /* 2 * physical Reynolds */
     const double omega; /* relaxation coefficient */
 public:
     cylinderProject(int l = -100, int r = 400, int u = 100, int d = -100, double dxi = 0.1, double deta = 0.1, double dt = 0.1, double rey = 40, double o = 1.618):deltaxi(dxi), deltaeta(deta), deltat(dt), leftboundary(l), rightboundary(r), upboundary(u), downboundary(d), omega(o){
