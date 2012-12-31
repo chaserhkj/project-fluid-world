@@ -18,28 +18,28 @@ void CalThread::start(Priority p)
 
 void CalThread::togglePause()
 {
-    if(paused)
-	paused = false;
+    if (paused)
+        paused = false;
     else
-	paused = true;
+        paused = true;
 }
 
 
 void CalThread::run()
 {
-    int i, times = freshTime/(step*1000);
-    while(!quitCalled)
-    {
-	while(paused)
-	{
-	    QThread::msleep(freshTime);
-	}
-	for (i = 0; i < times; ++i)
-	{
-	    this->pendulum::run();
-	}
-	emit statusChanged();
-	QThread::msleep(freshTime);
+    int i, times = freshTime / (step * 1000);
+
+    while (!quitCalled) {
+        while (paused) {
+            QThread::msleep(freshTime);
+        }
+
+        for (i = 0; i < times; ++i) {
+            this->pendulum::run();
+        }
+
+        emit statusChanged();
+        QThread::msleep(freshTime);
     }
 }
 

@@ -11,9 +11,9 @@ class QCloseEvent;
 class StatWidget : public QWidget
 {
     Q_OBJECT
-    
+
 public:
-    StatWidget(QWidget *parent = 0);
+    StatWidget(QWidget * parent = 0);
     ~StatWidget();
     void setCloseFlag();
 public slots:
@@ -21,17 +21,17 @@ public slots:
     void setVelocity(double value);
     void setTime(double value);
 protected:
-    void closeEvent(QCloseEvent *event);
+    void closeEvent(QCloseEvent * event);
 private:
-    QVBoxLayout *mainlo;
-    QLabel *lposition;
-    QLabel *vposition;
-    QLabel *lvelocity;
-    QLabel *vvelocity;
-    QLabel *ltime;
-    QLabel *vtime;
-    QPushButton *stopbtn;
-    QPushButton *pausebtn;
+    QVBoxLayout * mainlo;
+    QLabel * lposition;
+    QLabel * vposition;
+    QLabel * lvelocity;
+    QLabel * vvelocity;
+    QLabel * ltime;
+    QLabel * vtime;
+    QPushButton * stopbtn;
+    QPushButton * pausebtn;
     bool closeFlag;
 signals:
     void stopRequest();

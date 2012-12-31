@@ -1,10 +1,10 @@
 #include "statwidget.h"
 #include <QtGui>
 
-StatWidget::StatWidget(QWidget *parent) : QWidget(parent, Qt::Window), closeFlag(false)
+StatWidget::StatWidget(QWidget * parent) : QWidget(parent, Qt::Window), closeFlag(false)
 {
     this->setWindowTitle(tr("Status"));
-    
+
     mainlo = new QVBoxLayout();
     lposition = new QLabel(tr("Position:(rad)"));
     vposition = new QLabel;
@@ -14,7 +14,7 @@ StatWidget::StatWidget(QWidget *parent) : QWidget(parent, Qt::Window), closeFlag
     vtime = new QLabel;
     stopbtn = new QPushButton(tr("&Stop"));
     pausebtn = new QPushButton(tr("&Pause/Resume"));
-    
+
     mainlo->addWidget(lposition);
     mainlo->addWidget(vposition);
     mainlo->addWidget(lvelocity);
@@ -65,10 +65,10 @@ void StatWidget::setCloseFlag()
     closeFlag = true;
 }
 
-void StatWidget::closeEvent(QCloseEvent *event)
+void StatWidget::closeEvent(QCloseEvent * event)
 {
-    if(closeFlag)
-	event->accept();
+    if (closeFlag)
+        event->accept();
     else
-	event->ignore();
+        event->ignore();
 }
