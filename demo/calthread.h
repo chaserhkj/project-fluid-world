@@ -6,16 +6,17 @@
 
 class QObject;
 
-class CalThread : public QThread, public pendulum
+class CalThread: public QThread, public pendulum
 {
 
-    Q_OBJECT
+    Q_OBJECT;
 
 public:
-    CalThread(double t = 0, double v = 0, double l = 1, double s = 0.1, \
-              bool p = false, QObject * parent = 0):                 \
-        QThread(parent), pendulum(t, v, l, s), quitCalled(false), paused(p), defaultPaused(p) {
-        QObject::connect(this, SIGNAL(statusChanged()), this, SLOT(emitChangeSignals()));
+    CalThread(double t = 0, double v = 0, double l = 1, double s = 0.1, bool p = false, QObject * parent = 0):
+        QThread(parent), pendulum(t, v, l, s), quitCalled(false), paused(p),
+        defaultPaused(p) {
+        QObject::connect(this, SIGNAL(statusChanged()), this,
+                         SLOT(emitChangeSignals()));
     }
 signals:
     void positionChanged(double value);

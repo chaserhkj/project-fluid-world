@@ -1,7 +1,8 @@
 #include "statwidget.h"
 #include <QtGui>
 
-StatWidget::StatWidget(QWidget * parent) : QWidget(parent, Qt::Window), closeFlag(false)
+StatWidget::StatWidget(QWidget * parent): QWidget(parent, Qt::Window),
+    closeFlag(false)
 {
     this->setWindowTitle(tr("Status"));
 
@@ -27,8 +28,10 @@ StatWidget::StatWidget(QWidget * parent) : QWidget(parent, Qt::Window), closeFla
 
     this->setGeometry(700, 200, 200, 200);
 
-    QObject::connect(stopbtn, SIGNAL(clicked()), this, SIGNAL(stopRequest()));
-    QObject::connect(pausebtn, SIGNAL(clicked()), this, SIGNAL(togglePauseRequest()));
+    QObject::connect(stopbtn, SIGNAL(clicked()), this,
+                     SIGNAL(stopRequest()));
+    QObject::connect(pausebtn, SIGNAL(clicked()), this,
+                     SIGNAL(togglePauseRequest()));
 }
 
 StatWidget::~StatWidget()

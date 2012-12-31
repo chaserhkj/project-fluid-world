@@ -8,9 +8,9 @@ class QLabel;
 class QPushButton;
 class QCloseEvent;
 
-class StatWidget : public QWidget
+class StatWidget: public QWidget
 {
-    Q_OBJECT
+    Q_OBJECT;
 
 public:
     StatWidget(QWidget * parent = 0);

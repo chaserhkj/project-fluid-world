@@ -18,4 +18,3 @@ void pendulum::run()
     theta += deltaTheta;
     time += step;
 }
-

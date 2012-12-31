@@ -10,10 +10,10 @@ class QCloseEvent;
 class QGraphicsLineItem;
 class QGraphicsEllipseItem;
 
-class DisplayWidget : public QWidget
+class DisplayWidget: public QWidget
 {
 
-    Q_OBJECT
+    Q_OBJECT;
 
 public:
     DisplayWidget(QWidget * parent = 0, double position = 0);
@@ -32,4 +32,3 @@ private:
 };
 
 #endif /* _DISPLAYWIDGET_H_ */
-
