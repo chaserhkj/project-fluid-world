@@ -7,3 +7,5 @@ demo.exe
 object_script.*
 /demo/Linux_build/demo
 *.orig
+/lib/libfrontend.a
+/lib/libfrontend.prl
