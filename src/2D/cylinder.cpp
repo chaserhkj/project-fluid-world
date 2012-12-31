@@ -21,7 +21,7 @@ void cylinderNode::calculateXY()
         theta = atan(2 * xi * eta / delta);
     } else {
         if (delta == 0) {
-            theta = M_PI_2; /* pi/2 */
+            theta = M_PI_2;   /* pi/2 */
         } else {
             theta = M_PI + atan(2 * xi * eta / delta);
         }
@@ -70,8 +70,7 @@ void cylinderProject::initialize()
             g3 = 0;
             g4 = 0;
             node->b0 =
-                2 * g1 / (deltaxi * deltaxi) +
-                2 * g2 / (deltaeta * deltaeta);
+                2 * g1 / (deltaxi * deltaxi) + 2 * g2 / (deltaeta * deltaeta);
             node->b1 = g1 / (deltaxi * deltaxi) + g3 / (2 * deltaxi);
             node->b2 = g1 / (deltaxi * deltaxi) - g3 / (2 * deltaxi);
             node->b3 = g2 / (deltaeta * deltaeta) + g4 / (2 * deltaeta);
@@ -208,12 +207,10 @@ void cylinderProject::run()
             heta = node->heta;
             vxi =
                 (coordination->access(j, i + 1).psi -
-                 coordination->access(j,
-                                      i - 1).psi) / (2 * heta * deltaeta);
+                 coordination->access(j, i - 1).psi) / (2 * heta * deltaeta);
             veta =
                 -(coordination->access(j + 1, i).psi -
-                  coordination->access(j - 1,
-                                       i).psi) / (2 * hxi * deltaxi);
+                  coordination->access(j - 1, i).psi) / (2 * hxi * deltaxi);
             uxi = vxi / hxi;
             ueta = veta / heta;
 
@@ -397,11 +394,9 @@ void cylinderProject::run()
     node->c6 = (ueta + lambdaeta * abs(ueta)) / (12 * deltaeta);
     node->c7 = -(uxi - uxi) / (12 * deltaxi);
     node->c8 =
-        (2 * uxi - uxi) / (3 * deltaxi) -
-        2 / (hxi * hxi * deltaxi * deltaxi * Re);
+        (2 * uxi - uxi) / (3 * deltaxi) - 2 / (hxi * hxi * deltaxi * deltaxi * Re);
     node->c9 =
-        -(2 * uxi + uxi) / (3 * deltaxi) -
-        2 / (hxi * hxi * deltaxi * deltaxi * Re);
+        -(2 * uxi + uxi) / (3 * deltaxi) - 2 / (hxi * hxi * deltaxi * deltaxi * Re);
     node->c10 = (uxi + uxi) / (12 * deltaxi);
     /* right stagnation point */
     j = rightterminal + 1;
@@ -458,8 +453,7 @@ void cylinderProject::run()
 
     for (j = downboundary + 2; j < upboundary - 1; j++) {
         for (i = leftboundary + 2; i < rightboundary - 1; i++) {
-            coordination->access(i, j).zetat =
-                coordination->access(i, j).zeta;
+            coordination->access(i, j).zetat = coordination->access(i, j).zeta;
         }
     }
 
@@ -467,7 +461,8 @@ void cylinderProject::run()
     /* recursive calculation */
     converge = 30;
 
-    while (converge) {      //TODO:converge
+    while (converge) {
+        //TODO:converge
         /* One step */
         #pragma omp parallel for private(j, i, node)
         for (j = downboundary + 2; j < upboundary - 1; j++) {
@@ -503,9 +498,7 @@ void cylinderProject::run()
                                  coordination->access(i - 1,
                                                       j).zeta) +
                      node->c10 * (coordination->access(i - 2, j).zetat +
-                                  coordination->access(i - 2,
-                                                       j).zeta)) /
-                    node->c1;
+                                  coordination->access(i - 2, j).zeta)) / node->c1;
             }
         }
 
@@ -539,8 +532,7 @@ void cylinderProject::run()
                              coordination->access(i - 1,
                                                   j).zeta) +
                  node->c10 * (coordination->access(i - 2, j).zetat +
-                              coordination->access(i - 2,
-                                                   j).zeta)) / node->c1;
+                              coordination->access(i - 2, j).zeta)) / node->c1;
         }
 
         j = -2;
@@ -572,8 +564,7 @@ void cylinderProject::run()
                              coordination->access(i - 1,
                                                   j).zeta) +
                  node->c10 * (coordination->access(i - 2, j).zetat +
-                              coordination->access(i - 2,
-                                                   j).zeta)) / node->c1;
+                              coordination->access(i - 2, j).zeta)) / node->c1;
         }
 
         /* j == +- 1 */
@@ -603,8 +594,7 @@ void cylinderProject::run()
                              coordination->access(i - 1,
                                                   j).zeta) +
                  node->c10 * (coordination->access(i - 2, j).zetat +
-                              coordination->access(i - 2,
-                                                   j).zeta)) / node->c1;
+                              coordination->access(i - 2, j).zeta)) / node->c1;
         }
 
         j = -1;
@@ -633,8 +623,7 @@ void cylinderProject::run()
                              coordination->access(i - 1,
                                                   j).zeta) +
                  node->c10 * (coordination->access(i - 2, j).zetat +
-                              coordination->access(i - 2,
-                                                   j).zeta)) / node->c1;
+                              coordination->access(i - 2, j).zeta)) / node->c1;
         }
 
         /* End of one step */
@@ -657,8 +646,7 @@ void cylinderProject::run()
 
     for (j = downboundary + 2; j < upboundary - 1; j++) {
         for (i = leftboundary + 2; i < rightboundary - 1; i++) {
-            coordination->access(i, j).zeta =
-                coordination->access(i, j).zetat;
+            coordination->access(i, j).zeta = coordination->access(i, j).zetat;
         }
     }
 
@@ -711,6 +699,7 @@ void cylinderProject::run()
 
     /* Calculating velocity */
     #pragma omp parallel for private(j, i, node)
+
     for (j = downboundary + 2; j < upboundary - 1; j++) {
         for (i = leftboundary + 2; i < rightboundary - 1; i++) {
             if ((j == 0) && (i >= leftterminal) && (i <= rightterminal)) {
@@ -719,8 +708,17 @@ void cylinderProject::run()
             }
 
             node = &coordination->access(i, j);
-            node.uxi = (coordination->access(i, j + 1).psi - coordination->access(i, j - 1).psi) / (2 * deltaeta * node.hxi * node.heta);
-            node.ueta = -(coordination->access(i + 1, j).psi - coordination->access(i - 1, j).psi) / (2 * deltaxi * node.hxi * node.heta);
+            node.uxi =
+                (coordination->access(i, j + 1).psi -
+                 coordination->access(i,
+                                      j -
+                                      1).psi) / (2 * deltaeta * node.hxi *
+                                                 node.heta);
+            node.ueta =
+                -(coordination->access(i + 1, j).psi -
+                  coordination->access(i - 1,
+                                       j).psi) / (2 * deltaxi * node.hxi *
+                                                  node.heta);
         }
     }
 
