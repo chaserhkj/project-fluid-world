@@ -12,7 +12,7 @@ inline double unitfy(double v)
     }
 }
 
-void cylinderNode::calculateXY()
+void cylinderTransformer::calculateXY()
 {
     double delta = xi * xi - eta * eta - 1;
     double theta;
@@ -708,17 +708,16 @@ void cylinderProject::run()
             }
 
             node = &coordination->access(i, j);
-            node.uxi =
+            node->uxi =
                 (coordination->access(i, j + 1).psi -
-                 coordination->access(i,
-                                      j -
-                                      1).psi) / (2 * deltaeta * node.hxi *
-                                                 node.heta);
-            node.ueta =
+                 coordination->access(i, j -
+                                      1).psi) / (2 * deltaeta * node->hxi *
+                                                 node->heta);
+            node->ueta =
                 -(coordination->access(i + 1, j).psi -
                   coordination->access(i - 1,
-                                       j).psi) / (2 * deltaxi * node.hxi *
-                                                  node.heta);
+                                       j).psi) / (2 * deltaxi * node->hxi *
+                                                  node->heta);
         }
     }
 

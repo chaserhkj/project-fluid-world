@@ -1,6 +1,16 @@
 #ifndef _commontypes
 #define _commontypes
 
+class Transformer  /* Who can transform between coordinations, not Optimus, Bumblebee, etc */
+{
+public:
+    double xi, eta; /* position in the transformed cordination */
+    double x, y; /* position in the physics coordination */
+
+    virtual void calculateXY() = 0;   /* Calculate X and Y position from xi and eta */
+};
+
+
 class Node
 {
 public:
@@ -9,12 +19,6 @@ public:
     double zetat;         /* vorticity after one recursion */
     double newzetat;      /* used for recursive calculation */
     double newpsi;
-    double xi;            /* X-position in the transformed cordination */
-    double eta;           /* Y-position in the transformed cordination */
-    double x;         /* X-position in the physics world */
-    double y;         /* Y-position in the physics world */
-
-    virtual void calculateXY() = 0;   /* Calculate X and Y position from xi and eta */
 
     /*
        Node(double z=0, double p=0, double x=0,double e=0):zeta(z), psi(p), xi(x), eta(e)

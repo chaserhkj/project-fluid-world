@@ -3,7 +3,13 @@
 
 #include "commontypes.h"
 
-class cylinderNode: public Node
+class cylinderTransformer: public Transformer
+{
+public:
+    void calculateXY();
+};
+
+class cylinderNode: public Node, public cylinderTransformer
 {
 public:
     double hxi;           /* lame coefficient */
@@ -11,8 +17,10 @@ public:
     double b0, b1, b2, b3, b4;    /* for calculating psi */
     double c1, c2, c3, c4, c5, c6, c7, c8, c9, c10;   /* for calculating zeta */
     double uxi, ueta;     /* velocity in the transformed coordination */
-    void calculateXY();
 };
+
+class cylinderSpotStain: public cylinderTransformer
+{};
 
 /* Simulation of 2D coordination */
 class cylinderCoordinate
