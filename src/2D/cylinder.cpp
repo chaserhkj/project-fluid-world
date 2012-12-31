@@ -709,4 +709,19 @@ void cylinderProject::run()
         converge -= 1;
     }
 
+    /* Calculating velocity */
+    #pragma omp parallel for private(j, i, node)
+    for (j = downboundary + 2; j < upboundary - 1; j++) {
+        for (i = leftboundary + 2; i < rightboundary - 1; i++) {
+            if ((j == 0) && (i >= leftterminal) && (i <= rightterminal)) {
+                /* On the cylinder, do nothing here */
+                continue;
+            }
+
+            node = &coordination->access(i, j);
+            node.uxi = (coordination->access(i, j + 1).psi - coordination->access(i, j - 1).psi) / (2 * deltaeta * node.hxi * node.heta);
+            node.ueta = -(coordination->access(i + 1, j).psi - coordination->access(i - 1, j).psi) / (2 * deltaxi * node.hxi * node.heta);
+        }
+    }
+
 }
