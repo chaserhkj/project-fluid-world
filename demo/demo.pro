@@ -1,5 +1,5 @@
 TEMPLATE = app
-CONFIG = warn_on debug qt
+CONFIG += warn_on debug qt
 
 HEADERS = backend.h \
 	  configwidget.h \
