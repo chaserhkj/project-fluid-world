@@ -2,17 +2,21 @@
 #define _commontypes
 
 class Node{
-private:
+public:
     double zeta;  /* vorticity */
     double psi;   /* stream */ 
-    double newzeta; /* vorticity after one recursion */
+    double zetat; /* vorticity after one recursion */
+    double newzetat; /* used for recursive calculation */
     double newpsi;
     double xi;    /* X-position in the transformed cordination */
     double eta;   /* Y-position in the transformed cordination */
     double x;     /* X-position in the physics world */
     double y;     /* Y-position in the physics world */
-public:
-    Node(double z, double p, double x,double e):zeta(z), psi(p), xi(x), eta(e)
+
+    virtual void calculateXY() = 0; /* Calculate X and Y position from xi and eta */ 
+
+/*
+    Node(double z=0, double p=0, double x=0,double e=0):zeta(z), psi(p), xi(x), eta(e)
     {}
 
     void setZeta(double z){
@@ -51,19 +55,19 @@ public:
     double getEta() const{
         return eta;
     }
-    double getX() const{ /* Do not use before calculate X! */
+    double getX() const{  Do not use before calculate X! 
         return x;
     }
-    double getY() const{ /* Do not use before calculate Y! */
+    double getY() const{  Do not use before calculate Y! 
         return y;
     }
 
-    virtual void calculateXY() = 0; /* Calculate X and Y position from xi and eta */ 
-    void flush()/* flush zeta and psi */{
+
+    void flush() flush zeta and psi {
         zeta = newzeta;
         psi = newpsi;
     }
- 
+*/ 
 };
 
 #endif /*_commontypes*/
