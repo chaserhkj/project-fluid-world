@@ -4,7 +4,7 @@
 #include "statwidget.h"
 #include <QtGui>
 
-ConfigWidget::ConfigWidget(QWidget * parent) : QWidget(parent, Qt::Window)
+ConfigWidget::ConfigWidget(QWidget * parent): QWidget(parent, Qt::Window)
 {
     //Initialize UI objects
     mainlo = new QVBoxLayout;
@@ -71,34 +71,43 @@ void ConfigWidget::start()
     double s = sedit->text().toDouble();
 
     if (l <= 0) {
-        QMessageBox::warning(this, tr("Warning"), tr("Length must be greater than zero."));
+        QMessageBox::warning(this, tr("Warning"),
+                             tr("Length must be greater than zero."));
         return;
     }
 
     if (s > 10) {
-        QMessageBox::warning(this, tr("Warning"), tr("Calculation step must be lesser than 10 ms."));
+        QMessageBox::warning(this, tr("Warning"),
+                             tr("Calculation step must be lesser than 10 ms."));
         return;
     }
 
     if (s <= 0) {
-        QMessageBox::warning(this, tr("Warning"), tr("Calculation step must be greater than 0 ms"));
+        QMessageBox::warning(this, tr("Warning"),
+                             tr("Calculation step must be greater than 0 ms"));
         return;
     }
 
     //Passing arguments and initialize CalThread object
     s = s / 1000;
     cal = new CalThread(p, v, l, s, pck->isChecked(), this);
-    QObject::connect(cal, SIGNAL(finished()), this, SLOT(autoDeleteThread()));
+    QObject::connect(cal, SIGNAL(finished()), this,
+                     SLOT(autoDeleteThread()));
 
     dw = new DisplayWidget(this, p);
     sw = new StatWidget(this);
 
-    QObject::connect(cal, SIGNAL(positionChanged(double)), dw, SLOT(changeGraph(double)));
-    QObject::connect(cal, SIGNAL(positionChanged(double)), sw, SLOT(setPosition(double)));
-    QObject::connect(cal, SIGNAL(velocityChanged(double)), sw, SLOT(setVelocity(double)));
-    QObject::connect(cal, SIGNAL(timeChanged(double)), sw, SLOT(setTime(double)));
+    QObject::connect(cal, SIGNAL(positionChanged(double)), dw,
+                     SLOT(changeGraph(double)));
+    QObject::connect(cal, SIGNAL(positionChanged(double)), sw,
+                     SLOT(setPosition(double)));
+    QObject::connect(cal, SIGNAL(velocityChanged(double)), sw,
+                     SLOT(setVelocity(double)));
+    QObject::connect(cal, SIGNAL(timeChanged(double)), sw,
+                     SLOT(setTime(double)));
     QObject::connect(sw, SIGNAL(stopRequest()), this, SLOT(stop()));
-    QObject::connect(sw, SIGNAL(togglePauseRequest()), cal, SLOT(togglePause()));
+    QObject::connect(sw, SIGNAL(togglePauseRequest()), cal,
+                     SLOT(togglePause()));
 
     this->setBlocked(false);
     dw->show();
