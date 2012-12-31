@@ -37,7 +37,6 @@ void cylinderProject::initialize()
     int i, j;
     double g1, g2, g3, g4;
     double x, y;
-    int leftterminal, rightterminal; /* terminals on the cylinder */
     cylinderNode *node;
 
     #pragma omp parallel for
