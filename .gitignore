@@ -1,6 +1,8 @@
 *.o
 *.swp
 *~
-/demo/demo
 Makefile
 moc_*.cpp
+demo.exe
+object_script.*
+/demo/Linux_build/demo
