@@ -39,7 +39,7 @@ void cylinderProject::initialize()
     double x, y;
     cylinderNode *node;
 
-    #pragma omp parallel for
+    #pragma omp parallel for private(i, j, g1, g2, g3, g4, x, y, node)
     for (i = downboundary; i <= upboundary; i++) {
 	for (j = leftboundary; j <= rightboundary; j++) {
 	    if ((i == 0) && (j >= leftterminal) && (j <= rightterminal)) {
@@ -79,7 +79,7 @@ void cylinderProject::initialize()
 	}
     }
     //Boundary conditions: left boundary
-    #pragma omp parallel for
+    #pragma omp parallel for private(i)
     for (i = downboundary; i <= upboundary; i++) {
 	coordination->access(leftboundary + 1, i).psi =
 	    coordination->access(leftboundary + 1, i).y;
@@ -88,7 +88,7 @@ void cylinderProject::initialize()
 	coordination->access(leftboundary + 1, i).zetat = 0;
     }
     //Boundary conditions: right boundary TODO:differential restrict
-    #pragma omp parallel for
+    #pragma omp parallel for private(i)
     for (i = downboundary; i <= upboundary; i++) {
 	coordination->access(rightboundary - 1, i).psi =
 	    coordination->access(rightboundary - 1, i).y;
@@ -99,7 +99,7 @@ void cylinderProject::initialize()
     //Boundary conditions: up and down boundary
     /* psi is already given */
     /* zeta is already 0 */
-    #pragma omp parallel for
+    #pragma omp parallel for private(i)
     for (i = leftboundary; i <= rightboundary; i++) {
 	coordination->access(i, upboundary).zetat = 0;
 	coordination->access(i, upboundary - 1).zetat = 0;
@@ -108,7 +108,7 @@ void cylinderProject::initialize()
     }
 
     //Boundary conditions: cylinder
-    #pragma omp parallel for
+    #pragma omp parallel for private(j, node)
     for (j = leftterminal; j <= rightterminal; j++) {
 	/* upper half */
 	node = &cylinderBoundary->access(j, 1);
@@ -150,7 +150,7 @@ void cylinderProject::run()
     cylinderNode *node;
 
     /* Calculating boundary conditions of zeta */
-    #pragma omp parallel for
+    #pragma omp parallel for private(j)
     for (j = leftterminal; j <= rightterminal; j++) {
 	/* upper half */
 	cylinderBoundary->access(j, 1).zeta =
@@ -179,7 +179,7 @@ void cylinderProject::run()
 
     /* Calculating new zeta at t + deltat on inner nodes */
     /* Calculating coefficients */
-    #pragma omp parallel for
+    #pragma omp parallel for private(i, j, node, hxi, heta, vxi, veta, uxi, ueta, lambdaxi, lambdaeta)
     for (i = downboundary + 2; i < upboundary - 1; i++) {
 	for (j = leftboundary + 2; j < rightboundary - 1; j++) {
 	    if ((i <= 1) && (i >= -1) && (j >= leftterminal)
@@ -236,7 +236,7 @@ void cylinderProject::run()
 	    node->c10 = (uxi + lambdaxi * abs(uxi)) / (12 * deltaxi);
 	}
     }
-    #pragma omp parallel for
+    #pragma omp parallel for private(j, hxi, heta, vxi, veta, uxi, ueta, lambdaxi, lambdaeta, node)
     for (j = leftterminal; j <= rightterminal; j++) {
 	/* Upper half */
 	node = &coordination->access(j, 1);
@@ -426,7 +426,7 @@ void cylinderProject::run()
     node->c10 = (uxi + (-uxi)) / (12 * deltaxi);
 
     /* copy zeta to zetat to use as guessing solve */
-    #pragma omp parallel for
+    #pragma omp parallel for private(j, i)
     for (j = downboundary + 2; j < upboundary - 1; j++) {
 	for (i = leftboundary + 2; i < rightboundary - 1; i++) {
 	    coordination->access(i, j).zetat =
@@ -439,7 +439,7 @@ void cylinderProject::run()
     converge = 30;
     while (converge) {		//TODO:converge
 	/* One step */
-        #pragma omp parallel for
+        #pragma omp parallel for private(j, i, node)
 	for (j = downboundary + 2; j < upboundary - 1; j++) {
 	    for (i = leftboundary + 2; i < rightboundary - 1; i++) {
 		if ((j <= 2) && (j >= -2) && (i >= leftterminal)
@@ -478,9 +478,9 @@ void cylinderProject::run()
 	    }
 	}
 	/* j == +-2 */
-        #pragma omp parallel for
+	j = 2;
+        #pragma omp parallel for private(i, node)
 	for (i = leftterminal; i <= rightterminal; i++) {
-	    j = 2;
 	    node = &coordination->access(i, j);
 	    node->newzetat =
 		(node->c2 * node->zeta +
@@ -508,8 +508,10 @@ void cylinderProject::run()
 		 node->c10 * (coordination->access(i - 2, j).zetat +
 			      coordination->access(i - 2,
 						   j).zeta)) / node->c1;
-
-	    j = -2;
+        }
+	j = -2;
+        #pragma omp parallel for private(i, node)
+	for (i = leftterminal; i <= rightterminal; i++) {
 	    node = &coordination->access(i, j);
 	    node->newzetat =
 		(node->c2 * node->zeta +
@@ -538,10 +540,11 @@ void cylinderProject::run()
 			      coordination->access(i - 2,
 						   j).zeta)) / node->c1;
 	}
+
 	/* j == +- 1 */
-        #pragma omp parallel for
+	j = 1;
+        #pragma omp parallel for private(i, node)
 	for (i = leftterminal; i <= rightterminal; i++) {
-	    j = 1;
 	    node = &coordination->access(i, j);
 	    node->newzetat =
 		(node->c2 * node->zeta +
@@ -566,8 +569,10 @@ void cylinderProject::run()
 		 node->c10 * (coordination->access(i - 2, j).zetat +
 			      coordination->access(i - 2,
 						   j).zeta)) / node->c1;
-
-	    j = -1;
+        }
+	j = -1;
+        #pragma omp parallel for private(i, node)
+	for (i = leftterminal; i <= rightterminal; i++) {
 	    node = &coordination->access(i, j);
 	    node->newzetat =
 		(node->c2 * node->zeta +
@@ -596,7 +601,7 @@ void cylinderProject::run()
 	/* End of one step */
 
 	/* flush */
-        #pragma omp parallel for
+        #pragma omp parallel for private(j, i)
 	for (j = downboundary + 2; j < upboundary - 1; j++) {
 	    for (i = leftboundary + 2; i < rightboundary - 1; i++) {
 		coordination->access(i, j).zetat =
@@ -607,7 +612,7 @@ void cylinderProject::run()
 	converge -= 1;
     }
     /* flush zetat back to zeta */
-    #pragma omp parallel for
+    #pragma omp parallel for private(j, i)
     for (j = downboundary + 2; j < upboundary - 1; j++) {
 	for (i = leftboundary + 2; i < rightboundary - 1; i++) {
 	    coordination->access(i, j).zeta =
@@ -622,7 +627,7 @@ void cylinderProject::run()
     converge = 30;
     while (converge) {
 	/* One step */
-        #pragma omp parallel for
+        #pragma omp parallel for private(j, i, node)
 	for (j = downboundary + 2; j < upboundary - 1; j++) {
 	    for (i = leftboundary + 2; i < rightboundary - 1; i++) {
 		if ((j == 0) && (i >= leftterminal) && (i <= rightterminal)) {
@@ -647,7 +652,7 @@ void cylinderProject::run()
 	/* End of one step */
 
 	/* flush */
-        #pragma omp parallel for
+        #pragma omp parallel for private(j, i)
 	for (j = downboundary + 2; j < upboundary - 1; j++) {
 	    for (i = leftboundary + 2; i < rightboundary - 1; i++) {
 		coordination->access(i, j).psi =
