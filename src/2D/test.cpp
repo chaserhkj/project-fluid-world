@@ -11,7 +11,7 @@ int main(int argc, char **argv)
 	new cylinderProject(-1000, 4000, 1000, -1000, 0.01, 0.01, 0.01, 40,
 			    1.618);
     testproject->initialize();
-    for (i = 0; i < 1000; i++) {
+    for (i = 0; i < 10; i++) {
 	testproject->run();
 	cout << "One step:" << testproject->getT() << endl;
     }
