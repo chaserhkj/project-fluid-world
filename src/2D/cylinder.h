@@ -3,7 +3,8 @@
 
 #include "commontypes.h"
 
-class cylinderNode : public Node {
+class cylinderNode : public Node
+{
 public:
     double hxi;   /* lame coefficient */
     double heta;
@@ -13,32 +14,34 @@ public:
 };
 
 /* Simulation of 2D coordination */
-class cylinderCoordinate{
+class cylinderCoordinate
+{
 private:
     int leftboundary, rightboundary, upboundary, downboundary;
-    cylinderNode* coordinate; /* array storing nodes */
+    cylinderNode * coordinate; /* array storing nodes */
 public:
-    cylinderCoordinate(int l, int r, int u, int d){
+    cylinderCoordinate(int l, int r, int u, int d) {
         leftboundary = l;
         rightboundary = r;
         upboundary = u;
         downboundary = d;
         coordinate = new cylinderNode[(r - l + 1) * (u - d + 1)];
     }
-    ~cylinderCoordinate(){
+    ~cylinderCoordinate() {
         delete [] coordinate;
     }
-    cylinderNode& access(int x, int y){
+    cylinderNode & access(int x, int y) {
         return coordinate[x - leftboundary + (y - downboundary) * (rightboundary - leftboundary + 1)];
     }
 };
 
-class cylinderProject{
+class cylinderProject
+{
 private:
     double t; /* Physical time */
     double Re; /* 2 * physical Reynolds */
-    cylinderCoordinate* coordination; /* transformed coordination */
-    cylinderCoordinate* cylinderBoundary; /* Boundary nodes on the cylinder, 1 means upper half and 0 means lower half */
+    cylinderCoordinate * coordination; /* transformed coordination */
+    cylinderCoordinate * cylinderBoundary; /* Boundary nodes on the cylinder, 1 means upper half and 0 means lower half */
     int leftboundary, rightboundary, upboundary, downboundary;
     int leftterminal, rightterminal; /* Terminals on the cylinder */
 protected:
@@ -47,7 +50,7 @@ protected:
     const double deltat; /* time step */
     const double omega; /* relaxation coefficient */
 public:
-    cylinderProject(int l = -100, int r = 400, int u = 100, int d = -100, double dxi = 0.1, double deta = 0.1, double dt = 0.1, double rey = 40, double o = 1.618): leftboundary(l), rightboundary(r), upboundary(u), downboundary(d), deltaxi(dxi), deltaeta(deta), deltat(dt), omega(o){
+    cylinderProject(int l = -100, int r = 400, int u = 100, int d = -100, double dxi = 0.1, double deta = 0.1, double dt = 0.1, double rey = 40, double o = 1.618): leftboundary(l), rightboundary(r), upboundary(u), downboundary(d), deltaxi(dxi), deltaeta(deta), deltat(dt), omega(o) {
         t = 0;
         Re = 2 * rey;
         leftterminal = -1 / deltaxi;
@@ -55,19 +58,19 @@ public:
         coordination = new cylinderCoordinate(l, r, u, d);
         cylinderBoundary = new cylinderCoordinate(-1 / deltaxi, 1 / deltaxi, 1, 0);
     }
-    ~cylinderProject(){
+    ~cylinderProject() {
         delete coordination;
         delete cylinderBoundary;
     }
 
-    double getT(){
+    double getT() {
         return t;
     }
 
     void initialize();
     void run();
 };
-    
+
 
 #endif /* _cylinder */
 
