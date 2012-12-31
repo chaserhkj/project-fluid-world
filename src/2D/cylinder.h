@@ -57,6 +57,10 @@ public:
         delete cylinderBoundary;
     }
 
+    double getT(){
+        return t;
+    }
+
     void initialize();
     void run();
 };

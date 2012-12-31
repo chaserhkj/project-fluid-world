@@ -11,7 +11,7 @@ int main(int argc, char** argv)
     testproject->initialize();
     for (i=0;i<1000;i++){
         testproject->run();
-        cout << "One step" <<endl;
+        cout << "One step:" << testproject->getT() << endl;
     }
     delete testproject;
     return 0;
