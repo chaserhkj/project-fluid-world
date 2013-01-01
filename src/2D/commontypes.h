@@ -3,11 +3,11 @@
 
 #include <stddef.h>
 
-class Transformer  /* Who can transform between coordinations, not Optimus, Bumblebee, etc */
+class Transformer       /* Who can transform between coordinations, not Optimus, Bumblebee, etc */
 {
 public:
-    double xi, eta; /* position in the transformed cordination */
-    double x, y; /* position in the physics coordination */
+    double xi, eta;       /* position in the transformed cordination */
+    double x, y;          /* position in the physics coordination */
 
     virtual void calculateXY() = 0;   /* Calculate X and Y position from xi and eta */
 };

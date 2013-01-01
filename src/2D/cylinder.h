@@ -24,11 +24,11 @@ public:
 class cylinderSpotStain: public cylinderTransformer
 {
 private:
-    cylinderProject* project; /* To know if I am out of range */
+    cylinderProject * project;    /* To know if I am out of range */
 public:
-    cylinderSpotStain* next;
+    cylinderSpotStain * next;
 
-    cylinderSpotStain(cylinderProject* p):project(p){
+    cylinderSpotStain(cylinderProject * p): project(p) {
         next = NULL;
     }
 
@@ -41,21 +41,23 @@ public:
 class cylinderSpotStainSource
 {
 private:
-    int step; /* distance between two nearby sources */
-    int number; /* number of sources */
-    cylinderSpotStain** source; /* source array */
-    cylinderProject* project;
+    int step;         /* distance between two nearby sources */
+    int number;           /* number of sources */
+    cylinderSpotStain ** source;  /* source array */
+    cylinderProject * project;
 public:
-    cylinderSpotStainSource(cylinderProject* p);
+    cylinderSpotStainSource(cylinderProject * p);
 
-    ~cylinderSpotStainSource(){
+    ~cylinderSpotStainSource() {
         int i;
-        for (i=0; i < number; i++){
+
+        for (i = 0; i < number; i++) {
             if (source[i]) {
                 source[i]->destroychain();
             }
         }
-        delete [] source;
+
+        delete[] source;
     }
 
     void run();
@@ -94,7 +96,7 @@ private:
     cylinderCoordinate * cylinderBoundary; /* Boundary nodes on the cylinder, 1 means upper half and 0 means lower half */
     int leftboundary, rightboundary, upboundary, downboundary;
     int leftterminal, rightterminal;  /* Terminals on the cylinder */
-    double density; /* spotstain density, from 0 to 1 */
+    double density;       /* spotstain density, from 0 to 1 */
     cylinderSpotStainSource * source; /* source of spotstains */
 protected:
     const double deltaxi;     /* delta xi and delta eta */
@@ -102,8 +104,8 @@ protected:
     const double deltat;      /* time step */
     const double omega;       /* relaxation coefficient */
 public:
-    cylinderProject(int l = -100, int r = 400, int u = 100, int d = -100, double dens = 0.1, double dxi = 0.1, double deta = 0.1, double dt = 0.1, double rey = 40, double o = 1.618): leftboundary(l), rightboundary(r), upboundary(u), downboundary(d), density(dens),
-        deltaxi(dxi), deltaeta(deta), deltat(dt),
+    cylinderProject(int l = -100, int r = 400, int u = 100, int d = -100, double dens = 0.1, double dxi = 0.1, double deta = 0.1, double dt = 0.1, double rey = 40, double o = 1.618): leftboundary(l), rightboundary(r), upboundary(u), downboundary(d),
+        density(dens), deltaxi(dxi), deltaeta(deta), deltat(dt),
         omega(o) {
         t = 0;
         Re = 2 * rey;
@@ -122,7 +124,7 @@ public:
     double getT() {
         return t;
     }
-    void setDensity(double dens){
+    void setDensity(double dens) {
         density = dens;
     }
 
