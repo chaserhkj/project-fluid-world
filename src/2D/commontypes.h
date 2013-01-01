@@ -1,6 +1,8 @@
 #ifndef _commontypes
 #define _commontypes
 
+#include <stddef.h>
+
 class Transformer  /* Who can transform between coordinations, not Optimus, Bumblebee, etc */
 {
 public:
