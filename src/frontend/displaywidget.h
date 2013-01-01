@@ -4,11 +4,11 @@
 #include <QGLWidget>
 class QWidget;
 
-class DisplayWidget : public QGLWidget
+class DisplayWidget: public QGLWidget
 {
 public:
     DisplayWidget(QWidget * parent = 0);
-    virtual ~DisplayWidget();
+    virtual ~ DisplayWidget();
 };
 
 #endif /* _DISPLAYWIDGET_H_ */

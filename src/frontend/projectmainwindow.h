@@ -7,11 +7,12 @@ class QWidget;
 class DisplayWidget;
 class QMenu;
 
-class ProjectMainWindow : public QMainWindow
+class ProjectMainWindow: public QMainWindow
 {
+    Q_OBJECT;
 public:
     ProjectMainWindow(QWidget * parent = 0);
-    virtual ~ProjectMainWindow();
+    virtual ~ ProjectMainWindow();
 private:
     //Central display widget.
     DisplayWidget * displayWidget;
@@ -19,6 +20,10 @@ private:
     //Help menu items.
     QMenu * helpMenu;
     QAction * aboutAct;
+    QAction * aboutQtAct;
+private slots:
+    void aboutActivated();
+    void aboutQtActivated();
 };
 
 #endif /* _PROJECTMAINWINDOW_H_ */
