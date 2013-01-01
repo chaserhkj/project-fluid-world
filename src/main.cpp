@@ -1,9 +1,9 @@
 #include <QApplication>
-#include "frontend/projectmainwindow.h"
+#include <FWfrontend.h>
 
-int main(int argc, char *argv[])
+int main(int argc, char * argv[])
 {
-    QApplication app(argc,argv);
+    QApplication app(argc, argv);
     ProjectMainWindow win;
     win.show();
     return app.exec();

@@ -1,7 +1,7 @@
 include(../project.pri)
 TEMPLATE = lib
 CONFIG += staticlib
-TARGET = 2D
+TARGET = FW2D
 DESTDIR = ../../lib
 SOURCES = cylinder.cpp
 HEADERS = cylinder.h \
