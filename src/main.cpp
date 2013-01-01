@@ -1,5 +1,5 @@
 #include <QApplication>
-#include "frontend/projectmainwindow.h"
+#include <FWfrontend.h>
 
 int main(int argc, char * argv[])
 {
