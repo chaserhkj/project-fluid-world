@@ -1,6 +1,7 @@
 #ifndef _cylinder
 #define _cylinder
 
+#include "interface.h"
 #include "commontypes.h"
 
 class cylinderProject;
@@ -87,7 +88,7 @@ public:
     }
 };
 
-class cylinderProject
+class cylinderProject:public Project
 {
 private:
     double t;         /* Physical time */
@@ -126,6 +127,8 @@ public:
     }
     void setDensity(double dens) {
         density = dens;
+        delete source;
+        source = new cylinderSpotStainSource(this);
     }
 
     friend class cylinderSpotStain;

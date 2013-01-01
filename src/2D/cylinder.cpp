@@ -118,6 +118,7 @@ void cylinderSpotStainSource::run()
     int i;
     cylinderSpotStain * spot, *tempspot;
 
+    #pragma omp parallel for private(i, spot, tempspot)
     for (i = 0; i < number; i++) {
         spot = source[i];
 
