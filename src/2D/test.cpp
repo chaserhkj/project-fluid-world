@@ -5,15 +5,22 @@ using namespace std;
 
 int main(int argc, char ** argv)
 {
-    int i;
+    int i,j;
     cylinderProject * testproject;
     testproject =
-        new cylinderProject(-100, 400, 100, -100, 0.1, 0.1, 0.1, 0.1, 40, 1.618);
+        new cylinderProject(-500, 2000, 500, -500, 1, 0.02, 0.02, 0.02, 40, 1);
     testproject->initialize();
-
-    for (i = 0; i < 10; i++) {
+    cylinderNode& node = testproject->getCoordinate()->access(-5,-19);
+    while (1) {
+        /*for (j=-500;j<=500;j++) {
+            for (i=-500;i<=2000;i++) {
+                if (testproject->getCoordinate()->access(i, j).psi>1000) {
+                    cout << '(' << i << ", " << j << ')' <<endl;
+                }
+            }
+        }*/
+        cout << node.b0 << ' ' << node.b1 << ' ' <<node.b2 << ' ' <<node.b3 << ' ' <<node.b4<<endl;
         testproject->run();
-        testproject->spotstainrun();
         cout << "One step:" << testproject->getT() << endl;
     }
 

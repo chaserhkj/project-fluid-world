@@ -62,6 +62,10 @@ public:
     }
 
     void run();
+
+    cylinderSpotStain * getchain(int i) {
+        return source[i];
+    }
 };
 
 
@@ -124,6 +128,12 @@ public:
 
     double getT() {
         return t;
+    }
+    cylinderSpotStainSource* getSource() {
+        return source;
+    }
+    cylinderCoordinate * getCoordinate() {
+        return coordination;
     }
     void setDensity(double dens) {
         density = dens;

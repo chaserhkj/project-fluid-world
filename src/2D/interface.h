@@ -4,12 +4,12 @@
 class Project
 {
 public:
-    Project();
-    virtual ~Project();
-    virtual initialize() = 0;
-    virtual run() = 0;
-    virtual spotstainrun() = 0;
-    virtual getT() = 0;
+    Project() {}
+    virtual ~Project() {}
+    virtual void initialize() = 0;
+    virtual void run() = 0;
+    virtual void spotstainrun() = 0;
+    virtual double getT() = 0;
 };
 
 #endif /* _INTERFACE_H_ */
