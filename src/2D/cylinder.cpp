@@ -696,12 +696,8 @@ void cylinderProject::run()
                      node->c4 * (coordination->access(i, j + 1).zetat +
                                  coordination->access(i,
                                                       j + 1).zeta) +
-                     node->c5 * (coordination->access(i, j - 1).zetat +
-                                 coordination->access(i,
-                                                      j - 1).zeta) +
-                     node->c6 * (coordination->access(i, j - 2).zetat +
-                                 coordination->access(i,
-                                                      j - 2).zeta) +
+                     node->c5 * (cylinderBoundary->access(i, 1).zetat +
+                                 cylinderBoundary->access(i, 1).zeta) +
                      node->c7 * (coordination->access(i + 2, j).zetat +
                                  coordination->access(i + 2,
                                                       j).zeta) +
