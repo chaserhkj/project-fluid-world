@@ -8,7 +8,7 @@ int main(int argc, char ** argv)
     int i,j;
     cylinderProject * testproject;
     testproject =
-        new cylinderProject(-500, 2000, 500, -500, 1, 0.02, 0.02, 0.02, 40, 1);
+        new cylinderProject(-100, 600, 100, -100, 1, 0.1, 0.1, 0.1, 40, 1);
     testproject->initialize();
     cylinderNode& node = testproject->getCoordinate()->access(-5,-19);
     while (1) {
@@ -19,7 +19,8 @@ int main(int argc, char ** argv)
                 }
             }
         }*/
-        cout << node.b0 << ' ' << node.b1 << ' ' <<node.b2 << ' ' <<node.b3 << ' ' <<node.b4<<endl;
+        cout << node.psi<<endl;
+        cout << testproject->getCoordinate()->access(-5,19).psi << endl;
         testproject->run();
         cout << "One step:" << testproject->getT() << endl;
     }
