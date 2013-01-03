@@ -689,27 +689,30 @@ void cylinderProject::run()
         for (i = leftterminal; i <= rightterminal; i++) {
             node = &coordination->access(i, j);
             node->newzetat =
-                (node->c2 * node->zeta +
-                 node->c3 * (cylinderBoundary->access(i, 1).zetat +
-                             cylinderBoundary->access(i,
-                                     1).zeta) +
-                 node->c4 * (coordination->access(i, j + 1).zetat +
-                             coordination->access(i,
-                                                  j + 1).zeta) +
-                 node->c5 * (coordination->access(i, j - 1).zetat +
-                             coordination->access(i,
-                                                  j - 1).zeta) +
-                 node->c7 * (coordination->access(i + 2, j).zetat +
-                             coordination->access(i + 2,
-                                                  j).zeta) +
-                 node->c8 * (coordination->access(i + 1, j).zetat +
-                             coordination->access(i + 1,
-                                                  j).zeta) +
-                 node->c9 * (coordination->access(i - 1, j).zetat +
-                             coordination->access(i - 1,
-                                                  j).zeta) +
-                 node->c10 * (coordination->access(i - 2, j).zetat +
-                              coordination->access(i - 2, j).zeta)) / node->c1;
+                    (node->c2 * node->zeta +
+                     node->c3 * (coordination->access(i, j + 2).zetat +
+                                 coordination->access(i,
+                                                      j + 2).zeta) +
+                     node->c4 * (coordination->access(i, j + 1).zetat +
+                                 coordination->access(i,
+                                                      j + 1).zeta) +
+                     node->c5 * (coordination->access(i, j - 1).zetat +
+                                 coordination->access(i,
+                                                      j - 1).zeta) +
+                     node->c6 * (coordination->access(i, j - 2).zetat +
+                                 coordination->access(i,
+                                                      j - 2).zeta) +
+                     node->c7 * (coordination->access(i + 2, j).zetat +
+                                 coordination->access(i + 2,
+                                                      j).zeta) +
+                     node->c8 * (coordination->access(i + 1, j).zetat +
+                                 coordination->access(i + 1,
+                                                      j).zeta) +
+                     node->c9 * (coordination->access(i - 1, j).zetat +
+                                 coordination->access(i - 1,
+                                                      j).zeta) +
+                     node->c10 * (coordination->access(i - 2, j).zetat +
+                                  coordination->access(i - 2, j).zeta)) / node->c1;
         }
 
         j = -1;
