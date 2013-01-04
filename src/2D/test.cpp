@@ -8,7 +8,7 @@ int main(int argc, char ** argv)
     int i,j;
     cylinderProject * testproject;
     testproject =
-        new cylinderProject(-100, 600, 100, -100, 1, 0.1, 0.1, 0.1, 40, 1);
+        new cylinderProject(-100, 600, 100, -100, 1, 0.1, 0.1, 0.1, 40);
     testproject->initialize();
     cylinderNode& node = testproject->getCoordinate()->access(-5,-19);
     while (1) {
@@ -19,10 +19,9 @@ int main(int argc, char ** argv)
                 }
             }
         }*/
-        cout << node.zeta<<endl;
-        cout << testproject->getCoordinate()->access(-5,19).zeta << endl;
+        cout << node.psi<<endl;
+        cout << testproject->getCoordinate()->access(-5,19).psi << endl;
         //testproject->run();
-        cout<<"here!";
         testproject->calculateNewPsi();
         cout << "One step:" << testproject->getT() << endl;
     }

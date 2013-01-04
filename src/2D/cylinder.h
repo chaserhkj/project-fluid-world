@@ -104,26 +104,17 @@ private:
     double density;       /* spotstain density, from 0 to 1 */
     cylinderSpotStainSource * source; /* source of spotstains */
 
-    /* convert 2-D points to 1-D for matrix solver */
-    int convert(int i, int j) {
-        return (j - (downboundary + 1)) * (rightboundary - leftboundary - 1) + i - (leftboundary + 1);
-    }
-    bool psiOnBoundary(int i, int j) {
-        if ((i == (leftboundary+1)) || (i == (rightboundary -1)) || (j == (downboundary +1)) || (j == (upboundary-1)) || ((j == 0) && (i >= leftterminal) && (i <= rightterminal))) {
-            return true;
-        } else {
-            return false;
-        }
-    }
+    /* convert 2-D points to 1-D for matrix solver when calculating psi */
+    int psiConvert(int i, int j);
+    bool psiOnBoundary(int i, int j);    
 protected:
     const double deltaxi;     /* delta xi and delta eta */
     const double deltaeta;    /* delta xi and delta eta */
     const double deltat;      /* time step */
-    const double omega;       /* relaxation coefficient */
 public:
-    cylinderProject(int l = -100, int r = 400, int u = 100, int d = -100, double dens = 0.1, double dxi = 0.1, double deta = 0.1, double dt = 0.1, double rey = 40, double o = 1.618): leftboundary(l), rightboundary(r), upboundary(u), downboundary(d),
-        density(dens), deltaxi(dxi), deltaeta(deta), deltat(dt),
-        omega(o) {
+    cylinderProject(int l = -100, int r = 400, int u = 100, int d = -100, double dens = 0.1, double dxi = 0.1, double deta = 0.1, double dt = 0.1, double rey = 40): leftboundary(l), rightboundary(r), upboundary(u), downboundary(d),
+        density(dens), deltaxi(dxi), deltaeta(deta), deltat(dt)
+         {
         t = 0;
         Re = 2 * rey;
         leftterminal = -1 / deltaxi;
