@@ -5,7 +5,6 @@
 class QAction;
 class QWidget;
 class DisplayWidget;
-class QMenu;
 
 class ProjectMainWindow: public QMainWindow
 {
@@ -17,13 +16,22 @@ private:
     //Central display widget.
     DisplayWidget * displayWidget;
 
-    //Help menu items.
-    QMenu * helpMenu;
+    //Actions.
+    //File menu actions.
+    QAction * quitAct;
+    
+    //Help menu actions.
+#ifdef SUDOKU_ENABLED
+    QAction * sudokuGameAct;
+#endif /* SUDOKU_ENABLED */
     QAction * aboutAct;
     QAction * aboutQtAct;
 private slots:
     void aboutActivated();
     void aboutQtActivated();
+#ifdef SUDOKU_ENABLED
+    void startSudokuGame();
+#endif /* SUDOKU_ENABLED */
 };
 
 #endif /* _PROJECTMAINWINDOW_H_ */

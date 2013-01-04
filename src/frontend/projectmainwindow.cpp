@@ -2,10 +2,15 @@
 #include <QtGui>
 #include "displaywidget.h"
 
+#ifdef SUDOKU_ENABLED
+#include <FWsudokuGui.h>
+#endif /* SUDOKU_ENABLED */
+
 ProjectMainWindow::ProjectMainWindow(QWidget * parent): QMainWindow(parent)
 {
     //Setting window title.
     this->setWindowTitle("Fluid World");
+    //Setting up window geometry.
     this->setGeometry(QStyle::alignedRect(Qt::LeftToRight,Qt::AlignCenter,QSize(800,600),qApp->desktop()->availableGeometry()));
     
     //Initializing central display widget.
@@ -13,16 +18,34 @@ ProjectMainWindow::ProjectMainWindow(QWidget * parent): QMainWindow(parent)
     this->setCentralWidget(displayWidget);
 
     //Initializing actions.
+    quitAct = new QAction(QIcon::fromTheme("application-exit"),tr("&Quit"), this);
+#ifdef SUDOKU_ENABLED
+    sudokuGameAct = new QAction(tr("&Sudoku Game"), this);
+#endif /* SUDOKU_ENABLED */
     aboutAct = new QAction(QIcon::fromTheme("help-about"), tr("&About"), this);
     aboutQtAct = new QAction(QIcon::fromTheme("help-about"), tr("About &Qt"),  this);
 
     //Connecting slots for actions.
+    QObject::connect(quitAct,SIGNAL(triggered()), this, SLOT(close()));
+#ifdef SUDOKU_ENABLED
+    QObject::connect(sudokuGameAct,SIGNAL(triggered()),this,SLOT(startSudokuGame()));
+#endif /* SUDOKU_ENABLED */
     QObject::connect(aboutAct,SIGNAL(triggered()),this,SLOT(aboutActivated()));
     QObject::connect(aboutQtAct,SIGNAL(triggered()), this, SLOT(aboutQtActivated()));
     
-    //Setting up menus.
+    //Initializing menu bar; 
+    QMenuBar * menuBar = this->menuBar();
+
+    //Initializing menus.
+    //File menu.
+    QMenu * fileMenu = menuBar->addMenu(tr("&File"));
+    fileMenu->addAction(quitAct);
     //Help menu.
-    helpMenu = this->menuBar()->addMenu(tr("&Help"));
+    QMenu * helpMenu = menuBar->addMenu(tr("&Help"));
+#ifdef SUDOKU_ENABLED
+    helpMenu->addAction(sudokuGameAct);
+    helpMenu->addSeparator();
+#endif /* SUDOKU_ENABLED */
     helpMenu->addAction(aboutAct);
     helpMenu->addAction(aboutQtAct);
 }
@@ -62,3 +85,17 @@ void ProjectMainWindow::aboutQtActivated()
 {
     QMessageBox::aboutQt(this);
 }
+
+#ifdef SUDOKU_ENABLED
+void ProjectMainWindow::startSudokuGame()
+{
+    //Initializing sudoku widget.
+    SudokuWidget * sudoku = new SudokuWidget(this);
+    //Explicitly setting it to behave as a window.
+    sudoku->setWindowFlags(Qt::Window);
+    //Setting its position.
+    sudoku->setGeometry(QStyle::alignedRect(Qt::LeftToRight,Qt::AlignCenter,sudoku->size(),qApp->desktop()->availableGeometry()));
+    //Show it.
+    sudoku->show();
+}
+#endif /* SUDOKU_ENABLED */
