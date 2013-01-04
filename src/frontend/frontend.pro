@@ -5,6 +5,16 @@ QT += opengl
 TARGET = FWfrontend
 DESTDIR = ../../lib
 SOURCES = displaywidget.cpp \
-          projectmainwindow.cpp
+          projectmainwindow.cpp \
+          controlwidget.cpp \
+          inputwidget.cpp
 HEADERS = displaywidget.h \
-          projectmainwindow.h
+          projectmainwindow.h \
+          controlwidget.h \
+          inputwidget.h
+sudoku {
+    CONFIG += link_prl
+    DEFINES += SUDOKU_ENABLED
+    INCLUDEPATH += ../../include
+    LIBS += -L"../../lib" -lFWsudokuGui
+}
