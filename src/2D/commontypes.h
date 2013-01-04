@@ -18,9 +18,9 @@ class Node
 public:
     double zeta;          /* vorticity */
     double psi;           /* stream */
-    double zetat;         /* vorticity after one recursion */
-    double newzetat;      /* used for recursive calculation */
-    double newpsi;
+    //double zetat;         /* vorticity after one recursion */
+    //double newzetat;      /* used for recursive calculation */
+    //double newpsi;
 
     /*
        Node(double z=0, double p=0, double x=0,double e=0):zeta(z), psi(p), xi(x), eta(e)

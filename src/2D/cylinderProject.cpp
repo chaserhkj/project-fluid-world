@@ -1,9 +1,7 @@
 #include <cmath>
 #include "solver.h"
 #include "cylinder.h"
-#include <iostream>
 
-using namespace std;
 using std::abs;
 
 int cylinderProject::psiConvert(int i, int j) 
@@ -18,7 +16,7 @@ int cylinderProject::zetaConvert(int i, int j)
 
 bool cylinderProject::OnBoundary(int i, int j)
 {
-    if ((i <= (leftboundary+1)) || (i >= (rightboundary +1)) || (j <= (downboundary+1)) || (j>=(upboundary-1)) || ((j == 0) && (i >= leftterminal) && (i <= rightterminal))) {
+    if ((i <= (leftboundary+1)) || (i >= (rightboundary -1)) || (j <= (downboundary+1)) || (j>=(upboundary-1)) || ((j == 0) && (i >= leftterminal) && (i <= rightterminal))) {
         return true;
     } else {
         return false;
@@ -37,9 +35,9 @@ void cylinderProject::initialize()
     for (i = downboundary; i <= upboundary; i++) {
         for (j = leftboundary; j <= rightboundary; j++) {
             if ((i == 0) && (j >= leftterminal) && (j <= rightterminal)) {
-                /* On the cylinder, do nothing but initialize zeta for future use */
+                /* On the cylinder, do nothing but initialize psi and zeta for future use */
+                coordination->access(j, i).psi = 0;
                 coordination->access(j, i).zeta = 0;
-                coordination->access(j, i).zetat = 0;
                 continue;
             }
 
@@ -50,10 +48,8 @@ void cylinderProject::initialize()
             x = node->x;
             y = node->y;
 
-            node->hxi =
-                sqrt(1 +
-                     (1 + x * x -
-                      y * y) / ((x * x + y * y) * (x * x + y * y))) / 2;
+            node->hxi = 2 * (x*x+y*y) / sqrt((x*x+y*y)*(x*x+y*y)-2*(x*x-y*y)+1);
+               
             node->heta = node->hxi;
 
             g1 = 1 / (node->hxi * node->hxi);
@@ -80,32 +76,20 @@ void cylinderProject::initialize()
         coordination->access(leftboundary + 1, i).psi =
             coordination->access(leftboundary + 1, i).y;
         /* zeta is already 0 */
-        coordination->access(leftboundary, i).zetat = 0;
-        coordination->access(leftboundary + 1, i).zetat = 0;
     }
 
-    //Boundary conditions: right boundary TODO:differential restrict
+    //Boundary conditions: right boundary 
     #pragma omp parallel for private(i)
 
     for (i = downboundary; i <= upboundary; i++) {
         coordination->access(rightboundary - 1, i).psi =
             coordination->access(rightboundary - 1, i).y;
         /* zeta is already 0 */
-        coordination->access(rightboundary, i).zetat = 0;
-        coordination->access(rightboundary - 1, i).zetat = 0;
     }
 
     //Boundary conditions: up and down boundary
     /* psi is already given */
     /* zeta is already 0 */
-    #pragma omp parallel for private(i)
-
-    for (i = leftboundary; i <= rightboundary; i++) {
-        coordination->access(i, upboundary).zetat = 0;
-        coordination->access(i, upboundary - 1).zetat = 0;
-        coordination->access(i, downboundary).zetat = 0;
-        coordination->access(i, downboundary + 1).zetat = 0;
-    }
 
     //Boundary conditions: cylinder
     #pragma omp parallel for private(j, node)
@@ -134,10 +118,6 @@ void cylinderProject::initialize()
         node->zeta = 0;
     }
 
-    /* For convenience, set psi at these two points to 0 */
-    coordination->access(leftterminal, 0).psi = 0;
-    coordination->access(rightterminal, 0).psi = 0;
-
     return;
 }
 
@@ -154,16 +134,12 @@ void cylinderProject::calculateBoundaryZeta()
                   0 /* cylinderBoundary->access(i, 1).psi) */) /
             (cylinderBoundary->access(i, 1).heta *
              cylinderBoundary->access(i, 1).heta * deltaeta * deltaeta);
-        cylinderBoundary->access(i, 1).zetat =
-            cylinderBoundary->access(i, 1).zeta;
         /* lower half */
         cylinderBoundary->access(i, 0).zeta =
             -2 * (coordination->access(i, -1).psi -
                   0 /* cylinderBoundary->access(i, 0).psi) */) /
             (cylinderBoundary->access(i, 0).heta *
              cylinderBoundary->access(i, 0).heta * deltaeta * deltaeta);
-        cylinderBoundary->access(i, 0).zetat =
-            cylinderBoundary->access(i, 0).zeta;
     }
 
     /* For convenience, set zeta at these two points */
@@ -542,7 +518,6 @@ void cylinderProject::calculateNewZeta()
             line += 1;
         }
     }
-    cout <<"POINT:" <<line - n<<endl;
     eql->solve();
     int counter = 0;
     for (j = downboundary; j <= upboundary; j++) {

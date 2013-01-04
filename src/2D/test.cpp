@@ -8,7 +8,7 @@ int main(int argc, char ** argv)
     int i,j;
     cylinderProject * testproject;
     testproject =
-        new cylinderProject(-100, 600, 100, -100, 1, 0.1, 0.1, 0.1, 40);
+        new cylinderProject(-100, 600, 100, -100, 1, 0.1, 0.1, 0.1, 400);
     testproject->initialize();
     cylinderNode& node = testproject->getCoordinate()->access(-5,-19);
     while (1) {
