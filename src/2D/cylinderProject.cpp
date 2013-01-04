@@ -472,15 +472,61 @@ void cylinderProject::calculateNewZeta()
                     eql->input(line,zetaConvert(i,j+2),-node->c3);
                     eql->input(line,zetaConvert(i,j+1),-node->c4);
                     eql->input(line,zetaConvert(i,j-1),-node->c5);
+                    eql->input(0,0,0);
+                    eql->input(line,zetaConvert(i+2,j),-node->c7);
+                    eql->input(line,zetaConvert(i+1,j),-node->c8);
+                    eql->input(line,zetaConvert(i-1,j),-node->c9);
+                    eql->input(line,zetaConvert(i-2,j),-node->c10);
+                    b[line] = node->c2 * node->zeta + node->c3*coordination->access(i,j+2).zeta + node->c4*coordination->access(i,j+1).zeta + node->c5*coordination->access(i,j-1).zeta + node->c6*cylinderBoundary->access(i,1).zeta*2 + node->c7*coordination->access(i+2,j).zeta + node->c8*coordination->access(i+1,j).zeta + node->c9*coordination->access(i-1,j).zeta + node->c10*coordination->access(i-2,j).zeta;
+                    line += 1;
+                    continue;
+                }
+                if (j==-2){
+                    node = &coordination->access(i,j);
+                    eql->input(line,zetaConvert(i,j),node->c1);
+                    eql->input(0,0,0);
+                    eql->input(line,zetaConvert(i,j+1),-node->c4);
+                    eql->input(line,zetaConvert(i,j-1),-node->c5);
                     eql->input(line,zetaConvert(i,j-2),-node->c6);
                     eql->input(line,zetaConvert(i+2,j),-node->c7);
                     eql->input(line,zetaConvert(i+1,j),-node->c8);
                     eql->input(line,zetaConvert(i-1,j),-node->c9);
                     eql->input(line,zetaConvert(i-2,j),-node->c10);
-                    b[line] = node->c2 * node->zeta + node->c3*coordination->access(i,j+2).zeta + node->c4*coordination->access(i,j+1).zeta + node->c5*coordination->access(i,j-1).zeta + node->c6*coordination->access(i,j-2).zeta + node->c7*coordination->access(i+2,j).zeta + node->c8*coordination->access(i+1,j).zeta + node->c9*coordination->access(i-1,j).zeta + node->c10*coordination->access(i-2,j).zeta;
+                    b[line] = node->c2 * node->zeta + node->c3*cylinderBoundary->access(i,0).zeta*2 + node->c4*coordination->access(i,j+1).zeta + node->c5*coordination->access(i,j-1).zeta + node->c6*coordination->access(i,j-2).zeta + node->c7*coordination->access(i+2,j).zeta + node->c8*coordination->access(i+1,j).zeta + node->c9*coordination->access(i-1,j).zeta + node->c10*coordination->access(i-2,j).zeta;
                     line += 1;
                     continue;
                 }
+                if (j==1){
+                    node = &coordination->access(i,j);
+                    eql->input(line,zetaConvert(i,j),node->c1);
+                    eql->input(line,zetaConvert(i,j+2),-node->c3);
+                    eql->input(line,zetaConvert(i,j+1),-node->c4);
+                    eql->input(0,0,0);
+                    eql->input(0,0,0);
+                    eql->input(line,zetaConvert(i+2,j),-node->c7);
+                    eql->input(line,zetaConvert(i+1,j),-node->c8);
+                    eql->input(line,zetaConvert(i-1,j),-node->c9);
+                    eql->input(line,zetaConvert(i-2,j),-node->c10);
+                    b[line] = node->c2 * node->zeta + node->c3*coordination->access(i,j+2).zeta + node->c4*coordination->access(i,j+1).zeta + node->c5*cylinderBoundary->access(i,1).zeta*2 + node->c6*cylinderBoundary->access(i,1).zeta*2 + node->c7*coordination->access(i+2,j).zeta + node->c8*coordination->access(i+1,j).zeta + node->c9*coordination->access(i-1,j).zeta + node->c10*coordination->access(i-2,j).zeta;
+                    line += 1;
+                    continue;
+                }
+                if (j==-1){
+                    node = &coordination->access(i,j);
+                    eql->input(line,zetaConvert(i,j),node->c1);
+                    eql->input(0,0,0);
+                    eql->input(0,0,0);
+                    eql->input(line,zetaConvert(i,j-1),-node->c5);
+                    eql->input(line,zetaConvert(i,j-2),-node->c6);
+                    eql->input(line,zetaConvert(i+2,j),-node->c7);
+                    eql->input(line,zetaConvert(i+1,j),-node->c8);
+                    eql->input(line,zetaConvert(i-1,j),-node->c9);
+                    eql->input(line,zetaConvert(i-2,j),-node->c10);
+                    b[line] = node->c2 * node->zeta + node->c3*cylinderBoundary->access(i,0).zeta*2 + node->c4*cylinderBoundary->access(i,0).zeta*2 + node->c5*coordination->access(i,j-1).zeta + node->c6*coordination->access(i,j-2).zeta + node->c7*coordination->access(i+2,j).zeta + node->c8*coordination->access(i+1,j).zeta + node->c9*coordination->access(i-1,j).zeta + node->c10*coordination->access(i-2,j).zeta;
+                    line += 1;
+                    continue;
+                }
+            }
 
             node = &coordination->access(i,j);
             eql->input(line,zetaConvert(i,j),node->c1);
