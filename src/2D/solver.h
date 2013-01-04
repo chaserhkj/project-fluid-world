@@ -5,8 +5,8 @@
 class Solver
 {
 private:
-    int nz;
     int n; /* must be square */
+    int nz;
     int *Ti, *Tj;
     double *b;
     double *Tx;

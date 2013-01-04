@@ -1,4 +1,5 @@
 #include <cmath>
+#include "solver.h"
 #include "cylinder.h"
 
 using std::abs;
@@ -265,36 +266,29 @@ void cylinderProject::initialize()
     return;
 }
 
-void cylinderProject::run()
+void cylinderProject::calculateBoundaryZeta()
 {
-    double vxi, veta;
-    double uxi, ueta;
-    double hxi, heta;
-    double lambdaxi, lambdaeta;
-    int i, j;
-    int converge;
-    cylinderNode * node;
-
+    int i;
     /* Calculating boundary conditions of zeta */
-    #pragma omp parallel for private(j)
+    #pragma omp parallel for private(i)
 
-    for (j = leftterminal; j <= rightterminal; j++) {
+    for (i = leftterminal; i <= rightterminal; i++) {
         /* upper half */
-        cylinderBoundary->access(j, 1).zeta =
-            -2 * (coordination->access(j, 1).psi -
-                  0 /* cylinderBoundary->access(j, 1).psi) */) /
-            (cylinderBoundary->access(j, 1).heta *
-             cylinderBoundary->access(j, 1).heta * deltaeta * deltaeta);
-        cylinderBoundary->access(j, 1).zetat =
-            cylinderBoundary->access(j, 1).zeta;
+        cylinderBoundary->access(i, 1).zeta =
+            -2 * (coordination->access(i, 1).psi -
+                  0 /* cylinderBoundary->access(i, 1).psi) */) /
+            (cylinderBoundary->access(i, 1).heta *
+             cylinderBoundary->access(i, 1).heta * deltaeta * deltaeta);
+        cylinderBoundary->access(i, 1).zetat =
+            cylinderBoundary->access(i, 1).zeta;
         /* lower half */
-        cylinderBoundary->access(j, 0).zeta =
-            -2 * (coordination->access(j, -1).psi -
-                  0 /* cylinderBoundary->access(j, 0).psi) */) /
-            (cylinderBoundary->access(j, 0).heta *
-             cylinderBoundary->access(j, 0).heta * deltaeta * deltaeta);
-        cylinderBoundary->access(j, 0).zetat =
-            cylinderBoundary->access(j, 0).zeta;
+        cylinderBoundary->access(i, 0).zeta =
+            -2 * (coordination->access(i, -1).psi -
+                  0 /* cylinderBoundary->access(i, 0).psi) */) /
+            (cylinderBoundary->access(i, 0).heta *
+             cylinderBoundary->access(i, 0).heta * deltaeta * deltaeta);
+        cylinderBoundary->access(i, 0).zetat =
+            cylinderBoundary->access(i, 0).zeta;
     }
 
     /* For convenience, set zeta at these two points */
@@ -304,7 +298,17 @@ void cylinderProject::run()
     coordination->access(rightterminal, 0).zeta =
         (cylinderBoundary->access(rightterminal, 1).zeta +
          cylinderBoundary->access(rightterminal, 0).zeta) / 2;
+}
 
+void cylinderProject::calculateNewZeta()
+{
+    double vxi, veta;
+    double uxi, ueta;
+    double hxi, heta;
+    double lambdaxi, lambdaeta;
+    int i, j;
+    int converge;
+    cylinderNode * node;
     /* Calculating new zeta at t + deltat on inner nodes */
     /* Calculating coefficients */
     #pragma omp parallel for private(i, j, node, hxi, heta, vxi, veta, uxi, ueta, lambdaxi, lambdaeta)
@@ -763,20 +767,65 @@ void cylinderProject::run()
             coordination->access(i, j).zeta = coordination->access(i, j).zetat;
         }
     }
+}
 
+void cylinderProject::timeStep()
+{
     /* Time step */
     t += deltat;
+}
 
+void cylinderProject::calculateNewPsi()
+{
+    int i, j;
+    cylinderNode * node;
     /* Calculating new psi */
-    converge = 30;
+    int n = (rightboundary - leftboundary - 1) * (upboundary - downboundary - 1);
+    int nz = 5 * n;
+    double *b = new double[n];
+    int line = 0;
+    Solver *eql = new Solver(n,nz,b);
+    for (j = downboundary + 2; j < upboundary - 1; j++) {
+        for (i = leftboundary + 2; i < rightboundary - 1; i++) {
+            if (psiOnBoundary(i, j)) {
+                node = &coordination->access(i, j);
+                eql->input(line, convert(i, j), 1);
+                eql->input(0, 0, 0);
+                eql->input(0, 0, 0);
+                eql->input(0, 0, 0);
+                eql->input(0, 0, 0);
+                b[line] = node->psi;
+                line += 1;
+                continue;
+            }
+
+            node = &coordination->access(i, j);
+            eql->input(line, convert(i, j), node->b0);
+            eql->input(line, convert(i+1,j), -node->b1);
+            eql->input(line, convert(i-1,j), -node->b2);
+            eql->input(line, convert(i,j+1), -node->b3);
+            eql->input(line, convert(i,j-1), -node->b4);
+            b[line] = node->zeta;
+            line += 1;
+        }
+    }
+    eql->solve();           
+    int counter = 0;
+    for (j = downboundary + 1; j < upboundary; j++) {
+        for (i = leftboundary + 1; i < rightboundary ; i++) {
+            coordination->access(i,j).psi = eql->getSolution()[counter];
+            counter += 1;
+        }
+    }
+
+    /* absolete */
+    /*converge = 30;
 
     while (converge) {
-        /* One step */
         #pragma omp parallel for private(j, i, node)
         for (j = downboundary + 2; j < upboundary - 1; j++) {
             for (i = leftboundary + 2; i < rightboundary - 1; i++) {
                 if ((j == 0) && (i >= leftterminal) && (i <= rightterminal)) {
-                    /* On the cylinder, do nothing here */
                     continue;
                 }
 
@@ -796,9 +845,7 @@ void cylinderProject::run()
             }
         }
 
-        /* End of one step */
 
-        /* flush */
         #pragma omp parallel for private(j, i)
 
         for (j = downboundary + 2; j < upboundary - 1; j++) {
@@ -810,7 +857,15 @@ void cylinderProject::run()
 
         converge -= 1;
     }
+    */
+    delete [] b;
+    delete eql;
+}
 
+void cylinderProject::calculateVelocity()
+{
+    int i, j;
+    cylinderNode * node;
     /* Calculating velocity */
     #pragma omp parallel for private(j, i, node)
 
@@ -835,6 +890,15 @@ void cylinderProject::run()
         }
     }
 
+}
+
+void cylinderProject::run()
+{
+    this->calculateBoundaryZeta();
+    this->calculateNewZeta();
+    this->timeStep();
+    this->calculateNewPsi();
+    this->calculateVelocity();
 }
 
 void cylinderProject::spotstainrun()

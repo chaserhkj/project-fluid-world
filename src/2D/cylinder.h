@@ -103,6 +103,18 @@ private:
     int leftterminal, rightterminal;  /* Terminals on the cylinder */
     double density;       /* spotstain density, from 0 to 1 */
     cylinderSpotStainSource * source; /* source of spotstains */
+
+    /* convert 2-D points to 1-D for matrix solver */
+    int convert(int i, int j) {
+        return (j - (downboundary + 1)) * (rightboundary - leftboundary - 1) + i - (leftboundary + 1);
+    }
+    bool psiOnBoundary(int i, int j) {
+        if ((i == (leftboundary+1)) || (i == (rightboundary -1)) || (j == (downboundary +1)) || (j == (upboundary-1)) || ((j == 0) && (i >= leftterminal) && (i <= rightterminal))) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 protected:
     const double deltaxi;     /* delta xi and delta eta */
     const double deltaeta;    /* delta xi and delta eta */
@@ -145,6 +157,11 @@ public:
     friend class cylinderSpotStainSource;
 
     void initialize();
+    void calculateBoundaryZeta();
+    void calculateNewZeta();
+    void timeStep();
+    void calculateNewPsi();
+    void calculateVelocity();
     void run();
     void spotstainrun();
 };
