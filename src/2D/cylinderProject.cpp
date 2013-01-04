@@ -1,7 +1,9 @@
 #include <cmath>
 #include "solver.h"
 #include "cylinder.h"
+#include <iostream>
 
+using namespace std;
 using std::abs;
 
 int cylinderProject::psiConvert(int i, int j) 
@@ -9,10 +11,14 @@ int cylinderProject::psiConvert(int i, int j)
     return (j - (downboundary + 1)) * (rightboundary - leftboundary - 1) + i - (leftboundary + 1);
 }
 
-
-bool cylinderProject::psiOnBoundary(int i, int j) 
+int cylinderProject::zetaConvert(int i, int j)
 {
-    if ((i == (leftboundary+1)) || (i == (rightboundary -1)) || (j == (downboundary +1)) || (j == (upboundary-1)) || ((j == 0) && (i >= leftterminal) && (i <= rightterminal))) {
+    return (j - downboundary) * (rightboundary - leftboundary + 1) + i - leftboundary;
+}
+
+bool cylinderProject::OnBoundary(int i, int j)
+{
+    if ((i <= (leftboundary+1)) || (i >= (rightboundary +1)) || (j <= (downboundary+1)) || (j>=(upboundary-1)) || ((j == 0) && (i >= leftterminal) && (i <= rightterminal))) {
         return true;
     } else {
         return false;
@@ -176,7 +182,6 @@ void cylinderProject::calculateNewZeta()
     double hxi, heta;
     double lambdaxi, lambdaeta;
     int i, j;
-    int converge;
     cylinderNode * node;
     /* Calculating new zeta at t + deltat on inner nodes */
     /* Calculating coefficients */
@@ -435,8 +440,73 @@ void cylinderProject::calculateNewZeta()
         -(2 * uxi + (-uxi)) / (3 * deltaxi) -
         2 / (hxi * hxi * deltaxi * deltaxi * Re);
     node->c10 = (uxi + (-uxi)) / (12 * deltaxi);
+    /* End of calculating coeffiecients */
 
-    /* copy zeta to zetat to use as guessing solve */
+    /* Matrix solver */
+    int n = (rightboundary - leftboundary + 1) * (upboundary - downboundary + 1);
+    int nz = 9 * n;
+    double *b = new double[n];
+    int line = 0;
+    Solver* eql = new Solver(n,nz,b);
+    for (j = downboundary; j <= upboundary; j++){
+        for (i = leftboundary; i <= rightboundary; i++){
+            if (OnBoundary(i,j)) {
+                node = &coordination->access(i,j);
+                eql->input(line,zetaConvert(i,j),1);
+                eql->input(0, 0, 0);
+                eql->input(0, 0, 0);
+                eql->input(0, 0, 0);
+                eql->input(0, 0, 0);
+                eql->input(0, 0, 0);
+                eql->input(0, 0, 0);
+                eql->input(0, 0, 0);
+                eql->input(0, 0, 0);
+                b[line] = node->zeta;
+                line += 1;
+                continue;
+            }
+            if ((i>=leftterminal) && (i<=rightterminal)) {
+                if (j==2){
+                    node = &coordination->access(i,j);
+                    eql->input(line,zetaConvert(i,j),node->c1);
+                    eql->input(line,zetaConvert(i,j+2),-node->c3);
+                    eql->input(line,zetaConvert(i,j+1),-node->c4);
+                    eql->input(line,zetaConvert(i,j-1),-node->c5);
+                    eql->input(line,zetaConvert(i,j-2),-node->c6);
+                    eql->input(line,zetaConvert(i+2,j),-node->c7);
+                    eql->input(line,zetaConvert(i+1,j),-node->c8);
+                    eql->input(line,zetaConvert(i-1,j),-node->c9);
+                    eql->input(line,zetaConvert(i-2,j),-node->c10);
+                    b[line] = node->c2 * node->zeta + node->c3*coordination->access(i,j+2).zeta + node->c4*coordination->access(i,j+1).zeta + node->c5*coordination->access(i,j-1).zeta + node->c6*coordination->access(i,j-2).zeta + node->c7*coordination->access(i+2,j).zeta + node->c8*coordination->access(i+1,j).zeta + node->c9*coordination->access(i-1,j).zeta + node->c10*coordination->access(i-2,j).zeta;
+                    line += 1;
+                    continue;
+                }
+
+            node = &coordination->access(i,j);
+            eql->input(line,zetaConvert(i,j),node->c1);
+            eql->input(line,zetaConvert(i,j+2),-node->c3);
+            eql->input(line,zetaConvert(i,j+1),-node->c4);
+            eql->input(line,zetaConvert(i,j-1),-node->c5);
+            eql->input(line,zetaConvert(i,j-2),-node->c6);
+            eql->input(line,zetaConvert(i+2,j),-node->c7);
+            eql->input(line,zetaConvert(i+1,j),-node->c8);
+            eql->input(line,zetaConvert(i-1,j),-node->c9);
+            eql->input(line,zetaConvert(i-2,j),-node->c10);
+            b[line] = node->c2 * node->zeta + node->c3*coordination->access(i,j+2).zeta + node->c4*coordination->access(i,j+1).zeta + node->c5*coordination->access(i,j-1).zeta + node->c6*coordination->access(i,j-2).zeta + node->c7*coordination->access(i+2,j).zeta + node->c8*coordination->access(i+1,j).zeta + node->c9*coordination->access(i-1,j).zeta + node->c10*coordination->access(i-2,j).zeta;
+            line += 1;
+        }
+    }
+    cout <<"POINT:" <<line - n<<endl;
+    eql->solve();
+    int counter = 0;
+    for (j = downboundary; j <= upboundary; j++) {
+        for (i = leftboundary; i <= rightboundary ; i++) {
+            coordination->access(i,j).zeta = eql->getSolution()[counter];
+            counter += 1;
+        }
+    }
+
+    /* absolete
     #pragma omp parallel for private(j, i)
 
     for (j = downboundary + 2; j < upboundary - 1; j++) {
@@ -446,18 +516,15 @@ void cylinderProject::calculateNewZeta()
     }
 
 
-    /* recursive calculation */
     converge = 30;
 
     while (converge) {
         //TODO:converge
-        /* One step */
         #pragma omp parallel for private(j, i, node)
         for (j = downboundary + 2; j < upboundary - 1; j++) {
             for (i = leftboundary + 2; i < rightboundary - 1; i++) {
                 if ((j <= 2) && (j >= -2) && (i >= leftterminal)
                     && (i <= rightterminal)) {
-                    /* Near or on the cylinder, do nothing here */
                     continue;
                 }
 
@@ -490,7 +557,6 @@ void cylinderProject::calculateNewZeta()
             }
         }
 
-        /* j == +-2 */
         j = 2;
         #pragma omp parallel for private(i, node)
 
@@ -555,7 +621,6 @@ void cylinderProject::calculateNewZeta()
                               coordination->access(i - 2, j).zeta)) / node->c1;
         }
 
-        /* j == +- 1 */
         j = 1;
         #pragma omp parallel for private(i, node)
 
@@ -613,9 +678,7 @@ void cylinderProject::calculateNewZeta()
                               coordination->access(i - 2, j).zeta)) / node->c1;
         }
 
-        /* End of one step */
 
-        /* flush */
         #pragma omp parallel for private(j, i)
 
         for (j = downboundary + 2; j < upboundary - 1; j++) {
@@ -627,15 +690,18 @@ void cylinderProject::calculateNewZeta()
 
         converge -= 1;
     }
+    */
 
-    /* flush zetat back to zeta */
+    /* flush zetat back to zeta 
     #pragma omp parallel for private(j, i)
 
     for (j = downboundary + 2; j < upboundary - 1; j++) {
         for (i = leftboundary + 2; i < rightboundary - 1; i++) {
             coordination->access(i, j).zeta = coordination->access(i, j).zetat;
         }
-    }
+    } */
+    delete [] b;
+    delete eql;
 }
 
 void cylinderProject::timeStep()
@@ -656,7 +722,7 @@ void cylinderProject::calculateNewPsi()
     Solver *eql = new Solver(n,nz,b);
     for (j = downboundary + 1; j < upboundary ; j++) {
         for (i = leftboundary + 1; i < rightboundary ; i++) {
-            if (psiOnBoundary(i, j)) {
+            if (OnBoundary(i, j)) {
                 node = &coordination->access(i, j);
                 eql->input(line, psiConvert(i, j), 1);
                 eql->input(0, 0, 0);

@@ -104,9 +104,11 @@ private:
     double density;       /* spotstain density, from 0 to 1 */
     cylinderSpotStainSource * source; /* source of spotstains */
 
-    /* convert 2-D points to 1-D for matrix solver when calculating psi */
+    /* convert 2-D points to 1-D for matrix solver */
     int psiConvert(int i, int j);
-    bool psiOnBoundary(int i, int j);    
+    int zetaConvert(int i, int j);
+
+    bool OnBoundary(int i, int j);    
 protected:
     const double deltaxi;     /* delta xi and delta eta */
     const double deltaeta;    /* delta xi and delta eta */

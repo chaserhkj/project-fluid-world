@@ -20,9 +20,11 @@ int main(int argc, char ** argv)
             }
         }*/
         cout << node.psi<<endl;
+        cout <<node.c1<<' '<<node.c2<<' '<<node.c3<<' '<<node.c4<<' '<<endl;
         cout << testproject->getCoordinate()->access(-5,19).psi << endl;
-        //testproject->run();
-        testproject->calculateNewPsi();
+        testproject->run();
+        //testproject->calculateNewZeta();
+        //testproject->calculateNewPsi();
         cout << "One step:" << testproject->getT() << endl;
     }
 
