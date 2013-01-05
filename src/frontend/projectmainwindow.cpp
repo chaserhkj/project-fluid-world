@@ -1,6 +1,8 @@
 #include "projectmainwindow.h"
 #include <QtGui>
 #include "displaywidget.h"
+#include "controlwidget.h"
+#include "inputwidget.h"
 
 #ifdef SUDOKU_ENABLED
 #include <FWsudokuGui.h>
@@ -16,6 +18,24 @@ ProjectMainWindow::ProjectMainWindow(QWidget * parent): QMainWindow(parent)
     //Initializing central display widget.
     displayWidget = new DisplayWidget;
     this->setCentralWidget(displayWidget);
+
+    //Initializing control widget.
+    QDockWidget * controlDock = new QDockWidget(tr("Control"));
+    ControlWidget *controlWidget = new ControlWidget;
+    controlDock->setWidget(controlWidget);
+    controlDock->setAllowedAreas(Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea);
+    controlDock->setFeatures(QDockWidget::DockWidgetMovable|QDockWidget::DockWidgetFloatable);
+    //Adding it to the main window.
+    this->addDockWidget(Qt::LeftDockWidgetArea, controlDock);
+
+    //Initialzing input widget.
+    QDockWidget * inputDock = new QDockWidget(tr("Input"));
+    InputWidget * inputWidget = new InputWidget;
+    inputDock->setWidget(inputWidget);
+    inputDock->setAllowedAreas(Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea);
+    inputDock->setFeatures(QDockWidget::DockWidgetMovable|QDockWidget::DockWidgetFloatable);
+    //Adding it to the main window.
+    this->addDockWidget(Qt::RightDockWidgetArea, inputDock);
 
     //Initializing actions.
     quitAct = new QAction(QIcon::fromTheme("application-exit"),tr("&Quit"), this);
