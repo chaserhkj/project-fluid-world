@@ -18,3 +18,7 @@ sudoku {
     INCLUDEPATH += ../../include
     LIBS += -L"../../lib" -lFWsudokuGui
 }
+
+debug {
+    INCLUDEPATH += ../debug
+}

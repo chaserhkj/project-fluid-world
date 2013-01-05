@@ -106,6 +106,11 @@ void ProjectMainWindow::aboutQtActivated()
     QMessageBox::aboutQt(this);
 }
 
+#ifdef DEBUG
+#include <QDumpObjectTree.cpp>
+#endif /* DEBUG */
+
+
 #ifdef SUDOKU_ENABLED
 void ProjectMainWindow::startSudokuGame()
 {
@@ -117,5 +122,9 @@ void ProjectMainWindow::startSudokuGame()
     sudoku->setGeometry(QStyle::alignedRect(Qt::LeftToRight,Qt::AlignCenter,sudoku->size(),qApp->desktop()->availableGeometry()));
     //Show it.
     sudoku->show();
+#ifdef DEBUG
+    dumpObjTree((QObject *)sudoku);
+#endif /* DEBUG */
+
 }
 #endif /* SUDOKU_ENABLED */

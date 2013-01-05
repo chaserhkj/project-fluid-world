@@ -6,3 +6,7 @@ DESTDIR = ../bin
 INCLUDEPATH += ../include
 LIBS += -L"../lib" -lFWfrontend
 SOURCES = main.cpp
+
+debug {
+    INCLUDEPATH += debug
+}
