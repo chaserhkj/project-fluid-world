@@ -1,13 +1,13 @@
 #include "sudokumodel.h"
 #include <QtGui>
 
-SudokuModel::SudokuModel(QObject * parent): QAbstractTableModel(parent)
+SudokuModel::SudokuModel(QObject * parent) : QAbstractTableModel(parent)
 {
     tb = sudoku_init();
 }
 
 SudokuModel::SudokuModel(int count,
-                         QObject * parent): QAbstractTableModel(parent)
+                         QObject * parent) : QAbstractTableModel(parent)
 {
     tb = sudoku_random_init(count);
 }
@@ -36,7 +36,8 @@ QVariant SudokuModel::data(const QModelIndex & index, int role) const
         return (int) Qt::AlignHCenter | Qt::AlignVCenter;
 
     if (role == Qt::DisplayRole) {
-        int value = sudoku_get_value(tb, index.column() + 1, index.row() + 1);
+        int value = sudoku_get_value(tb, index.column() + 1,
+                                     index.row() + 1);
 
         if (value == 0)
             return "";
@@ -45,7 +46,8 @@ QVariant SudokuModel::data(const QModelIndex & index, int role) const
     }
 
     if (role == Qt::EditRole) {
-        return sudoku_get_value(tb, index.column() + 1, index.row() + 1);
+        return sudoku_get_value(tb, index.column() + 1, index.row() +
+                                1);
     }
 
     return QVariant();
@@ -65,14 +67,15 @@ bool SudokuModel::setData(const QModelIndex & index, const QVariant & value,
     if (role == Qt::EditRole) {
         int v = value.toInt();
 
-        if (sudoku_check_value(tb, index.column() + 1, index.row() + 1, v) ==
+        if (sudoku_check_value(tb, index.column() + 1, index.row() + 1,
+                               v) ==
             0)
             return false;
 
         sudoku_set_value(tb, index.column() + 1, index.row() + 1, v);
         emit dataChanged(index, index);
-        if (sudoku_check_complete(tb))
-        {
+
+        if (sudoku_check_complete(tb)) {
             QMessageBox msgBox;
             msgBox.setWindowTitle(tr("Congratulations!"));
             msgBox.setText(tr("<h3>Congratulations!</h3>"));
@@ -80,6 +83,7 @@ bool SudokuModel::setData(const QModelIndex & index, const QVariant & value,
             msgBox.setIcon(QMessageBox::Information);
             msgBox.exec();
         }
+
         return true;
     }
 

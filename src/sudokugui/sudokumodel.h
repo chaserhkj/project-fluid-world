@@ -4,13 +4,13 @@
 #include <FWsudoku.h>
 #include <QAbstractTableModel>
 
-class SudokuModel: public QAbstractTableModel
+class SudokuModel : public QAbstractTableModel
 {
     Q_OBJECT;
 public:
     SudokuModel(QObject * parent = 0);
     SudokuModel(int count, QObject * parent = 0);
-    virtual ~ SudokuModel();
+    virtual ~SudokuModel();
     int rowCount(const QModelIndex & parent) const;
     int columnCount(const QModelIndex & parent) const;
     QVariant data(const QModelIndex & index, int role) const;

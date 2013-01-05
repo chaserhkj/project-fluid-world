@@ -5,12 +5,12 @@
 class SudokuModel;
 class QTableView;
 
-class SudokuWidget: public QWidget
+class SudokuWidget : public QWidget
 {
     Q_OBJECT;
 public:
     SudokuWidget(QWidget * parent = 0);
-    virtual ~ SudokuWidget();
+    virtual ~SudokuWidget();
 private:
     SudokuModel * model;
     QTableView * view;
