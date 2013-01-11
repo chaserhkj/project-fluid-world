@@ -2,7 +2,7 @@
 #include <FWfrontend.h>
 
 #ifdef DEBUG
-#include <QDumpObjectTree.cpp>
+#include <debug/QDumpObjectTree.cpp>
 #endif /* DEBUG */
 
 int main(int argc, char * argv[])

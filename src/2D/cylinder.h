@@ -1,7 +1,7 @@
 #ifndef _cylinder
 #define _cylinder
 
-#include "interface.h"
+#include <interface.h>
 #include "commontypes.h"
 
 class cylinderProject;

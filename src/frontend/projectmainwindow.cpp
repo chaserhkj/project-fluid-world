@@ -13,7 +13,7 @@ ProjectMainWindow::ProjectMainWindow(QWidget * parent): QMainWindow(parent)
     //Setting window title.
     this->setWindowTitle("Fluid World");
     //Setting up window geometry.
-    this->setGeometry(QStyle::alignedRect(Qt::LeftToRight,Qt::AlignCenter,QSize(800,600),qApp->desktop()->availableGeometry()));
+    this->setGeometry(QStyle::alignedRect(Qt::LeftToRight,Qt::AlignCenter,QSize(900,600),qApp->desktop()->availableGeometry()));
     
     //Initializing central display widget.
     displayWidget = new DisplayWidget;
@@ -25,6 +25,7 @@ ProjectMainWindow::ProjectMainWindow(QWidget * parent): QMainWindow(parent)
     controlDock->setWidget(controlWidget);
     controlDock->setAllowedAreas(Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea);
     controlDock->setFeatures(QDockWidget::DockWidgetMovable|QDockWidget::DockWidgetFloatable);
+    controlDock->setFixedWidth(150);
     //Adding it to the main window.
     this->addDockWidget(Qt::LeftDockWidgetArea, controlDock);
 
@@ -34,6 +35,7 @@ ProjectMainWindow::ProjectMainWindow(QWidget * parent): QMainWindow(parent)
     inputDock->setWidget(inputWidget);
     inputDock->setAllowedAreas(Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea);
     inputDock->setFeatures(QDockWidget::DockWidgetMovable|QDockWidget::DockWidgetFloatable);
+    inputDock->setFixedWidth(150); 
     //Adding it to the main window.
     this->addDockWidget(Qt::RightDockWidgetArea, inputDock);
 
@@ -107,7 +109,7 @@ void ProjectMainWindow::aboutQtActivated()
 }
 
 #ifdef DEBUG
-#include <QDumpObjectTree.cpp>
+#include <debug/QDumpObjectTree.cpp>
 #endif /* DEBUG */
 
 
