@@ -12,7 +12,7 @@ namespace {
         if ( parent == 0 ) {
             treeWidget = new QTreeWidget( 0 );
             treeWidget->setWindowTitle("Dumped Object Tree");
-            treeWidget->resize(500, 500);
+            treeWidget->resize(800, 600);
             treeWidget->setRootIsDecorated( TRUE );
             treeWidget->setColumnCount(3);
             QStringList headers;
@@ -32,10 +32,21 @@ namespace {
         property->setText( 0, "[Properties]" );
         for (i = 0; i < n ; ++i){
             child = new QTreeWidgetItem(property);
-            child->setText(0, object->metaObject()->property(i).name());
-            child->setText(1, QVariant::typeToName(object->metaObject()
-                                                   ->property(i).type()));
-            child->setText(2, object->metaObject()->property(i).read(object).toString());
+            QMetaProperty p = object -> metaObject()->property(i);
+            child->setText(0, p.name());
+            QString typeName, value;
+            if (p.isEnumType()) {
+                QMetaEnum e = p.enumerator();
+                typeName = QString("[Enum]%1::%2").arg(e.scope(),e.name());
+                value = e.valueToKeys(p.read(object).toInt());
+            }
+            else {
+                typeName = p.typeName();
+                value = p.read(object).toString();
+            }
+            
+            child->setText(1, typeName);
+            child->setText(2, value);
         }
         
         foreach(QObject * obj, object->children())
