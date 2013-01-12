@@ -1,4 +1,5 @@
 #include <cmath>
+#include <assert.h>
 #include "solver.h"
 #include "cylinder.h"
 
@@ -848,6 +849,63 @@ void cylinderProject::calculateVelocity()
 
 }
 
+double cylinderProject::getData(DATA data)
+{
+    assert(data == TIME);
+    return t;
+}
+
+FWDataVarient cylinderProject::getData(DATA data, double xip, double etap)
+{
+    assert(data == PSI);
+    return FWDataVarient(data, &coordination->access(xip, etap));
+}
+
+FWDataVarient cylinderProject::getData(DATA data, int n)
+{
+    assert(data == SPOT);
+    return FWDataVarient(data, source[n]);
+}
+
+double cylinderProject::getX(FWDataVarient& data)
+{
+    switch (data){
+        case PSI:
+            return data.node->x;
+            break;
+        case SPOT:
+            return data.spot->x;
+        }
+}
+
+double cylinderProject::getY(FWDataVarient& data)
+{
+    switch (data){
+        case PSI:
+            return data.node->y;
+            break;
+        case SPOT:
+            return data.spot->y;
+        }
+}
+
+double cylinderProject::getPsi(FWDataVarient& data)
+{
+    assert(data.type == PSI);
+    return data.node->psi;
+}
+
+bool cylinderProject::next(FWDataVarient& data)
+{
+    assert(data.type == SPOT);
+    if (data.spot->next) {
+        data.spot = data.spot->next;
+        return true;
+    } else {
+        return false;
+    }
+}
+
 void cylinderProject::run()
 {
     this->calculateBoundaryZeta();
@@ -859,5 +917,6 @@ void cylinderProject::run()
 
 void cylinderProject::spotstainrun()
 {
+    this->run();
     source->run();
 }

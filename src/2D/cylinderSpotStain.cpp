@@ -56,6 +56,8 @@ void cylinderSpotStain::run()
     } else {
         eta = neweta;
     }
+    
+    calculateXY();
 }
 
 void cylinderSpotStain::destroychain()
@@ -99,6 +101,7 @@ void cylinderSpotStainSource::run()
         spot = new cylinderSpotStain(project);
         spot->xi = (project->leftboundary + 2) * project->deltaxi;
         spot->eta = (project->downboundary + 2 + i * step) * project->deltaeta;
+        spot->calculateXY();
         spot->next = source[i];
         source[i] = spot;
         /* delete outofrange spots */

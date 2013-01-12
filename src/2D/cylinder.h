@@ -4,6 +4,19 @@
 #include <interface.h>
 #include "commontypes.h"
 
+class FWDataVarient
+{
+private:
+    DATA type;
+    cylinderNode* node;
+    cylinderSpotStain* spot;
+public:
+    FWDataVarient(DATA t, cylinderNode* n):type(t), node(n){};
+    FWDataVarient(DATA t, cylinderSpotStain* s):type(t), spot(s){};
+
+    friend class cylinderProject;
+}
+
 class cylinderProject;
 
 class cylinderTransformer: public Transformer
@@ -63,7 +76,11 @@ public:
 
     void run();
 
-    cylinderSpotStain * getchain(int i) {
+    int getNumber(){
+        return number;
+    }
+
+    cylinderSpotStain * operator[](int i) {
         return source[i];
     }
 };
@@ -108,6 +125,13 @@ private:
     int psiConvert(int i, int j);
     int zetaConvert(int i, int j);
 
+    void initialize();
+    void calculateBoundaryZeta();
+    void calculateNewZeta();
+    void timeStep();
+    void calculateNewPsi();
+    void calculateVelocity();
+
     bool OnBoundary(int i, int j);    
 protected:
     const double deltaxi;     /* delta xi and delta eta */
@@ -131,7 +155,7 @@ public:
         delete source;
     }
 
-    double getT() {
+    /*double getT() {
         return t;
     }
     cylinderSpotStainSource* getSource() {
@@ -139,7 +163,22 @@ public:
     }
     cylinderCoordinate * getCoordinate() {
         return coordination;
+    }*/
+
+    int getSourceNumber(){
+        return source->getNumber();
     }
+    
+    double getData(DATA data);
+    FWDataVarient getData(DATA data, double xip, double etap);
+    FWDataVarient getData(DATA data, int n);
+
+    double getX(FWDataVarient& data);
+    double getY(FWDataVarient& data);
+    double getPsi(FWDataVarient& data);
+    bool next(FWDataVarient& data);
+    
+
     void setDensity(double dens) {
         density = dens;
         delete source;
@@ -149,12 +188,6 @@ public:
     friend class cylinderSpotStain;
     friend class cylinderSpotStainSource;
 
-    void initialize();
-    void calculateBoundaryZeta();
-    void calculateNewZeta();
-    void timeStep();
-    void calculateNewPsi();
-    void calculateVelocity();
     void run();
     void spotstainrun();
 };
