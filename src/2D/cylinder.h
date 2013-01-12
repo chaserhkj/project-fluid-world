@@ -4,19 +4,6 @@
 #include <interface.h>
 #include "commontypes.h"
 
-class FWDataVarient
-{
-private:
-    DATA type;
-    cylinderNode* node;
-    cylinderSpotStain* spot;
-public:
-    FWDataVarient(DATA t, cylinderNode* n):type(t), node(n){};
-    FWDataVarient(DATA t, cylinderSpotStain* s):type(t), spot(s){};
-
-    friend class cylinderProject;
-}
-
 class cylinderProject;
 
 class cylinderTransformer: public Transformer
