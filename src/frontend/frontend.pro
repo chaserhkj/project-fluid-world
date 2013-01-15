@@ -4,18 +4,19 @@ CONFIG += qt staticlib create_prl
 QT += opengl
 TARGET = FWfrontend
 DESTDIR = ../../lib
-INCLUDEPATH += ../common
+INCLUDEPATH += ../common ../../include
 SOURCES = displaywidget.cpp \
           projectmainwindow.cpp \
           controlwidget.cpp \
+          calthread.cpp \
           inputwidget.cpp
 HEADERS = displaywidget.h \
           projectmainwindow.h \
           controlwidget.h \
+          calthread.h \
           inputwidget.h
 sudoku {
     CONFIG += link_prl
     DEFINES += SUDOKU_ENABLED
-    INCLUDEPATH += ../../include
     LIBS += -L"../../lib" -lFWsudokuGui
 }

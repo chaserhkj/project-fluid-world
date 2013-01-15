@@ -3,12 +3,13 @@
 #include "displaywidget.h"
 #include "controlwidget.h"
 #include "inputwidget.h"
+#include "calthread.h"
 
 #ifdef SUDOKU_ENABLED
 #include <FWsudokuGui.h>
 #endif /* SUDOKU_ENABLED */
 
-ProjectMainWindow::ProjectMainWindow(QWidget * parent): QMainWindow(parent)
+ProjectMainWindow::ProjectMainWindow(QWidget * parent): QMainWindow(parent),thread(NULL)
 {
     //Setting window title.
     this->setWindowTitle("Fluid World");
@@ -21,7 +22,7 @@ ProjectMainWindow::ProjectMainWindow(QWidget * parent): QMainWindow(parent)
 
     //Initializing control widget.
     QDockWidget * controlDock = new QDockWidget(tr("Control"));
-    ControlWidget *controlWidget = new ControlWidget;
+    controlWidget = new ControlWidget;
     controlDock->setWidget(controlWidget);
     controlDock->setAllowedAreas(Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea);
     controlDock->setFeatures(QDockWidget::DockWidgetMovable|QDockWidget::DockWidgetFloatable);
@@ -31,7 +32,7 @@ ProjectMainWindow::ProjectMainWindow(QWidget * parent): QMainWindow(parent)
 
     //Initialzing input widget.
     QDockWidget * inputDock = new QDockWidget(tr("Input"));
-    InputWidget * inputWidget = new InputWidget;
+    inputWidget = new InputWidget;
     inputDock->setWidget(inputWidget);
     inputDock->setAllowedAreas(Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea);
     inputDock->setFeatures(QDockWidget::DockWidgetMovable|QDockWidget::DockWidgetFloatable);
@@ -39,6 +40,9 @@ ProjectMainWindow::ProjectMainWindow(QWidget * parent): QMainWindow(parent)
     //Adding it to the main window.
     this->addDockWidget(Qt::RightDockWidgetArea, inputDock);
 
+    //Connecting signals for Input Widget, Control Widget and Display Widget
+    QObject::connect(inputWidget, SIGNAL(startClicked()), this, SLOT(startCalculate()));
+    
     //Initializing actions.
     quitAct = new QAction(QIcon::fromTheme("application-exit"),tr("&Quit"), this);
 #ifdef SUDOKU_ENABLED
@@ -76,6 +80,11 @@ ProjectMainWindow::~ProjectMainWindow()
 {
 }
 
+CalThread * ProjectMainWindow::getThread()
+{
+    return thread;
+}
+
 void ProjectMainWindow::aboutActivated()
 {
     QMessageBox msgBox(this);
@@ -106,6 +115,17 @@ void ProjectMainWindow::aboutActivated()
 void ProjectMainWindow::aboutQtActivated()
 {
     QMessageBox::aboutQt(this);
+}
+
+void ProjectMainWindow::startCalculate()
+{
+    if (thread != NULL)
+        delete thread;
+    thread = new CalThread;
+    QObject::connect(thread,SIGNAL(dataGenerated()),
+                     displayWidget,SLOT(updateGraph()),Qt::DirectConnection);
+    thread->start();
+    emit calculateStarted();
 }
 
 #ifdef DEBUG

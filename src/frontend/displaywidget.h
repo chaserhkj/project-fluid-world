@@ -6,9 +6,12 @@ class QWidget;
 
 class DisplayWidget: public QGLWidget
 {
+    Q_OBJECT;
 public:
     DisplayWidget(QWidget * parent = 0);
     virtual ~ DisplayWidget();
+public slots:
+    void updateGraph();
 protected:
     void initializeGL();
     void paintGL();

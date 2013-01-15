@@ -5,6 +5,9 @@
 class QAction;
 class QWidget;
 class DisplayWidget;
+class InputWidget;
+class ControlWidget;
+class CalThread;
 
 class ProjectMainWindow: public QMainWindow
 {
@@ -12,10 +15,18 @@ class ProjectMainWindow: public QMainWindow
 public:
     ProjectMainWindow(QWidget * parent = 0);
     virtual ~ ProjectMainWindow();
+    CalThread * getThread();
+signals:
+    void calculateStarted();
 private:
+    //Thread for calculating.
+    CalThread * thread;
+
     //Central display widget.
     DisplayWidget * displayWidget;
-
+    InputWidget * inputWidget;
+    ControlWidget * controlWidget;
+    
     //Actions.
     //File menu actions.
     QAction * quitAct;
@@ -29,6 +40,7 @@ private:
 private slots:
     void aboutActivated();
     void aboutQtActivated();
+    void startCalculate();
 #ifdef SUDOKU_ENABLED
     void startSudokuGame();
 #endif /* SUDOKU_ENABLED */

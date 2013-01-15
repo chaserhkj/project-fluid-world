@@ -3,11 +3,13 @@ TEMPLATE = subdirs
 SUBDIRS = frontend \
           sudoku \
           sudokugui \
-          main
+          main \
+          2D
 
+2D.file = src/2D/2D.pro
           
 frontend.file = src/frontend/frontend.pro
-frontend.depends = sudokugui
+frontend.depends = sudokugui 2D
 
 sudoku.file = src/sudoku/sudoku.pro
 

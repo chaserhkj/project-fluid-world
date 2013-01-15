@@ -8,15 +8,25 @@ ControlWidget::ControlWidget(QWidget * parent): QWidget(parent)
     this->setLayout(layout);
     
     //Initializing mode chooser.
-    QComboBox * box = new QComboBox;
+    QLabel * modeLabel = new QLabel(tr("Please choose mode:"));
+    QComboBox * modeChooser = new QComboBox;
     QStringList list;
-    list<<"1"<<"2";
-    box->addItems(list);
-    //Adding it to the layout.
-    layout->addWidget(box);
+    int i;
+    list<<"cylinder";
+    modeChooser->addItems(list);
+    //Adding them to the layout.
+    layout->addWidget(modeLabel);
+    layout->addWidget(modeChooser);
 
     //Adding a stretchable space to the  end of the layout
     layout->addStretch();
+
+    //Connecting signals for event handling.
+    QObject::connect(modeChooser,
+                     SIGNAL(currentIndexChanged(int)),
+                     this,
+                     SIGNAL(modeChose(int)));
+    
 }
 
 ControlWidget::~ControlWidget()

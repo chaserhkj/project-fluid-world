@@ -7,10 +7,13 @@ InputWidget::InputWidget(QWidget * parent): QWidget(parent)
     QVBoxLayout * layout = new QVBoxLayout;
     this->setLayout(layout);
 
-    //Initialzing value inputer.
-    QLineEdit  * valueEdit=new QLineEdit;
-    //Adding it to the layout.
-    layout->addWidget(valueEdit);
+    //Initialzing button.
+    QPushButton * startBtn = new QPushButton(tr("&Start Calculate"));
+    //Adding them to the layout.
+    layout->addWidget(startBtn);
+    //Connecting signals for buttons.
+    QObject::connect(startBtn, SIGNAL(clicked()),
+                     this,SIGNAL(startClicked()));
 
     //Adding a stretchable space to the  end of the layout
     layout->addStretch();
@@ -20,3 +23,9 @@ InputWidget::~InputWidget()
 {
     
 }
+
+void InputWidget::changeMode(int index)
+{
+    
+}
+

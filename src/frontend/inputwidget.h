@@ -2,15 +2,22 @@
 #define _INPUTWIDGET_H_
 
 #include <QWidget>
-class QLineEdit;
+#include <QList>
+class QLabel;
 
 class InputWidget : public QWidget
 {
+    Q_OBJECT;
 public:
     InputWidget(QWidget * parent = 0);
     virtual ~InputWidget();
+signals:
+    void startClicked();
+public slots:
+    void changeMode(int index);
 private:
-    QLineEdit * edit;
+    QList<QLabel *> labelList;
+    QList<QWidget *> inputList;
 };
 
 #endif /* _INPUTWIDGET_H_ */
