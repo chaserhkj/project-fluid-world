@@ -7,7 +7,8 @@ INCLUDEPATH = ../common
 QMAKE_CXXFLAGS += -fopenmp
 SOURCES = cylinder.cpp \
           cylinderProject.cpp \
-          cylinderSpotStain.cpp
+          cylinderSpotStain.cpp \
+          cylinderDataVariant.cpp
 HEADERS = cylinder.h \
           commontypes.h \
           solver.h
