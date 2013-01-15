@@ -1,6 +1,6 @@
 include(../project.pri)
 TEMPLATE = lib
-CONFIG += qt staticlib create_prl
+CONFIG += qt staticlib create_prl link_prl
 QT += opengl
 TARGET = FWfrontend
 DESTDIR = ../../lib
@@ -17,7 +17,6 @@ HEADERS = displaywidget.h \
           calthread.h \
           inputwidget.h
 sudoku {
-    CONFIG += link_prl
     DEFINES += SUDOKU_ENABLED
     LIBS += -L"../../lib" -lFWsudokuGui
 }
