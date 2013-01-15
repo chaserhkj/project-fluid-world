@@ -131,6 +131,10 @@ private:
     double density;       /* spotstain density, from 0 to 1 */
     cylinderSpotStainSource * source; /* source of spotstains */
 
+    double deltaxi;     /* delta xi and delta eta */
+    double deltaeta;    /* delta xi and delta eta */
+    double deltat;      /* time step */
+
     /* convert 2-D points to 1-D for matrix solver */
     int psiConvert(int i, int j);
     int zetaConvert(int i, int j);
@@ -142,27 +146,10 @@ private:
     void calculateVelocity();
 
     bool OnBoundary(int i, int j);    
-    double deltaxi;     /* delta xi and delta eta */
-    double deltaeta;    /* delta xi and delta eta */
-    double deltat;      /* time step */
 public:
-    cylinderProject(int l = -100, int r = 400, int u = 100, int d = -100, double dens = 0.1, double dxi = 0.1, double deta = 0.1, double dt = 0.1, double rey = 40): leftboundary(l), rightboundary(r), upboundary(u), downboundary(d),
-        density(dens), deltaxi(dxi), deltaeta(deta), deltat(dt)
-         {
-        t = 0;
-        Re = 2 * rey;
-        leftterminal = -1 / deltaxi;
-        rightterminal = 1 / deltaxi;
-        coordination = new cylinderCoordinate(l, r, u, d);
-        cylinderBoundary = new cylinderCoordinate(-1 / deltaxi, 1 / deltaxi, 1, 0);
-        source = new cylinderSpotStainSource(this);
-    }
-    ~cylinderProject() {
-        delete coordination;
-        delete cylinderBoundary;
-        delete source;
-    }
-
+    cylinderProject(int l = -100, int r = 400, int u = 100, int d = -100, double dens = 0.1, double dxi = 0.1, double deta = 0.1, double dt = 0.1, double rey = 40);
+    cylinderProject(const char* location); /* resume from file */
+    ~cylinderProject();
     /*double getT() {
         return t;
     }
@@ -178,10 +165,12 @@ public:
 
     //It's user's duty to delete it 
     DataVariant * getData(Project::DataType type, ...); 
+
     void setDensity(double dens); 
     void initialize();
     void run();
     void spotstainrun();
+    bool dumptofile(const char* location);
 };
 
 #endif /* _cylinder */

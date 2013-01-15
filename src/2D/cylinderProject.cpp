@@ -1,9 +1,73 @@
 #include <cmath>
 #include <cstdarg>
+#include <fstream>
 #include "solver.h"
 #include "cylinder.h"
 
 using std::abs;
+
+cylinderProject::cylinderProject(int l = -100, int r = 400, int u = 100, int d = -100, double dens = 0.1, double dxi = 0.1, double deta = 0.1, double dt = 0.1, double rey = 40): leftboundary(l), rightboundary(r), upboundary(u), downboundary(d),
+        density(dens), deltaxi(dxi), deltaeta(deta), deltat(dt)
+{
+    t = 0;
+    Re = 2 * rey;
+    leftterminal = -1 / deltaxi;
+    rightterminal = 1 / deltaxi;
+    coordination = new cylinderCoordinate(l, r, u, d);
+    cylinderBoundary = new cylinderCoordinate(leftterminal, rightterminal, 1, 0);
+    source = new cylinderSpotStainSource(this);
+}
+
+cylinderProject::cylinderProject(const char* location)
+{   
+    int i,j;
+    cylinderNode* node;
+    std::ifstream file(location);
+
+    /* basic parameters */
+    file >> t;
+    file >> Re;
+    file >> leftboundary >> rightboundary >> upboundary >> downboundary;
+    file >> leftterminal >> rightterminal;
+    file >> density;
+    file >> deltaxi;
+    file >> deltaeta;
+    file >> deltat;
+
+    coordination = new cylinderCoordinate(leftboundary, rightboundary, upboundary, downboundary);
+    cylinderBoundary = new cylinderCoordinate(leftterminal, rightterminal, 1, 0);
+    source = new cylinderSpotStainSource(this);
+
+    initialize();
+    
+    /* node properties */
+    for (i=downboundary;i<= upboundary;i++){
+        for (j=leftboundary;j<=rightboundary;j++){
+            node = &coordination->access(i,j);
+            file >> node->zeta;
+            file >> node->psi;
+        }
+    }
+
+    /* node on cylinder */
+    for (j=0;j<=1;j++){
+        for (i=leftterminal;i<= rightterminal;i++){
+            node = &cylinderBoundary->access(i,j);
+            file >> node->zeta;
+            file >> node->psi;
+        }
+    }
+
+    calculateVelocity();
+    
+    file.close();
+}
+
+cylinderProject::~cylinderProject() {
+    delete coordination;
+    delete cylinderBoundary;
+    delete source;
+}
 
 int cylinderProject::psiConvert(int i, int j) 
 {
@@ -893,6 +957,51 @@ void cylinderProject::run()
 
 void cylinderProject::spotstainrun()
 {
-    this->run();
     source->run();
 }
+
+bool cylinderProject::dumptofile(const char* location)
+{
+    int i,j;
+    cylinderNode* node;
+    std::ofstream file(location);
+    if ( !file ) {
+        return false;
+    }
+
+    /* basic parameters */
+    file << t << ' ';
+    file << Re << ' ';
+    file << leftboundary << ' ' << rightboundary << ' ' << upboundary << ' ' << downboundary << ' ';
+    file << leftterminal << ' ' << rightterminal << ' ';
+    file << density << ' ';
+    file << deltaxi << ' ';
+    file << deltaeta << ' ';
+    file << deltat << std::endl;
+    
+    /* node properties */
+    for (i=downboundary;i<= upboundary;i++){
+        for (j=leftboundary;j<=rightboundary;j++){
+            node = &coordination->access(i,j);
+            file << node->zeta << ' ';
+            file << node->psi << ' ';
+        }
+    }
+
+    file << std::endl;
+
+    /* node on cylinder */
+    for (j=0;j<=1;j++){
+        for (i=leftterminal;i<= rightterminal;i++){
+            node = &cylinderBoundary->access(i,j);
+            file << node->zeta << ' ';
+            file << node->psi << ' ';
+        }
+    }
+    
+    file.close();
+
+    /* successfully dumped */
+    return true;
+}
+

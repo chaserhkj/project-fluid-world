@@ -13,6 +13,7 @@ public:
     virtual void run()= 0;
     virtual void spotstainrun() = 0;
     virtual void setDensity(double dens) = 0;
+    virtual bool dumptofile(const char* location) = 0;
     virtual DataVariant * getData(DataType type, ...) = 0;
 };
 
