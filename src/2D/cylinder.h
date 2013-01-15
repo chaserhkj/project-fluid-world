@@ -6,6 +6,27 @@
 
 class cylinderProject;
 
+class cylinderDataVariant:public DataVariant
+{
+private:
+    Project::DataType type;
+    void * data;
+    /* including three possibilities 
+    double * time;
+    cylinderNode* node;
+    cylinderSpotStain* spot;
+    */
+public:
+    cylinderDataVariant(Project::DataType t, void* d):type(t), data(d){}
+    double getX();
+    double getY();
+    double getZ();
+    double getPsi();
+    double getTime();
+    bool next();
+}
+
+
 class cylinderTransformer: public Transformer
 {
 public:
@@ -156,21 +177,13 @@ public:
         return source->getNumber();
     }
     
-    double getData(DATA data);
-    FWDataVarient getData(DATA data, double xip, double etap);
-    FWDataVarient getData(DATA data, int n);
-
-    double getX(FWDataVarient& data);
-    double getY(FWDataVarient& data);
-    double getPsi(FWDataVarient& data);
-    bool next(FWDataVarient& data);
-    
-
     void setDensity(double dens) {
         density = dens;
         delete source;
         source = new cylinderSpotStainSource(this);
     }
+
+    DataVariant * getData(Project::DataType type, ...); //Users need to delete it 
 
     friend class cylinderSpotStain;
     friend class cylinderSpotStainSource;

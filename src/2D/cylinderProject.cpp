@@ -1,5 +1,5 @@
 #include <cmath>
-#include <assert.h>
+#include <cstdarg>
 #include "solver.h"
 #include "cylinder.h"
 
@@ -849,61 +849,27 @@ void cylinderProject::calculateVelocity()
 
 }
 
-double cylinderProject::getData(DATA data)
+DataVariant * cylinderProject::getData(Project::DataType type, ...)
 {
-    assert(data == TIME);
-    return t;
-}
-
-FWDataVarient cylinderProject::getData(DATA data, double xip, double etap)
-{
-    assert(data == PSI);
-    return FWDataVarient(data, &coordination->access(xip, etap));
-}
-
-FWDataVarient cylinderProject::getData(DATA data, int n)
-{
-    assert(data == SPOT);
-    return FWDataVarient(data, source[n]);
-}
-
-double cylinderProject::getX(FWDataVarient& data)
-{
-    switch (data){
-        case PSI:
-            return data.node->x;
-            break;
-        case SPOT:
-            return data.spot->x;
+    cylinderDataVariant* data;
+    va_list ap;
+    switch (type){
+        case Project::TimeType :
+            data = new cylinderDataVariant(type, &t);
+            return data;
+        case Project::PsiType :
+            va_start(ap, type);
+            data = new cylinderDataVariant(type, &coordination->access(va_arg(ap, int), va_arg(ap, int)));
+            va_end(ap);
+            return data;
+        case Project::SpotType :
+            va_start(ap, type);
+            data = new cylinderDataVariant(type, source[va_arg(ap,int)]);
+            va_end(ap);
+            return data;
         }
-}
-
-double cylinderProject::getY(FWDataVarient& data)
-{
-    switch (data){
-        case PSI:
-            return data.node->y;
-            break;
-        case SPOT:
-            return data.spot->y;
-        }
-}
-
-double cylinderProject::getPsi(FWDataVarient& data)
-{
-    assert(data.type == PSI);
-    return data.node->psi;
-}
-
-bool cylinderProject::next(FWDataVarient& data)
-{
-    assert(data.type == SPOT);
-    if (data.spot->next) {
-        data.spot = data.spot->next;
-        return true;
-    } else {
-        return false;
-    }
+    // Wrong type
+    return NULL;
 }
 
 void cylinderProject::run()
