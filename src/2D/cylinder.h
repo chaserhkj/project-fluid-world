@@ -11,8 +11,9 @@ class cylinderDataVariant:public DataVariant
 private:
     Project::DataType type;
     void * data;
-    /* including three possibilities 
+    /* including four possibilities 
     double * time;
+    int * number;
     cylinderNode* node;
     cylinderSpotStain* spot;
     */
@@ -23,6 +24,7 @@ public:
     double getZ();
     double getPsi();
     double getTime();
+    int getNumber();
     bool next();
 };
 
@@ -84,7 +86,7 @@ public:
 
     void run();
 
-    int getNumber(){
+    int& getNumber(){
         return number;
     }
 
@@ -140,10 +142,9 @@ private:
     void calculateVelocity();
 
     bool OnBoundary(int i, int j);    
-protected:
-    const double deltaxi;     /* delta xi and delta eta */
-    const double deltaeta;    /* delta xi and delta eta */
-    const double deltat;      /* time step */
+    double deltaxi;     /* delta xi and delta eta */
+    double deltaeta;    /* delta xi and delta eta */
+    double deltat;      /* time step */
 public:
     cylinderProject(int l = -100, int r = 400, int u = 100, int d = -100, double dens = 0.1, double dxi = 0.1, double deta = 0.1, double dt = 0.1, double rey = 40): leftboundary(l), rightboundary(r), upboundary(u), downboundary(d),
         density(dens), deltaxi(dxi), deltaeta(deta), deltat(dt)
@@ -172,21 +173,12 @@ public:
         return coordination;
     }*/
 
-    int getSourceNumber(){
-        return source->getNumber();
-    }
-    
-    void setDensity(double dens) {
-        density = dens;
-        delete source;
-        source = new cylinderSpotStainSource(this);
-    }
-
-    DataVariant * getData(Project::DataType type, ...); //Users need to delete it 
-
     friend class cylinderSpotStain;
     friend class cylinderSpotStainSource;
 
+    //It's user's duty to delete it 
+    DataVariant * getData(Project::DataType type, ...); 
+    void setDensity(double dens); 
     void initialize();
     void run();
     void spotstainrun();

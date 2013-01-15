@@ -8,9 +8,11 @@ class Project
 public:
     Project() {}
     virtual ~Project() {}
-    enum DataType{NoneType, TimeType, PsiType, SpotType};
+    enum DataType{NoneType, TimeType, PsiType, SpotType, NumberType/* number of spotstain sources */};
     virtual void initialize() = 0;
     virtual void run()= 0;
+    virtual void spotstainrun() = 0;
+    virtual void setDensity(double dens) = 0;
     virtual DataVariant * getData(DataType type, ...) = 0;
 };
 
@@ -25,6 +27,7 @@ public:
     virtual double getZ() = 0;
     virtual double getPsi() = 0;
     virtual double getTime() = 0;
+    virtual int getNumber() = 0;
     virtual bool next() = 0; //If successfully get next spotstain, then return true, else return false
 };
 

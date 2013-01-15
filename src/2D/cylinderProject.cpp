@@ -849,6 +849,12 @@ void cylinderProject::calculateVelocity()
 
 }
 
+void cylinderProject::setDensity(double dens) {
+    density = dens;
+    delete source;
+    source = new cylinderSpotStainSource(this);
+}
+
 DataVariant * cylinderProject::getData(Project::DataType type, ...)
 {
     cylinderDataVariant* data;
@@ -856,6 +862,9 @@ DataVariant * cylinderProject::getData(Project::DataType type, ...)
     switch (type){
         case Project::TimeType :
             data = new cylinderDataVariant(type, &t);
+            return data;
+        case Project::NumberType :
+            data = new cylinderDataVariant(type, &source->getNumber());
             return data;
         case Project::PsiType :
             va_start(ap, type);

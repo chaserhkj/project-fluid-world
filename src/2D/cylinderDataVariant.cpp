@@ -34,6 +34,11 @@ double cylinderDataVariant::getTime()
     return *((double*)data);
 }
 
+int cylinderDataVariant::getNumber()
+{
+    return *((int*)data);
+}
+
 bool cylinderDataVariant::next()
 {
     cylinderSpotStain* spot = (cylinderSpotStain*)data;
