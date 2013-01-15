@@ -1,0 +1,73 @@
+使用的库：umfpack
+UMFPACK是一系列解非对称稀疏矩阵AX=B的库，使用了多波前算法和直接的LU分解算法。它使用ANSI/ISO C写成，提供了MATLAB前端。UMFPACK依赖于BLAS-Level 3。UMFPACK支持Windows和许多Unix平台。
+解大规模线性方程组是SIMPLE算法的重点，其运算效率直接影响到整个程序的效率。在前文中提到，我们尝试了简单迭代法和松弛迭代法，但是迭代发散，所以不得不寻求别的高效解法。首先，我们的方程组中系数为零的项占绝大多数，在流函数方程组中每个方程仅有5个非零项，而在涡量方程组中不超过9个，非零项个数和方程个数n线性相关，为稀疏矩阵。对于一般矩阵，存储空间和计算时间复杂度均为O（n^2),而如能利用稀疏矩阵的特性，则可降至O（n），这对于快速解出大型方程组来说是必要的。UMFPACK能充分利用矩阵的稀疏性，本身算法先进，稳定，可扩展性好，而且UMFPACK可以使用用户提供的BLAS库而非静态的算法，因此用户可以提供高效的BLAS实现（如Intel MKL）来加快运算速度。
+
+solver.h
+将UMFPACK提供的C接口封装为C++类Solver，通过给定矩阵元aij的值和B便可解得X。
+提供接口：
+构造函数Solver(int num, int nonzero, double* right)
+num为矩阵阶数，nonzero为非零项个数，right为一维数组B。
+
+bool input(int i, int j, double x)
+设置aij=x，如果成功返回true，如果设置非零项的总数超过了nonzero则返回false。
+
+void solve()
+解方程
+
+double* getSolution()
+返回一维数组X。注意Solver类析构时会释放X的内存空间，所以访问时请保证Solver类未被析构
+
+
+主要类：
+cylinderDataVariant
+cylinderDataVariant为DataVariant的一个子类，用于前端从后端获取数据。
+
+cylinderNode
+cylinderNode用于记录每个计算节点的流函数、涡量和速度
+
+cylinderSpotStain
+cylinderSpotStain是染色点类，用于染色点法绘制流线图。
+
+cylinderProject
+cylinderProject是圆柱体绕流模型，提供接口如下：
+构造函数cylinderProject(int l = -100, int r = 400, int u = 100, int d = -100, double dens = 0.1, double dxi = 0.1, double deta = 0.1, double dt = 0.1, double rey = 40)。
+构造并初始化系统。其中l为计算坐标系的左边界，r为右边界，u为上边界，d为下边界。dens为绘制的流线密度，取值在0-1间，值越大流线越密集。dxi为计算坐标系xi方向的坐标间隔（相邻两个计算节点的横坐标差），deta为eta方向坐标间隔，dt为时间步长，rey为雷诺数。
+
+构造函数cylinderProject(const char* location)
+读取存盘文件并继续计算。location为存盘文件路径。存盘文件可由方法dumptofile生成。
+ 
+DataVariant * getData(Project::DataType type, ...)
+根据传入的数据类型传出交换数据。type可以为Project::TimeType, Project::PsiType, Project::SpotType, Project::NumberType之一，分别返回包含系统时间、流函数、染色点位置、染色点发生源数目。其中流函数需要用可变参数再提供节点的xi和eta坐标，染色点位置需要再提供染色点发生源的标号（从0到染色点发生源数目-1）。
+
+void setDensity(double dens)
+设置流线密度
+
+void run();
+进行一步计算，系统时间增加一个时间步长
+
+void spotstainrun();
+染色点运动一个时间步长
+
+bool dumptofile(const char* location);
+将当前计算项目存盘，location为存盘文件路径。如果成功返回true，失败返回false。
+
+DataVariant
+DataVariant是前端与后端进行数据交换的类型。有四种类型：Project::TimeType, Project::PsiType, Project::SpotType, Project::NumberType。提供接口如下：
+
+getX() 仅适用于Project::PsiType, Project::SpotType
+获得目标的x坐标
+
+getY() 仅适用于Project::PsiType, Project::SpotType
+获得目标的y坐标
+
+getZ() 仅适用于Project::PsiType, Project::SpotType
+获得目标的z坐标
+
+getPsi() 仅适用于Project::PsiType
+获得节点的流函数值
+
+getTime() 仅适用于Project::TimeType
+获得系统的时间
+
+getNumber() 仅适用于Project::NumberType
+获得染色点发生源数目
