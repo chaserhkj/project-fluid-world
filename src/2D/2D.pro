@@ -1,6 +1,6 @@
 include(../project.pri)
 TEMPLATE = lib
-CONFIG += staticlib
+CONFIG += staticlib create_prl link_prl
 TARGET = FW2D
 DESTDIR = ../../lib
 INCLUDEPATH = ../common

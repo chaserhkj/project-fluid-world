@@ -4,6 +4,7 @@ CONFIG += qt staticlib create_prl
 QT += opengl
 TARGET = FWfrontend
 DESTDIR = ../../lib
+LIBS += -L"../../lib" -lFW2D
 INCLUDEPATH += ../common ../../include
 SOURCES = displaywidget.cpp \
           projectmainwindow.cpp \

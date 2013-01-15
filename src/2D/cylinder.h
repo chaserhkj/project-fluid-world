@@ -139,6 +139,7 @@ private:
     int psiConvert(int i, int j);
     int zetaConvert(int i, int j);
 
+    void initialize();
     void calculateBoundaryZeta();
     void calculateNewZeta();
     void timeStep();
@@ -167,7 +168,6 @@ public:
     DataVariant * getData(Project::DataType type, ...); 
 
     void setDensity(double dens); 
-    void initialize();
     void run();
     void spotstainrun();
     bool dumptofile(const char* location);

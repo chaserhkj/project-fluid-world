@@ -6,7 +6,7 @@
 
 using std::abs;
 
-cylinderProject::cylinderProject(int l = -100, int r = 400, int u = 100, int d = -100, double dens = 0.1, double dxi = 0.1, double deta = 0.1, double dt = 0.1, double rey = 40): leftboundary(l), rightboundary(r), upboundary(u), downboundary(d),
+cylinderProject::cylinderProject(int l, int r, int u, int d, double dens, double dxi, double deta, double dt, double rey): leftboundary(l), rightboundary(r), upboundary(u), downboundary(d),
         density(dens), deltaxi(dxi), deltaeta(deta), deltat(dt)
 {
     t = 0;
@@ -16,6 +16,7 @@ cylinderProject::cylinderProject(int l = -100, int r = 400, int u = 100, int d =
     coordination = new cylinderCoordinate(l, r, u, d);
     cylinderBoundary = new cylinderCoordinate(leftterminal, rightterminal, 1, 0);
     source = new cylinderSpotStainSource(this);
+    initialize();
 }
 
 cylinderProject::cylinderProject(const char* location)
