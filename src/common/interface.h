@@ -22,7 +22,7 @@ class DataVariant
 private:
     Project::DataType type;
 public:
-    DataVariant(Project::DataType t = Project::NoneType);
+    DataVariant(Project::DataType t = Project::NoneType){}
     virtual double getX() = 0;
     virtual double getY() = 0;
     virtual double getZ() = 0;
