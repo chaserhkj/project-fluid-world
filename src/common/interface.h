@@ -11,7 +11,7 @@ public:
     enum DataType{NoneType, TimeType, PsiType, SpotType};
     virtual void initialize() = 0;
     virtual void run()= 0;
-    virtual double getData(DataType data, ...) = 0;
+    virtual DataVariant * getData(DataType type, ...) = 0;
 };
 
 class DataVariant
@@ -25,7 +25,7 @@ public:
     virtual double getZ() = 0;
     virtual double getPsi() = 0;
     virtual double getTime() = 0;
-    virtual bool next() = 0;
+    virtual bool next() = 0; //If successfully get next spotstain, then return true, else return false
 };
 
 

@@ -864,12 +864,13 @@ DataVariant * cylinderProject::getData(Project::DataType type, ...)
             return data;
         case Project::SpotType :
             va_start(ap, type);
-            data = new cylinderDataVariant(type, source[va_arg(ap,int)]);
+            data = new cylinderDataVariant(type, source->getLine(va_arg(ap,int)));
             va_end(ap);
             return data;
+        default :
+            /* Wrong Type */
+            return NULL;
         }
-    // Wrong type
-    return NULL;
 }
 
 void cylinderProject::run()

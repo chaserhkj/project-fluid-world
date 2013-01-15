@@ -3,18 +3,18 @@
 double cylinderDataVariant::getX()
 {
     if (type == Project::PsiType){
-        return (cylinderNode*)data->x;
+        return ((cylinderNode*)data)->x;
     } else {
-        return (cylinderSpotStain*)data->x;
+        return ((cylinderSpotStain*)data)->x;
     }
 }
 
 double cylinderDataVariant::getY()
 {
     if (type == Project::PsiType){
-        return (cylinderNode*)data->y;
+        return ((cylinderNode*)data)->y;
     } else {
-        return (cylinderSpotStain*)data->y;
+        return ((cylinderSpotStain*)data)->y;
     }
 }
 
@@ -26,7 +26,7 @@ double cylinderDataVariant::getZ()
 
 double cylinderDataVariant::getPsi()
 {
-    return (cylinderNode*)data->psi;
+    return ((cylinderNode*)data)->psi;
 }
 
 double cylinderDataVariant::getTime()
@@ -36,7 +36,7 @@ double cylinderDataVariant::getTime()
 
 bool cylinderDataVariant::next()
 {
-    cylinderSpotStain* spot = data;
+    cylinderSpotStain* spot = (cylinderSpotStain*)data;
     if (spot->next){
         data = spot->next;
         return true;

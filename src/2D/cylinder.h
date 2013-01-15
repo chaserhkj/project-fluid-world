@@ -24,7 +24,7 @@ public:
     double getPsi();
     double getTime();
     bool next();
-}
+};
 
 
 class cylinderTransformer: public Transformer
@@ -88,7 +88,7 @@ public:
         return number;
     }
 
-    cylinderSpotStain * operator[](int i) {
+    cylinderSpotStain * getLine(int i) {
         return source[i];
     }
 };
@@ -133,7 +133,6 @@ private:
     int psiConvert(int i, int j);
     int zetaConvert(int i, int j);
 
-    void initialize();
     void calculateBoundaryZeta();
     void calculateNewZeta();
     void timeStep();
@@ -188,6 +187,7 @@ public:
     friend class cylinderSpotStain;
     friend class cylinderSpotStainSource;
 
+    void initialize();
     void run();
     void spotstainrun();
 };
