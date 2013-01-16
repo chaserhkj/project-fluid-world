@@ -4,7 +4,7 @@
 
 CalThread::CalThread(QObject * parent) : QThread(parent), stopCalled(false)
 {
-    pro = new cylinderProject;
+    pro = new cylinderProject("dump");
 }
 
 CalThread::~CalThread()
@@ -23,11 +23,11 @@ void CalThread::run()
     while(!stopCalled)
     {
         int i;
-        for (i = 0; i < 1; ++i) {
+        /*for (i = 0; i < 1; ++i) {
             if (stopCalled)
                 return;
             pro->run();
-        }
+        }*/
         for (i = 0; i < 1000; ++i)
             pro->spotstainrun();            
         spotStainTable table;
