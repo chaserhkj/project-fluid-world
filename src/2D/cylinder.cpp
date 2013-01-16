@@ -28,7 +28,7 @@ void cylinderTransformer::calculateXY()
     }
 
     double mid = sqrt(sqrt(delta * delta + 4 * xi * xi * eta * eta));
-    x = xi + unitfy(xi) * mid * abs(cos(theta / 2));
-    y = eta + unitfy(eta) * mid * abs(sin(theta / 2));
+    x = (xi + unitfy(xi) * mid * abs(cos(theta / 2))) / 2;
+    y = (eta + unitfy(eta) * mid * abs(sin(theta / 2))) / 2;
     return;
 }
