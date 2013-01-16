@@ -46,7 +46,7 @@ public:
         Ai = new int[nz];
         Ax = new double[nz];
 
-        umfpack_di_triplet_to_col(n, n, nz, Ti, Tj, Tx, Ap, Ai, Ax, NULL);
+        umfpack_di_triplet_to_col(n, n, counter, Ti, Tj, Tx, Ap, Ai, Ax, NULL);
         umfpack_di_symbolic(n, n, Ap, Ai, Ax, &Symbolic, NULL, NULL);
         umfpack_di_numeric(Ap, Ai, Ax, Symbolic, &Numeric, NULL, NULL);
         umfpack_di_free_symbolic(&Symbolic);
