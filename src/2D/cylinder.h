@@ -150,15 +150,15 @@ private:
 
     bool OnBoundary(int i, int j);
 public:
-    cylinderProject(int l = -100,
-                    int r = 400,
-                    int u = 100,
-                    int d = -100,
-                    double dens = 0.1,
-                    double dxi = 0.1,
-                    double deta = 0.1,
-                    double dt = 0.1,
-                    double rey = 40);
+    cylinderProject(int l = -50,
+                    int r = 300,
+                    int u = 50,
+                    int d = -50,
+                    double dens = 0.2,
+                    double dxi = 0.2,
+                    double deta = 0.2,
+                    double dt = 0.2,
+                    double rey = 20);
     cylinderProject(const char * location);    /* resume from file */
     ~cylinderProject();
     /*double getT() {

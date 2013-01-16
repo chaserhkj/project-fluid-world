@@ -9,9 +9,9 @@ int main(int argc, char ** argv)
     Project * testproject;
     DataVariant * data;
     testproject =
-        new cylinderProject(-100, 600, 100, -100, 0.25, 0.1, 0.1, 0.1, 20);
+        new cylinderProject;
 
-    for (i = 0; i < 100; i++) {
+    for (i = 0; i < 10; i++) {
         testproject->run();
         data = testproject->getData(Project::TimeType);
         cout << data->getTime() << endl;
