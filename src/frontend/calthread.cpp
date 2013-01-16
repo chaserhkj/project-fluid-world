@@ -26,5 +26,6 @@ void CalThread::run()
         for (i = 0; i < 1000; ++i)
             pro->spotstainrun();            
         emit dataGenerated();
+        qDebug("Data Generated!");
     }
 }
