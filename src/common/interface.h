@@ -25,7 +25,6 @@ public:
     DataVariant(Project::DataType t = Project::NoneType){}
     virtual double getX() = 0;
     virtual double getY() = 0;
-    virtual double getZ() = 0;
     virtual double getPsi() = 0;
     virtual double getTime() = 0;
     virtual int getNumber() = 0;

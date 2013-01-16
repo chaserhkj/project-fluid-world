@@ -123,7 +123,7 @@ void ProjectMainWindow::startCalculate()
         delete thread;
     thread = new CalThread;
     QObject::connect(thread,SIGNAL(dataGenerated()),
-                     displayWidget,SLOT(updateGraph()),Qt::DirectConnection);
+                     displayWidget,SLOT(updateGraph()));
     thread->start();
     emit calculateStarted();
 }

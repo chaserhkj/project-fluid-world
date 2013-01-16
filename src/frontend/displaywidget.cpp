@@ -1,42 +1,35 @@
 #include "displaywidget.h"
+
+#ifdef OPENGL_ENABLED
 #include <QtOpenGL>
+#else /* OPENGL_ENABLED */
+#include <QtGui>
+#endif /* OPENGL_ENABLED */
+
 #include "projectmainwindow.h"
 #include "calthread.h"
-#include <interface.h>
+
+#ifdef OPENGL_ENABLED
 
 DisplayWidget::DisplayWidget(QWidget * parent): QGLWidget(parent)
 {
 }
 
-DisplayWidget::~DisplayWidget()
-{
-}
-
 void DisplayWidget::updateGraph()
 {
-    ProjectMainWindow * win = qobject_cast<ProjectMainWindow *>(this->parent());
-    Project * pro = win->getThread()->getProject();
+    CalThread * thd = qobject_cast<ProjectMainWindow *>(this->parent())->getThread();
+    if (tbd->queueIsEmpty())
+        return;
+    spotStainTable tb = thd->getData();
     makeCurrent();
     glClear(GL_COLOR_BUFFER_BIT);
-    DataVariant * data = pro->getData(Project::NumberType);
-    int n = data->getNumber();
-    delete data;
-    double f = 1.0/n;
-    int i;
-    for (i = 0; i < n; ++i)
-    {
-        glColor3f(1-f*i,0.0,f*i);
-        data = pro->getData(Project::SpotType, i);
+    foreach(QList<QPointF> line, tb) {
         glBegin(GL_LINES);
-        glVertex3f(data->getX(),data->getY(),0.0);
-        while (data->next()){
-            glVertex3f(data->getX(),data->getY(),0.0);            
-            glEnd();
-            glBegin(GL_LINES);
-            glVertex3f(data->getX(),data->getY(),0.0);
-        }
+        foreach(QPointF p, line)
+            glVertex3f(p.x(),p.y(),0.0);
         glEnd();
         glFlush();
+        }
     }
 }
 
@@ -57,3 +50,35 @@ void DisplayWidget::resizeGL(int w, int h)
 {
     
 }
+#else /* OPENGL_ENABLED */
+
+DisplayWidget::DisplayWidget(QWidget * parent) : QGraphicsView(parent)
+{
+    scene = new QGraphicsScene(this);
+    this->setScene(scene);
+    this->setDragMode(QGraphicsView::ScrollHandDrag);
+}
+
+void DisplayWidget::updateGraph()
+{
+    CalThread * thd = qobject_cast<ProjectMainWindow * >(this->parent())->getThread();
+    if (thd->queueIsEmpty())
+        return;
+    spotStainTable tb = thd->getData();
+    scene->clear();
+    foreach(QList<QPointF> line, tb) {
+        QPainterPath path;
+        path.moveTo(line[0].x()*10, line[0].y()*10);
+        foreach(QPointF p, line)
+            path.lineTo(p.x()*10, p.y()*10);
+        scene->addPath(path);
+    }
+    
+}
+
+#endif /* OPENGL_ENABLED */
+
+DisplayWidget::~DisplayWidget()
+{
+}
+
