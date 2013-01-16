@@ -29,7 +29,6 @@ void DisplayWidget::updateGraph()
             glVertex3f(p.x(),p.y(),0.0);
         glEnd();
         glFlush();
-        }
     }
 }
 
@@ -52,11 +51,13 @@ void DisplayWidget::resizeGL(int w, int h)
 }
 #else /* OPENGL_ENABLED */
 
+#include <QtOpenGL>
 DisplayWidget::DisplayWidget(QWidget * parent) : QGraphicsView(parent)
 {
     scene = new QGraphicsScene(this);
     this->setScene(scene);
     this->setDragMode(QGraphicsView::ScrollHandDrag);
+    this->setViewport(new QGLWidget());
 }
 
 void DisplayWidget::updateGraph()
@@ -66,14 +67,16 @@ void DisplayWidget::updateGraph()
         return;
     spotStainTable tb = thd->getData();
     scene->clear();
+    scene->addEllipse(-10,-10,20,20);
     foreach(QList<QPointF> line, tb) {
         QPainterPath path;
         path.moveTo(line[0].x()*10, line[0].y()*10);
         foreach(QPointF p, line)
+        {
             path.lineTo(p.x()*10, p.y()*10);
+        }
         scene->addPath(path);
     }
-    
 }
 
 #endif /* OPENGL_ENABLED */

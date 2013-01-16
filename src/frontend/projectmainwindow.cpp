@@ -124,8 +124,15 @@ void ProjectMainWindow::startCalculate()
     thread = new CalThread;
     QObject::connect(thread,SIGNAL(dataGenerated()),
                      displayWidget,SLOT(updateGraph()));
+    QObject::connect(thread,SIGNAL(calculateFinished()),
+                     this,SLOT(notifyFinished()));
     thread->start();
     emit calculateStarted();
+}
+
+void ProjectMainWindow::notifyFinished()
+{
+    QMessageBox::information(this,"Finished!","Finished!");
 }
 
 #ifdef DEBUG

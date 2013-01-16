@@ -32,6 +32,8 @@ private:
     void putData(const spotStainTable &table);
 signals:
     void dataGenerated();
+    void calculateFinished();
+    void calculateInterrupted();
 };
 
 

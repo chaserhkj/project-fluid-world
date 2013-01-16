@@ -4,7 +4,7 @@
 
 CalThread::CalThread(QObject * parent) : QThread(parent), stopCalled(false)
 {
-    pro = new cylinderProject("dump");
+    pro = new cylinderProject(-50, 300, 50, -50, 0.2, 0.2, 0.2, 0.2, 20);
 }
 
 CalThread::~CalThread()
@@ -20,14 +20,19 @@ void CalThread::start()
 
 void CalThread::run()
 {
-    while(!stopCalled)
+    int j=0;
+    while(j<40)
     {
         int i;
-        /*for (i = 0; i < 1; ++i) {
+        qDebug()<<j;
+        for (i = 0; i < 1; ++i) {
             if (stopCalled)
+            {
+                emit calculateInterrupted();
                 return;
+            }
             pro->run();
-        }*/
+        }
         for (i = 0; i < 1000; ++i)
             pro->spotstainrun();            
         spotStainTable table;
@@ -47,7 +52,9 @@ void CalThread::run()
         }
         this->putData(table);
         emit dataGenerated();
+        ++j;
     }
+    emit calculateFinished();
 }
 
 void CalThread::stop()
