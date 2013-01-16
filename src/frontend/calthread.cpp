@@ -2,9 +2,9 @@
 #include "../2D/cylinder.h"
 #include <QtCore>
 
-CalThread::CalThread(QObject * parent) : QThread(parent), stopCalled(false)
+CalThread::CalThread(QObject * parent, int l, int r, int u, int d, double dens, double dxi, double deta, double dt, double rey, int total, int single, int spot) : QThread(parent), stopCalled(false), isPaused(false), totalCycleCount(total), singleCycleCount(single), spotCycleCount(spot)
 {
-    pro = new cylinderProject;
+    pro = new cylinderProject(l,r,u,d,dens,dxi,deta,dt,rey);
 }
 
 CalThread::~CalThread()
@@ -15,24 +15,33 @@ CalThread::~CalThread()
 void CalThread::start()
 {
     stopCalled = false;
+    isPaused = false;
+    emit calculateStarted();
     this->QThread::start();
 }
 
 void CalThread::run()
 {
-    while (1) {
+    int j;
+    for (j = 0; j < totalCycleCount; ++j) {
         int i;
 
-        for (i = 0; i < 1; ++i) {
+        for (i = 0; i < singleCycleCount; ++i) {
             if (stopCalled) {
                 emit calculateInterrupted();
                 return;
             }
 
+            while (isPaused)
+                if (stopCalled) {
+                    emit calculateInterrupted();
+                    return;
+                }
+
             pro->run();
         }
 
-        for (i = 0; i < 1000; ++i)
+        for (i = 0; i < spotCycleCount; ++i)
             pro->spotstainrun();
 
         spotStainTable table;
@@ -64,6 +73,11 @@ void CalThread::run()
 void CalThread::stop()
 {
     stopCalled = true;
+}
+
+void CalThread::togglePaused()
+{
+    isPaused = !isPaused;
 }
 
 void CalThread::putData(const spotStainTable & table)

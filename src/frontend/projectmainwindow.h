@@ -31,7 +31,8 @@ private slots:
     void aboutActivated();
     void aboutQtActivated();
     void startCalculate();
-    void notifyFinished();
+    void getPreviousGraph();
+    void getNextGraph();
 #ifdef SUDOKU_ENABLED
     void startSudokuGame();
 #endif /* SUDOKU_ENABLED */

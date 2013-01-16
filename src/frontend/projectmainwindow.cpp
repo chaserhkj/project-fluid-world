@@ -16,7 +16,7 @@ ProjectMainWindow::ProjectMainWindow(QWidget * parent) : QMainWindow(parent),
     this->setWindowTitle("Fluid World");
     //Setting up window geometry.
     this->setGeometry(QStyle::alignedRect(Qt::LeftToRight, Qt::AlignCenter,
-                                          QSize(900,
+                                          QSize(1000,
                                                   600),
                                           qApp->desktop()->availableGeometry()));
 
@@ -33,7 +33,7 @@ ProjectMainWindow::ProjectMainWindow(QWidget * parent) : QMainWindow(parent),
     controlDock->setFeatures(
         QDockWidget::DockWidgetMovable |
         QDockWidget::DockWidgetFloatable);
-    controlDock->setFixedWidth(150);
+    controlDock->setFixedWidth(200);
     //Adding it to the main window.
     this->addDockWidget(Qt::LeftDockWidgetArea, controlDock);
 
@@ -46,14 +46,20 @@ ProjectMainWindow::ProjectMainWindow(QWidget * parent) : QMainWindow(parent),
     inputDock->setFeatures(
         QDockWidget::DockWidgetMovable |
         QDockWidget::DockWidgetFloatable);
-    inputDock->setFixedWidth(150);
+    inputDock->setFixedWidth(200);
     //Adding it to the main window.
     this->addDockWidget(Qt::RightDockWidgetArea, inputDock);
 
     //Connecting signals for Input Widget, Control Widget and Display Widget
     QObject::connect(inputWidget, SIGNAL(startClicked()), this,
                      SLOT(startCalculate()));
-
+    QObject::connect(controlWidget, SIGNAL(previousGraphClicked()), this,
+                     SLOT(getPreviousGraph()));
+    QObject::connect(controlWidget, SIGNAL(nextGraphClicked()), this,
+                     SLOT(getNextGraph()));
+    QObject::connect(controlWidget, SIGNAL(factorChanged(double)), displayWidget,
+                     SLOT(setDisplayFactor(double)));
+    
     //Initializing actions.
     QAction * quitAct =
         new QAction(QIcon::fromTheme("application-exit"), tr(
@@ -95,7 +101,7 @@ ProjectMainWindow::ProjectMainWindow(QWidget * parent) : QMainWindow(parent),
     helpMenu->addAction(aboutQtAct);
 
     //Display status bar message.
-    this->statusBar()->setMessage(tr("Ready!"));
+    this->statusBar()->showMessage(tr("Ready!"));
 }
 
 ProjectMainWindow::~ProjectMainWindow()
@@ -148,10 +154,27 @@ void ProjectMainWindow::startCalculate()
         thread = NULL;
     }
 
-    thread = new CalThread(this);
+    displayWidget->clear();
+    thread = inputWidget->constructThread(this);
     QObject::connect(thread, SIGNAL(dataGenerated()),
                      displayWidget, SLOT(updateGraph()));
     thread->start();
+}
+
+void ProjectMainWindow::getPreviousGraph()
+{
+    if (!displayWidget->setCurrentIndex(displayWidget->currentIndex()-1))
+    {
+        QMessageBox::warning(this, tr("Warning"), tr("This graph is the first one."));
+    }
+}
+
+void ProjectMainWindow::getNextGraph()
+{
+    if (!displayWidget->setCurrentIndex(displayWidget->currentIndex()+1))
+    {
+        QMessageBox::warning(this, tr("Warning"), tr("This graph is the last one."));
+    }
 }
 
 #ifdef DEBUG

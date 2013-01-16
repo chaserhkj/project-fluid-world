@@ -11,6 +11,12 @@ public:
     virtual ~ControlWidget();
 signals:
     void modeChose(int index);
+    void factorChanged(double factor);
+    void nextGraphClicked();
+    void previousGraphClicked();
+    void startClicked();
+    void pauseClicked();
+    void stopClicked();
 };
 
 #endif /* _CONTROLWIDGET_H_ */

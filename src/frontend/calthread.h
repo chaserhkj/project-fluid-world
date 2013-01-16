@@ -15,23 +15,40 @@ class CalThread : public QThread
 {
     Q_OBJECT;
 public:
-    CalThread(QObject * parent = 0);
+    CalThread(QObject * parent,
+              int l,
+              int r,
+              int u,
+              int d,
+              double dens,
+              double dxi,
+              double deta,
+              double dt,
+              double rey,
+              int total,
+              int single,
+              int spot);
     virtual ~CalThread();
-    void start();
     void run();
-    void stop();
     spotStainTable getData();
     bool queueIsEmpty();
-    //    void setProject(cylinderProject * pro);
-    //    cylinderProject * project();
+public slots:
+    void start();
+    void stop();
+    void togglePaused();
 private:
     cylinderProject * pro;
     bool stopCalled;
+    bool isPaused;
+    int totalCycleCount;
+    int singleCycleCount;
+    int spotCycleCount;
     QQueue<spotStainTable> data;
     QReadWriteLock lock;
     void putData(const spotStainTable & table);
 signals:
     void dataGenerated();
+    void calculateStarted();
     void calculateFinished();
     void calculateInterrupted();
 };
