@@ -1234,6 +1234,14 @@ DataVariant * cylinderProject::getData(Project::DataType type, ...)
 
 void cylinderProject::run()
 {
+    int i;
+    for (i=0;i<source->getNumber();i++) {
+        if (source->getLine(i)){
+            /* User has run spotstain, clear spotstains */
+            this->setDensity(density);
+            break;
+        }
+    }
     this->calculateBoundaryZeta();
     this->calculateNewZeta();
     this->timeStep();
