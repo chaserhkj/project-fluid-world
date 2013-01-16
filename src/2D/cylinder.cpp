@@ -21,7 +21,7 @@ void cylinderTransformer::calculateXY()
         theta = atan(2 * xi * eta / delta);
     } else {
         if (delta == 0) {
-            theta = M_PI_2;   /* pi/2 */
+            theta = M_PI_2; /* pi/2 */
         } else {
             theta = M_PI + atan(2 * xi * eta / delta);
         }
