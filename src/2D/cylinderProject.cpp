@@ -14,7 +14,8 @@ cylinderProject::cylinderProject(int l,
                                  double dxi,
                                  double deta,
                                  double dt,
-                                 double rey) : leftboundary(l), rightboundary(r),
+                                 double rey) : leftboundary(l),
+    rightboundary(r),
     upboundary(u), downboundary(d),
     density(dens), deltaxi(dxi), deltaeta(deta), deltat(dt)
 {
@@ -144,7 +145,9 @@ void cylinderProject::initialize()
             node->hxi = 2 *
                         (x * x + y *
                          y) / sqrt(
-                            (x * x + y * y) * (x * x + y * y) - 2 * (x * x - y * y) + 1);
+                            (x * x + y *
+                             y) *
+                            (x * x + y * y) - 2 * (x * x - y * y) + 1);
 
             node->heta = node->hxi;
 
@@ -156,8 +159,10 @@ void cylinderProject::initialize()
                 2 * g1 /
                 (deltaxi *
                  deltaxi) + 2 * g2 / (deltaeta * deltaeta);
-            node->b1 = g1 / (deltaxi * deltaxi) + g3 / (2 * deltaxi);
-            node->b2 = g1 / (deltaxi * deltaxi) - g3 / (2 * deltaxi);
+            node->b1 = g1 /
+                       (deltaxi * deltaxi) + g3 / (2 * deltaxi);
+            node->b2 = g1 /
+                       (deltaxi * deltaxi) - g3 / (2 * deltaxi);
             node->b3 = g2 /
                        (deltaeta * deltaeta) + g4 / (2 * deltaeta);
             node->b4 = g2 /
@@ -234,14 +239,16 @@ void cylinderProject::calculateBoundaryZeta()
                   0 /* cylinderBoundary->access(i, 1).psi) */) /
             (cylinderBoundary->access(i, 1).heta *
              cylinderBoundary->access(i,
-                                      1).heta * deltaeta * deltaeta);
+                                      1).heta * deltaeta *
+             deltaeta);
         /* lower half */
         cylinderBoundary->access(i, 0).zeta =
             -2 * (coordination->access(i, -1).psi -
                   0 /* cylinderBoundary->access(i, 0).psi) */) /
             (cylinderBoundary->access(i, 0).heta *
              cylinderBoundary->access(i,
-                                      0).heta * deltaeta * deltaeta);
+                                      0).heta * deltaeta *
+             deltaeta);
     }
 
     /* For convenience, set zeta at these two points */
@@ -322,8 +329,10 @@ void cylinderProject::calculateNewZeta()
                   abs(ueta)) / (3 * deltaeta) -
                 2 / (heta * heta * deltaeta * deltaeta * Re);
             node->c6 =
-                (ueta + lambdaeta * abs(ueta)) / (12 * deltaeta);
-            node->c7 = -(uxi - lambdaxi * abs(uxi)) / (12 * deltaxi);
+                (ueta + lambdaeta *
+                 abs(ueta)) / (12 * deltaeta);
+            node->c7 =
+                -(uxi - lambdaxi * abs(uxi)) / (12 * deltaxi);
             node->c8 =
                 (2 * uxi - lambdaxi *
                  abs(uxi)) / (3 * deltaxi) -
@@ -332,7 +341,8 @@ void cylinderProject::calculateNewZeta()
                 -(2 * uxi + lambdaxi *
                   abs(uxi)) / (3 * deltaxi) -
                 2 / (hxi * hxi * deltaxi * deltaxi * Re);
-            node->c10 = (uxi + lambdaxi * abs(uxi)) / (12 * deltaxi);
+            node->c10 =
+                (uxi + lambdaxi * abs(uxi)) / (12 * deltaxi);
         }
     }
 
@@ -486,7 +496,8 @@ void cylinderProject::calculateNewZeta()
     node->c7 = -(uxi - uxi) / (12 * deltaxi);
     node->c8 =
         (2 * uxi -
-         uxi) / (3 * deltaxi) - 2 / (hxi * hxi * deltaxi * deltaxi * Re);
+         uxi) /
+        (3 * deltaxi) - 2 / (hxi * hxi * deltaxi * deltaxi * Re);
     node->c9 =
         -(2 * uxi +
           uxi) /
@@ -574,7 +585,8 @@ void cylinderProject::calculateNewZeta()
                 if (j == 2) {
                     node = &coordination->access(i, j);
                     eql->input(line, zetaConvert(i,
-                                                 j), node->c1);
+                                                 j),
+                               node->c1);
                     eql->input(line, zetaConvert(i,
                                                  j + 2),
                                -node->c3);
@@ -598,16 +610,19 @@ void cylinderProject::calculateNewZeta()
                                                  j),
                                -node->c10);
                     b[line] = node->c2 * node->zeta +
-                              node->c3 * coordination->access(
+                              node->c3 *
+                              coordination->access(
                                   i,
                                   j +
                                   2)
                               .zeta +
-                              node->c4 * coordination->access(
+                              node->c4 *
+                              coordination->access(
                                   i,
                                   j +
                                   1).zeta +
-                              node->c5 * coordination->access(
+                              node->c5 *
+                              coordination->access(
                                   i,
                                   j -
                                   1).zeta +
@@ -615,14 +630,17 @@ void cylinderProject::calculateNewZeta()
                               access(
                                   i,
                                   1).zeta * 2 +
-                              node->c7 * coordination->access(
+                              node->c7 *
+                              coordination->access(
                                   i + 2,
                                   j)
                               .zeta +
-                              node->c8 * coordination->access(
+                              node->c8 *
+                              coordination->access(
                                   i + 1,
                                   j).zeta +
-                              node->c9 * coordination->access(
+                              node->c9 *
+                              coordination->access(
                                   i - 1,
                                   j).zeta +
                               node->c10 * coordination->
@@ -636,7 +654,8 @@ void cylinderProject::calculateNewZeta()
                 if (j == -2) {
                     node = &coordination->access(i, j);
                     eql->input(line, zetaConvert(i,
-                                                 j), node->c1);
+                                                 j),
+                               node->c1);
                     //eql->input(0,0,0);
                     eql->input(line, zetaConvert(i,
                                                  j + 1),
@@ -664,26 +683,32 @@ void cylinderProject::calculateNewZeta()
                               access(i,
                                      0)
                               .zeta * 2 +
-                              node->c4 * coordination->access(
+                              node->c4 *
+                              coordination->access(
                                   i,
                                   j +
                                   1)
                               .zeta +
-                              node->c5 * coordination->access(
+                              node->c5 *
+                              coordination->access(
                                   i,
                                   j -
                                   1).zeta +
-                              node->c6 * coordination->access(
+                              node->c6 *
+                              coordination->access(
                                   i,
                                   j -
                                   2).zeta +
-                              node->c7 * coordination->access(
+                              node->c7 *
+                              coordination->access(
                                   i + 2,
                                   j).zeta +
-                              node->c8 * coordination->access(
+                              node->c8 *
+                              coordination->access(
                                   i + 1,
                                   j).zeta +
-                              node->c9 * coordination->access(
+                              node->c9 *
+                              coordination->access(
                                   i - 1,
                                   j).zeta +
                               node->c10 * coordination->
@@ -697,7 +722,8 @@ void cylinderProject::calculateNewZeta()
                 if (j == 1) {
                     node = &coordination->access(i, j);
                     eql->input(line, zetaConvert(i,
-                                                 j), node->c1);
+                                                 j),
+                               node->c1);
                     eql->input(line, zetaConvert(i,
                                                  j + 2),
                                -node->c3);
@@ -719,12 +745,14 @@ void cylinderProject::calculateNewZeta()
                                                  j),
                                -node->c10);
                     b[line] = node->c2 * node->zeta +
-                              node->c3 * coordination->access(
+                              node->c3 *
+                              coordination->access(
                                   i,
                                   j +
                                   2)
                               .zeta +
-                              node->c4 * coordination->access(
+                              node->c4 *
+                              coordination->access(
                                   i,
                                   j +
                                   1).zeta +
@@ -736,14 +764,17 @@ void cylinderProject::calculateNewZeta()
                               access(i,
                                      1)
                               .zeta * 2 +
-                              node->c7 * coordination->access(
+                              node->c7 *
+                              coordination->access(
                                   i + 2,
                                   j)
                               .zeta +
-                              node->c8 * coordination->access(
+                              node->c8 *
+                              coordination->access(
                                   i + 1,
                                   j).zeta +
-                              node->c9 * coordination->access(
+                              node->c9 *
+                              coordination->access(
                                   i - 1,
                                   j).zeta +
                               node->c10 * coordination->
@@ -757,7 +788,8 @@ void cylinderProject::calculateNewZeta()
                 if (j == -1) {
                     node = &coordination->access(i, j);
                     eql->input(line, zetaConvert(i,
-                                                 j), node->c1);
+                                                 j),
+                               node->c1);
                     //eql->input(0,0,0);
                     //eql->input(0,0,0);
                     eql->input(line, zetaConvert(i,
@@ -787,22 +819,27 @@ void cylinderProject::calculateNewZeta()
                               access(i,
                                      0)
                               .zeta * 2 +
-                              node->c5 * coordination->access(
+                              node->c5 *
+                              coordination->access(
                                   i,
                                   j -
                                   1)
                               .zeta +
-                              node->c6 * coordination->access(
+                              node->c6 *
+                              coordination->access(
                                   i,
                                   j -
                                   2).zeta +
-                              node->c7 * coordination->access(
+                              node->c7 *
+                              coordination->access(
                                   i + 2,
                                   j).zeta +
-                              node->c8 * coordination->access(
+                              node->c8 *
+                              coordination->access(
                                   i + 1,
                                   j).zeta +
-                              node->c9 * coordination->access(
+                              node->c9 *
+                              coordination->access(
                                   i - 1,
                                   j).zeta +
                               node->c10 * coordination->
@@ -839,7 +876,8 @@ void cylinderProject::calculateNewZeta()
                               j).zeta +
                       node->c9 * coordination->access(i - 1,
                               j).zeta +
-                      node->c10 * coordination->access(i - 2, j).zeta;
+                      node->c10 *
+                      coordination->access(i - 2, j).zeta;
             line += 1;
         }
     }
@@ -1222,7 +1260,8 @@ DataVariant * cylinderProject::getData(Project::DataType type, ...)
     case Project::SpotType:
         va_start(ap, type);
         data = new cylinderDataVariant(Project::SpotType,
-                                       source->getLine(va_arg(ap, int)));
+                                       source->getLine(va_arg(ap,
+                                               int)));
         va_end(ap);
         return data;
 
@@ -1235,13 +1274,15 @@ DataVariant * cylinderProject::getData(Project::DataType type, ...)
 void cylinderProject::run()
 {
     int i;
-    for (i=0;i<source->getNumber();i++) {
-        if (source->getLine(i)){
+
+    for (i = 0; i < source->getNumber(); i++) {
+        if (source->getLine(i)) {
             /* User has run spotstain, clear spotstains */
             this->setDensity(density);
             break;
         }
     }
+
     this->calculateBoundaryZeta();
     this->calculateNewZeta();
     this->timeStep();

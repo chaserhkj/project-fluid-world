@@ -22,14 +22,14 @@ public:
     void stop();
     spotStainTable getData();
     bool queueIsEmpty();
-//    void setProject(cylinderProject * pro);
-//    cylinderProject * project();
+    //    void setProject(cylinderProject * pro);
+    //    cylinderProject * project();
 private:
     cylinderProject * pro;
     bool stopCalled;
     QQueue<spotStainTable> data;
     QReadWriteLock lock;
-    void putData(const spotStainTable &table);
+    void putData(const spotStainTable & table);
 signals:
     void dataGenerated();
     void calculateFinished();

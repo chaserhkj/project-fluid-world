@@ -4,7 +4,7 @@
 #include <QGraphicsView>
 class QGraphicsScene;
 
-class DisplayWidget: public QGraphicsView
+class DisplayWidget : public QGraphicsView
 {
     Q_OBJECT;
 public:

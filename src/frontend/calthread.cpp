@@ -20,37 +20,44 @@ void CalThread::start()
 
 void CalThread::run()
 {
-    while(1)
-    {
+    while (1) {
         int i;
+
         for (i = 0; i < 1; ++i) {
-            if (stopCalled)
-            {
+            if (stopCalled) {
                 emit calculateInterrupted();
                 return;
             }
+
             pro->run();
         }
+
         for (i = 0; i < 1000; ++i)
-            pro->spotstainrun();            
+            pro->spotstainrun();
+
         spotStainTable table;
         QList<QPointF> line;
         DataVariant * d = pro->getData(Project::NumberType);
         int n = d->getNumber();
         delete d;
-        for (i = 0; i < n; ++i)
-        {
+
+        for (i = 0; i < n; ++i) {
             line.clear();
             d = pro->getData(Project::SpotType, i);
+
             do
-                line.append(QPointF(d->getX(),d->getY()));
-            while(d->next());
+                line.append(QPointF(d->getX(), d->getY()));
+
+            while (d->next());
+
             delete d;
             table.append(line);
         }
+
         this->putData(table);
         emit dataGenerated();
     }
+
     emit calculateFinished();
 }
 

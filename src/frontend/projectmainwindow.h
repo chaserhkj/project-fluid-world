@@ -9,12 +9,12 @@ class InputWidget;
 class ControlWidget;
 class CalThread;
 
-class ProjectMainWindow: public QMainWindow
+class ProjectMainWindow : public QMainWindow
 {
     Q_OBJECT;
 public:
     ProjectMainWindow(QWidget * parent = 0);
-    virtual ~ ProjectMainWindow();
+    virtual ~ProjectMainWindow();
     CalThread * getThread();
 signals:
     void calculateStarted();
@@ -26,7 +26,7 @@ private:
     DisplayWidget * displayWidget;
     InputWidget * inputWidget;
     ControlWidget * controlWidget;
-    
+
 private slots:
     void aboutActivated();
     void aboutQtActivated();

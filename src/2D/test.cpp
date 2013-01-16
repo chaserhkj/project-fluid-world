@@ -18,7 +18,7 @@ int main(int argc, char ** argv)
         delete data;
     }
 
-    testproject->dumptofile("dump"); 
+    testproject->dumptofile("dump");
 
     //testproject = new cylinderProject("dump");
     for (i = 0; i < 1000; i++) {
@@ -29,15 +29,19 @@ int main(int argc, char ** argv)
     int n = data->getNumber();
     delete data;
 
-    for (i=0;i<n;i++){
+    for (i = 0; i < n; i++) {
         data = testproject->getData(Project::SpotType, i);
         cout << "#######################" << endl;
-        cout << "i=" << i <<endl;
+        cout << "i=" << i << endl;
+
         do {
-            cout << '(' << data->getX() << ", " << data->getY() << ')' <<
+            cout << '(' << data->getX() << ", " << data->getY() <<
+                 ')' <<
                  endl;
         } while (data->next());
+
         delete data;
     }
+
     return 0;
 }

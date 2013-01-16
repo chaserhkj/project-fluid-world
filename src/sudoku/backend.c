@@ -53,8 +53,11 @@ int sudoku_check_value(sudoku_table tb, int x, int y, int v)
     check_valid(v, 0);
     int i, j;
     int rx =
-        ((x - 1) / sudoku_table_minor_side) * sudoku_table_minor_side + 1,
-        ry = ((y - 1) / sudoku_table_minor_side) * sudoku_table_minor_side + 1;
+        ((x -
+          1) / sudoku_table_minor_side) * sudoku_table_minor_side + 1,
+        ry =
+            ((y -
+              1) / sudoku_table_minor_side) * sudoku_table_minor_side + 1;
 
     for (i = 1; i <= sudoku_table_side; ++i) {
         if (i == x)

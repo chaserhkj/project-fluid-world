@@ -1,7 +1,7 @@
 #include "inputwidget.h"
 #include <QtGui>
 
-InputWidget::InputWidget(QWidget * parent): QWidget(parent)
+InputWidget::InputWidget(QWidget * parent) : QWidget(parent)
 {
     //Initialzing layout manager.
     QVBoxLayout * layout = new QVBoxLayout;
@@ -13,7 +13,7 @@ InputWidget::InputWidget(QWidget * parent): QWidget(parent)
     layout->addWidget(startBtn);
     //Connecting signals for buttons.
     QObject::connect(startBtn, SIGNAL(clicked()),
-                     this,SIGNAL(startClicked()));
+                     this, SIGNAL(startClicked()));
 
     //Adding a stretchable space to the  end of the layout
     layout->addStretch();
@@ -21,11 +21,11 @@ InputWidget::InputWidget(QWidget * parent): QWidget(parent)
 
 InputWidget::~InputWidget()
 {
-    
+
 }
 
 void InputWidget::changeMode(int index)
 {
-    
+
 }
 
