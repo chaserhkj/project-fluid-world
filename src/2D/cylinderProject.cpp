@@ -495,14 +495,14 @@ void cylinderProject::calculateNewZeta()
             if (OnBoundary(i,j)) {
                 node = &coordination->access(i,j);
                 eql->input(line,zetaConvert(i,j),1);
+                /*eql->input(0, 0, 0);
                 eql->input(0, 0, 0);
                 eql->input(0, 0, 0);
                 eql->input(0, 0, 0);
                 eql->input(0, 0, 0);
                 eql->input(0, 0, 0);
                 eql->input(0, 0, 0);
-                eql->input(0, 0, 0);
-                eql->input(0, 0, 0);
+                eql->input(0, 0, 0);*/
                 b[line] = node->zeta;
                 line += 1;
                 continue;
@@ -514,7 +514,7 @@ void cylinderProject::calculateNewZeta()
                     eql->input(line,zetaConvert(i,j+2),-node->c3);
                     eql->input(line,zetaConvert(i,j+1),-node->c4);
                     eql->input(line,zetaConvert(i,j-1),-node->c5);
-                    eql->input(0,0,0);
+                    //eql->input(0,0,0);
                     eql->input(line,zetaConvert(i+2,j),-node->c7);
                     eql->input(line,zetaConvert(i+1,j),-node->c8);
                     eql->input(line,zetaConvert(i-1,j),-node->c9);
@@ -526,7 +526,7 @@ void cylinderProject::calculateNewZeta()
                 if (j==-2){
                     node = &coordination->access(i,j);
                     eql->input(line,zetaConvert(i,j),node->c1);
-                    eql->input(0,0,0);
+                    //eql->input(0,0,0);
                     eql->input(line,zetaConvert(i,j+1),-node->c4);
                     eql->input(line,zetaConvert(i,j-1),-node->c5);
                     eql->input(line,zetaConvert(i,j-2),-node->c6);
@@ -543,8 +543,8 @@ void cylinderProject::calculateNewZeta()
                     eql->input(line,zetaConvert(i,j),node->c1);
                     eql->input(line,zetaConvert(i,j+2),-node->c3);
                     eql->input(line,zetaConvert(i,j+1),-node->c4);
-                    eql->input(0,0,0);
-                    eql->input(0,0,0);
+                    //eql->input(0,0,0);
+                    //eql->input(0,0,0);
                     eql->input(line,zetaConvert(i+2,j),-node->c7);
                     eql->input(line,zetaConvert(i+1,j),-node->c8);
                     eql->input(line,zetaConvert(i-1,j),-node->c9);
@@ -556,8 +556,8 @@ void cylinderProject::calculateNewZeta()
                 if (j==-1){
                     node = &coordination->access(i,j);
                     eql->input(line,zetaConvert(i,j),node->c1);
-                    eql->input(0,0,0);
-                    eql->input(0,0,0);
+                    //eql->input(0,0,0);
+                    //eql->input(0,0,0);
                     eql->input(line,zetaConvert(i,j-1),-node->c5);
                     eql->input(line,zetaConvert(i,j-2),-node->c6);
                     eql->input(line,zetaConvert(i+2,j),-node->c7);
@@ -812,10 +812,10 @@ void cylinderProject::calculateNewPsi()
             if (OnBoundary(i, j)) {
                 node = &coordination->access(i, j);
                 eql->input(line, psiConvert(i, j), 1);
+                /*eql->input(0, 0, 0);
                 eql->input(0, 0, 0);
                 eql->input(0, 0, 0);
-                eql->input(0, 0, 0);
-                eql->input(0, 0, 0);
+                eql->input(0, 0, 0);*/
                 b[line] = node->psi;
                 line += 1;
                 continue;
