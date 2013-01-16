@@ -1,0 +1,394 @@
+%!TEX TS-program = xelatex
+%!TEX encoding = UTF-8 Unicode
+\documentclass[12pt]{article}
+\usepackage[top=1in,bottom=1in,left=1.25in,right=1in]{geometry}
+\geometry{a4paper}
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{fontspec,xltxtra,xunicode}
+\defaultfontfeatures{Mapping=tex-text}
+\usepackage{amsmath}
+\setromanfont[Mapping=tex-text]{微软雅黑}
+\XeTeXlinebreaklocale “zh”
+\XeTeXlinebreakskip = 0pt plus 1pt minus 0.1pt 
+\usepackage{indentfirst}
+\setlength{\parindent}{2.22em}
+\usepackage{pdfpages}
+\usepackage{listings}
+\lstset{
+	language=C++,
+	keywordstyle=\bfseries\ttfamily\color[rgb]{0,0,1},
+	identifierstyle=\ttfamily,
+	commentstyle=\color[rgb]{0.133,0.545,0.133},
+	stringstyle=\ttfamily\color[rgb]{0.627,0.126,0.941},
+	showstringspaces=false,
+	basicstyle=\small,
+	numberstyle=\footnotesize,
+	numbers=left,
+	stepnumber=1,
+	numbersep=10pt,
+	tabsize=2,
+	breaklines=true,
+	prebreak = \raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+	breakatwhitespace=false,
+	aboveskip={1.5\baselineskip},
+  columns=fixed,
+  upquote=true,
+  extendedchars=true,
+% frame=single,
+% backgroundcolor=\color{lbcolor},
+}
+\usepackage[colorlinks,linkcolor=blue,anchorcolor=blue,citecolor=green]{hyperref}
+\newcommand{\ud}{\mathrm{d}}
+\renewcommand\refname{参考文献}
+\renewcommand{\contentsname}{目录}
+\title{计算概论：：流体世界\\ Project Fluid World}
+\author{徐智怡 \and 黄康靖 \and 沈钟灵}
+%\date{}                                           % Activate to display a given date or no date
+\begin{document}
+\maketitle
+\begin{abstract}
+为了进一步在实践中掌握c++语言，理解面向对象编程；应用流体力学知识并初步了解一些数值方法的相关内容。
+以c++语言为编程工具，数值模拟并可视化展示钝物体绕流的过程。对于一个粘性流体绕圆柱的二维层流流动问题，采用流函数-涡量法的高阶混合有限差分格式、初始条件和边界条件的处理方法。可视化的部分则采用染色线生成方法。\end{abstract}
+\newpage
+\tableofcontents
+\newpage
+\section{课题目的}
+我们常常惊叹于流体的神秘莫测，它和生活本身一样难以预测。作为经典力学的最后一块堡垒，科学家在上个世纪下半叶找到了一种极为有效的攻克它的途径——计算流体力学\footnote{即computational fluid dynamics,CFD}。随着计算机科学的不断发展，更强大的硬件与更巧妙的算法让这门方法逐渐成熟，能够解决许多工业上的问题。介于这门学科的复杂精深，我们想要实现的功能是单一的。即便如此，这个课题对我们的挑战，起到的提高促进作用仍是巨大的。
+
+在本课题中，我们要实现的目标是：
+\begin{enumerate}
+\item 采用SIMPLE算流函数涡量高阶混合有限差分格式数值模拟二维层流流动。
+\item 利用openGL，Qt提供的接口实现计算结果的可视化。
+\item 由于计算时间漫长。在程序主要结构中镶嵌一个数独游戏，以供使用者消遣。
+\end{enumerate}
+
+\section{实现方案}
+\subsection{流体力学基本原理}
+流体作为连续介质，在宏观尺度分析时可以忽略物质的分子结构和分子运动。我们用流动的控制方程表达基本物理守恒律的数学形式。
+\begin{enumerate}
+\item 流体质量守恒：
+\begin{equation}\label{mass equ}
+\frac{\partial\rho}{\partial t}+\nabla\cdot(\rho\vec u)=0
+\end{equation}
+\item 流体动量方程：
+\begin{equation}\label{momen equ}
+\rho \frac{\ud u}{\ud t}=\frac{\partial(-p+\tau_{xx})}{\partial x}+\frac{\partial \tau_{yx}}{\partial y}+\frac{\partial \tau_{zx}}{\partial z}
+\end{equation}
+\item 流体能量方程：
+\begin{equation}
+\label{energy equ}
+\begin{split}
+\rho\frac{\ud E}{\ud t}=-\nabla \cdot(p\vec u)+[\frac{\partial(u\tau_{xx})}{\partial x}+\frac{\partial(u\tau_{xy})}{\partial y}+\frac{\partial(u\tau_zz)}{\partial z}+\frac{\partial(v\tau_yx)}{\partial x}
++\frac{\partial(v\tau_yy)}{\partial y}+\\  \frac{\partial(v\tau_yz)}{\partial z}+\frac{\partial(w\tau_zx)}{\partial x}+\frac{\partial(w\tau_zy)}{\partial y}+\frac{\partial(w\tau_zz)}{\partial z}+\nabla \cdot(k\nabla T)+S_E
+\end{split}
+\end{equation}
+\item 牛顿流体的剪应力公式:
+\label{newton}
+\begin{equation}
+\begin{split}
+\tau_{xx}=2\mu\frac{\partial u}{\partial x} +\lambda\nabla\cdot\vec u,  \tau_{xy}=\tau_{yx}=\mu(\frac{\partial u}{\partial y}+\frac{\partial v}{\partial x})\\ \dots\dots
+\end{split}
+\end{equation}
+由以上方程\ref{mass equ},\ref{momen equ},\ref{energy equ}以及\ref{newton}可以推导出牛顿流体的Nacier-Stokes方程。对于建立有限体积法，其最有用的形式是：
+\item N-s方程:
+\begin{equation}
+\rho \frac{\ud u}{\ud t}=-\frac{\partial p}{\partial x}+\nabla\cdot(\mu\nabla u)+S_{Mx}
+\end{equation}
+\begin{equation}
+\rho \frac{\ud v}{\ud t}=-\frac{\partial p}{\partial y}+\nabla\cdot(\mu\nabla v)+S_{My}
+\end{equation}
+\begin{equation}
+\rho \frac{\ud w}{\ud t}=-\frac{\partial p}{\partial z}+\nabla\cdot(\mu\nabla w)+S_{Mz}
+\end{equation}
+\item 对于二维不可压缩流体的流动问题，可以用流函数方程和涡量方程来描述
+将流函数定义为：
+\begin{displaymath}
+u=\frac{\partial\psi}{\partial y},v=-\frac{\partial\psi}{\partial x}
+\end{displaymath}
+将涡量定义为流体质点旋转角速度的两倍，二维流动的涡量只有一个分量
+\begin{displaymath}
+\zeta=\frac{\partial v}{\partial x}-\frac{\partial u}{\partial y}
+\end{displaymath}
+由二维不可压缩流体运动方程可得对流扩散方程
+\begin{equation}
+\frac{\partial\zeta}{\partial t}+u\frac{\partial\zeta}{\partial x}+v\frac{\partial \eta}{\partial y}=\alpha(\frac{\partial^{2}\eta}{\partial x^{2}}+\frac{\partial^{2}\eta}{\partial y^{2}})
+\end{equation}
+式中，$\alpha=\frac{1}{R_{e}}$为粘性扩散系数。将流函数表示的速度分量代入涡量表达式，得到流函数的泊松方程。
+\begin{equation}
+\frac{\partial^{2}\psi}{\partial x^{2}}+\frac{\partial^{2}\psi}{\partial y^{2}}=-\eta
+\end{equation}
+\end{enumerate}
+\subsection{数值模拟二维不可压缩粘性流体绕圆柱的流动}
+以下内容摘自\cite{cfd},是我们主要参考书目。
+\includepdfmerge{cfd.pdf,198-206}
+\newpage
+\addcontentsline{toc}{subsection}{选录自参考书内容}
+\section{程序结构说明（数据结构，主要算法，类，函数}
+\subsection{后端}
+\subsubsection{使用的库：UMFPACK}
+UMFPACK是一系列解非对称稀疏矩阵AX=B的库，使用了多波前算法和直接的LU分解算法。它使用ANSI/ISO C写成，提供了MATLAB前端。UMFPACK依赖于BLAS-Level 3。UMFPACK支持Windows和许多Unix平台。
+解大规模线性方程组是SIMPLE算法的重点，其运算效率直接影响到整个程序的效率。在前文中提到，我们尝试了简单迭代法和松弛迭代法，但是迭代发散，所以不得不寻求别的高效解法。首先，我们的方程组中系数为零的项占绝大多数，在流函数方程组中每个方程仅有5个非零项，而在涡量方程组中不超过9个，非零项个数和方程个数n线性相关，为稀疏矩阵。对于一般矩阵，存储空间和计算时间复杂度均为$O(n^2)$,而如能利用稀疏矩阵的特性，
+则可降至$O(n)$，这对于快速解出大型方程组来说是必要的。UMFPACK能充分利用矩阵的稀疏性，本身算法先进，稳定，可扩展性好，而且UMFPACK可以使用用户提供的BLAS库而非静态的算法，因此用户可以提供高效的BLAS实现（如Intel MKL）来加快运算速度。
+\begin{itemize}
+\item solver.h
+
+将UMFPACK提供的C接口封装为C++类Solver，通过给定矩阵元aij的值和B便可解得X。
+提供接口：
+构造函数Solver(int num, int nonzero, double* right)
+num为矩阵阶数，nonzero为非零项个数，right为一维数组B。
+\item bool input(int i, int j, double x)
+
+设置aij=x，如果成功返回true，如果设置非零项的总数超过了nonzero则返回false。
+
+\item void solve()
+
+求解方程
+
+\item double* getSolution()
+
+返回一维数组X。注意Solver类析构时会释放X的内存空间，所以访问时请保证Solver类未被析构
+
+\end{itemize}
+\subsubsection{主要的类}
+\begin{description}
+\item[\underline{cylinderDataVariant}]
+cylinderDataVariant为DataVariant的一个子类，用于前端从后端获取数据。
+
+\item[\underline{cylinderNode}]
+cylinderNode用于记录每个计算节点的流函数、涡量和速度
+
+\item[\underline{cylinderSpotStain}]
+cylinderSpotStain是染色点类，用于染色点法绘制流线图。
+
+\item[\underline{cylinderProject}]
+cylinderProject是圆柱体绕流模型，提供接口如下：
+\item[构造函数]cylinderProject(int l = -100, int r = 400, int u = 100, int d = -100, double dens = 0.1, double dxi = 0.1, double deta = 0.1, double dt = 0.1, double rey = 40)。
+构造并初始化系统。其中l为计算坐标系的左边界，r为右边界，u为上边界，d为下边界。dens为绘制的流线密度，取值在0-1间，值越大流线越密集。dxi为计算坐标系xi方向的坐标间隔（相邻两个计算节点的横坐标差），deta为eta方向坐标间隔，dt为时间步长，rey为雷诺数。
+
+\item[构造函数]cylinderProject(const char* location)
+读取存盘文件并继续计算。location为存盘文件路径。存盘文件可由方法dumptofile生成。
+ 
+\item[\underline{DataVariant * getData(Project::DataType type, ...)}]
+根据传入的数据类型传出交换数据。type可以为Project::TimeType, Project::PsiType, Project::SpotType, Project::NumberType之一，分别返回包含系统时间、流函数、染色点位置、染色点发生源数目。其中流函数需要用可变参数再提供节点的xi和eta坐标，染色点位置需要再提供染色点发生源的标号（从0到染色点发生源数目-1）。
+
+\item[\underline{void setDensity(double dens)}void run();]
+进行一步计算，系统时间增加一个时间步长
+
+\item[\underline{void spotstainrun();}]
+染色点运动一个时间步长
+
+\item[\underline {bool dumptofile(const char* location);}]
+将当前计算项目存盘，location为存盘文件路径。如果成功返回true，失败返回false。
+
+\item[\underline{DataVariant}]
+DataVariant是前端与后端进行数据交换的类型。有四种类型：Project::TimeType, Project::PsiType, Project::SpotType, Project::NumberType。提供接口如下：
+\begin{itemize}
+\item getX()
+
+ 仅适用于Project::PsiType, Project::SpotType
+获得目标的x坐标
+
+\item getY() \\仅适用于Project::PsiType, Project::SpotType
+获得目标的y坐标
+
+\item getZ()\\ 仅适用于Project::PsiType, Project::SpotType
+获得目标的z坐标
+
+\item getPsi()\\ 仅适用于Project::PsiType
+获得节点的流函数值
+
+\item getTime() \\仅适用于Project::TimeType
+获得系统的时间
+
+\item getNumber() \\仅适用于Project::NumberType
+获得染色点发生源数目
+\end{itemize}
+\end{description}
+\subsubsection{代码示例}
+以下列出迭代计算$\zeta$的代码，作为典型的代码示例。
+\begin{lstlisting}
+void cylinderProject::calculateNewZeta()
+{
+    double vxi, veta;
+    double uxi, ueta;
+    double hxi, heta;
+    double lambdaxi, lambdaeta;
+    int i, j;
+    cylinderNode * node;
+    /* Calculating new zeta at t + deltat on inner nodes */
+    /* Calculating coefficients */
+    #pragma omp parallel for private(i, j, node, hxi, heta, vxi, veta, uxi, ueta, lambdaxi, lambdaeta)
+
+    for (i = downboundary + 2; i < upboundary - 1; i++) {
+        for (j = leftboundary + 2; j < rightboundary - 1; j++) {
+            if ((i <= 1) && (i >= -1) && (j >= leftterminal)
+                && (j <= rightterminal)) {
+                /* Near or on the cylinder, do nothing here */
+                continue;
+            }
+
+            node = &coordination->access(j, i);
+            hxi = node->hxi;
+            heta = node->heta;
+            vxi =
+                (coordination->access(j, i + 1).psi -
+                 coordination->access(j, i - 1).psi) / (2 * heta * deltaeta);
+            veta =
+                -(coordination->access(j + 1, i).psi -
+                  coordination->access(j - 1, i).psi) / (2 * hxi * deltaxi);
+            uxi = vxi / hxi;
+            ueta = veta / heta;
+
+            if (Re < 1000) {
+                lambdaxi = 1 - 1 / exp(abs(uxi));
+                lambdaeta = 1 - 1 / exp(abs(ueta));
+            } else {
+                lambdaxi = 1;
+                lambdaeta = 1;
+            }
+
+            node->c1 =
+                -2 / deltat - lambdaxi * abs(uxi) / (2 * deltaxi) -
+                lambdaeta * abs(ueta) / (2 * deltaeta) -
+                4 / (hxi * hxi * deltaxi * deltaxi * Re) -
+                4 / (heta * heta * deltaeta * deltaeta * Re);
+            node->c2 =
+                -2 / deltat + lambdaxi * abs(uxi) / (2 * deltaxi) +
+                lambdaeta * abs(ueta) / (2 * deltaeta) +
+                4 / (hxi * hxi * deltaxi * deltaxi * Re) +
+                4 / (heta * heta * deltaeta * deltaeta * Re);
+            node->c3 = -(ueta - lambdaeta * abs(ueta)) / (12 * deltaeta);
+            node->c4 =
+                (2 * ueta - lambdaeta * abs(ueta)) / (3 * deltaeta) -
+                2 / (heta * heta * deltaeta * deltaeta * Re);
+            node->c5 =
+                -(2 * ueta + lambdaeta * abs(ueta)) / (3 * deltaeta) -
+                2 / (heta * heta * deltaeta * deltaeta * Re);
+            node->c6 = (ueta + lambdaeta * abs(ueta)) / (12 * deltaeta);
+            node->c7 = -(uxi - lambdaxi * abs(uxi)) / (12 * deltaxi);
+            node->c8 =
+                (2 * uxi - lambdaxi * abs(uxi)) / (3 * deltaxi) -
+                2 / (hxi * hxi * deltaxi * deltaxi * Re);
+            node->c9 =
+                -(2 * uxi + lambdaxi * abs(uxi)) / (3 * deltaxi) -
+                2 / (hxi * hxi * deltaxi * deltaxi * Re);
+            node->c10 = (uxi + lambdaxi * abs(uxi)) / (12 * deltaxi);
+        }
+    }
+
+    #pragma omp parallel for private(j, hxi, heta, vxi, veta, uxi, ueta, lambdaxi, lambdaeta, node)
+
+    for (j = leftterminal; j <= rightterminal; j++) {
+        /* Upper half */
+        node = &coordination->access(j, 1);
+        hxi = node->hxi;
+        heta = node->heta;
+        vxi =
+            (coordination->access(j, 2).psi -
+             cylinderBoundary->access(j, 1).psi) / (2 * heta * deltaeta);
+        veta =
+            -(coordination->access(j + 1, 1).psi -
+              coordination->access(j - 1, 1).psi) / (2 * hxi * deltaxi);
+        uxi = vxi / hxi;
+        ueta = veta / heta;
+
+        if (Re < 1000) {
+            lambdaxi = 1 - 1 / exp(abs(uxi));
+            lambdaeta = 1 - 1 / exp(abs(ueta));
+        } else {
+            lambdaxi = 1;
+            lambdaeta = 1;
+        }
+
+        node->c1 =
+            -2 / deltat - lambdaxi * abs(uxi) / (2 * deltaxi) -
+            (-ueta) / (2 * deltaeta) -
+            4 / (hxi * hxi * deltaxi * deltaxi * Re) -
+            4 / (heta * heta * deltaeta * deltaeta * Re);
+        node->c2 =
+            -2 / deltat + lambdaxi * abs(uxi) / (2 * deltaxi) +
+            (-ueta) / (2 * deltaeta) +
+            4 / (hxi * hxi * deltaxi * deltaxi * Re) +
+            4 / (heta * heta * deltaeta * deltaeta * Re);
+        node->c3 = -(ueta - (-ueta)) / (12 * deltaeta);
+        node->c4 =
+            (2 * ueta - (-ueta)) / (3 * deltaeta) -
+            2 / (heta * heta * deltaeta * deltaeta * Re);
+        node->c5 =
+            -(2 * ueta + (-ueta)) / (3 * deltaeta) -
+            2 / (heta * heta * deltaeta * deltaeta * Re);
+        node->c6 = (ueta + (-ueta)) / (12 * deltaeta);
+        node->c7 = -(uxi - lambdaxi * abs(uxi)) / (12 * deltaxi);
+        node->c8 =
+            (2 * uxi - lambdaxi * abs(uxi)) / (3 * deltaxi) -
+            2 / (hxi * hxi * deltaxi * deltaxi * Re);
+        node->c9 =
+            -(2 * uxi + lambdaxi * abs(uxi)) / (3 * deltaxi) -
+            2 / (hxi * hxi * deltaxi * deltaxi * Re);
+        node->c10 = (uxi + lambdaxi * abs(uxi)) / (12 * deltaxi);
+
+        /* Lower half */
+        node = &coordination->access(j, -1);
+        hxi = node->hxi;
+        heta = node->heta;
+        vxi =
+            (cylinderBoundary->access(j, 0).psi -
+             coordination->access(j, -2).psi) / (2 * heta * deltaeta);
+        veta =
+            -(coordination->access(j + 1, -1).psi -
+              coordination->access(j - 1, -1).psi) / (2 * hxi * deltaxi);
+        uxi = vxi / hxi;
+        ueta = veta / heta;
+
+        if (Re < 1000) {
+            lambdaxi = 1 - 1 / exp(abs(uxi));
+            lambdaeta = 1 - 1 / exp(abs(ueta));
+        } else {
+            lambdaxi = 1;
+            lambdaeta = 1;
+        }
+
+        node->c1 =
+            -2 / deltat - lambdaxi * abs(uxi) / (2 * deltaxi) -
+            ueta / (2 * deltaeta) -
+            4 / (hxi * hxi * deltaxi * deltaxi * Re) -
+            4 / (heta * heta * deltaeta * deltaeta * Re);
+        node->c2 =
+            -2 / deltat + lambdaxi * abs(uxi) / (2 * deltaxi) +
+            ueta / (2 * deltaeta) +
+            4 / (hxi * hxi * deltaxi * deltaxi * Re) +
+            4 / (heta * heta * deltaeta * deltaeta * Re);
+        node->c3 = -(ueta - ueta) / (12 * deltaeta);
+        node->c4 =
+            (2 * ueta - ueta) / (3 * deltaeta) -
+            2 / (heta * heta * deltaeta * deltaeta * Re);
+        node->c5 =
+            -(2 * ueta + ueta) / (3 * deltaeta) -
+            2 / (heta * heta * deltaeta * deltaeta * Re);
+        node->c6 = (ueta + ueta) / (12 * deltaeta);
+        node->c7 = -(uxi - lambdaxi * abs(uxi)) / (12 * deltaxi);
+        node->c8 =
+            (2 * uxi - lambdaxi * abs(uxi)) / (3 * deltaxi) -
+            2 / (hxi * hxi * deltaxi * deltaxi * Re);
+        node->c9 =
+            -(2 * uxi + lambdaxi * abs(uxi)) / (3 * deltaxi) -
+            2 / (hxi * hxi * deltaxi * deltaxi * Re);
+        node->c10 = (uxi + lambdaxi * abs(uxi)) / (12 * deltaxi);
+    }
+\end{lstlisting}
+\subsection{前端}
+
+
+
+\begin{thebibliography}
+{99}
+ \bibitem{cfd} 李万平: 
+ \emph{计算流体力学},华中科技大学 
+(2004)
+  \end{thebibliography}
+
+
+
+
+\end{document}  
