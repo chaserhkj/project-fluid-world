@@ -4,7 +4,7 @@
 
 CalThread::CalThread(QObject * parent) : QThread(parent), stopCalled(false)
 {
-    pro = new cylinderProject(-50, 300, 50, -50, 0.2, 0.2, 0.2, 0.2, 20);
+    pro = new cylinderProject;
 }
 
 CalThread::~CalThread()
@@ -20,11 +20,9 @@ void CalThread::start()
 
 void CalThread::run()
 {
-    int j=0;
-    while(j<40)
+    while(1)
     {
         int i;
-        qDebug()<<j;
         for (i = 0; i < 1; ++i) {
             if (stopCalled)
             {
@@ -52,7 +50,6 @@ void CalThread::run()
         }
         this->putData(table);
         emit dataGenerated();
-        ++j;
     }
     emit calculateFinished();
 }

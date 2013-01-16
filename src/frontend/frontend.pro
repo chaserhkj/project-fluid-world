@@ -1,6 +1,6 @@
 include(../project.pri)
 TEMPLATE = lib
-CONFIG += qt staticlib create_prl link_prl opengl
+CONFIG += qt staticlib create_prl link_prl
 TARGET = FWfrontend
 DESTDIR = ../../lib
 LIBS += -L"../../lib" -lFW2D
@@ -21,5 +21,5 @@ sudoku {
 }
 opengl {
     QT += opengl
-#    DEFINES += OPENGL_ENABLED
+    DEFINES += OPENGL_ENABLED
 }

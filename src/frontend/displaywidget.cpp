@@ -9,55 +9,14 @@
 #include "projectmainwindow.h"
 #include "calthread.h"
 
-#ifdef OPENGL_ENABLED
-
-DisplayWidget::DisplayWidget(QWidget * parent): QGLWidget(parent)
-{
-}
-
-void DisplayWidget::updateGraph()
-{
-    CalThread * thd = qobject_cast<ProjectMainWindow *>(this->parent())->getThread();
-    if (tbd->queueIsEmpty())
-        return;
-    spotStainTable tb = thd->getData();
-    makeCurrent();
-    glClear(GL_COLOR_BUFFER_BIT);
-    foreach(QList<QPointF> line, tb) {
-        glBegin(GL_LINES);
-        foreach(QPointF p, line)
-            glVertex3f(p.x(),p.y(),0.0);
-        glEnd();
-        glFlush();
-    }
-}
-
-void DisplayWidget::initializeGL()
-{
-    glClearColor( 0.0, 0.0, 0.0, 0.0 );
-    glScalef(2.0/25,1.0/5,1.0);
-    glTranslatef(-7.5,0.0,0.0);
-}
-
-void DisplayWidget::paintGL()
-{
-    glClear(GL_COLOR_BUFFER_BIT);
-    
-}
-
-void DisplayWidget::resizeGL(int w, int h)
-{
-    
-}
-#else /* OPENGL_ENABLED */
-
-#include <QtOpenGL>
 DisplayWidget::DisplayWidget(QWidget * parent) : QGraphicsView(parent)
 {
     scene = new QGraphicsScene(this);
     this->setScene(scene);
     this->setDragMode(QGraphicsView::ScrollHandDrag);
-    this->setViewport(new QGLWidget());
+#ifdef OPENGL_ENABLED
+    this->setViewport(new QGLWidget());    
+#endif /* OPENGL_ENABLED */
 }
 
 void DisplayWidget::updateGraph()
@@ -79,9 +38,6 @@ void DisplayWidget::updateGraph()
     }
 }
 
-#endif /* OPENGL_ENABLED */
-
 DisplayWidget::~DisplayWidget()
 {
 }
-
