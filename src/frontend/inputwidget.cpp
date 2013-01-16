@@ -32,7 +32,7 @@ InputWidget::InputWidget(QWidget * parent) : QWidget(parent)
     QLabel * reyLabel = new QLabel(tr("Reynolds Number:"));
     QLabel * totalCycleLabel = new QLabel(tr("Total Cycle Count:"));
     QLabel * singleCycleLabel = new QLabel(tr("Single Cycle Count:"));
-    QLabel * spotCycleLabel = new QLabel(tr("Spot Stain Count"));
+    QLabel * spotCycleLabel = new QLabel(tr("Spot Stain Count:"));
     leftEdit->setText("-50");
     rightEdit->setText("300");
     upEdit->setText("50");

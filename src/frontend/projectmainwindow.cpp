@@ -230,6 +230,7 @@ void ProjectMainWindow::afterCalculate()
     inputWidget->setEnabled(true);
     isPaused = false;
     displayWidget->updateGraph();
+    QMessageBox::information(this, tr("Finished"), tr("Calculation Finished!"));
 }
 
 void ProjectMainWindow::getPreviousGraph()
