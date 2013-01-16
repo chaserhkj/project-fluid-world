@@ -44,12 +44,12 @@ ProjectMainWindow::ProjectMainWindow(QWidget * parent): QMainWindow(parent),thre
     QObject::connect(inputWidget, SIGNAL(startClicked()), this, SLOT(startCalculate()));
     
     //Initializing actions.
-    quitAct = new QAction(QIcon::fromTheme("application-exit"),tr("&Quit"), this);
+    QAction * quitAct = new QAction(QIcon::fromTheme("application-exit"),tr("&Quit"), this);
 #ifdef SUDOKU_ENABLED
-    sudokuGameAct = new QAction(tr("&Sudoku Game"), this);
+    QAction * sudokuGameAct = new QAction(tr("&Sudoku Game"), this);
 #endif /* SUDOKU_ENABLED */
-    aboutAct = new QAction(QIcon::fromTheme("help-about"), tr("&About"), this);
-    aboutQtAct = new QAction(QIcon::fromTheme("help-about"), tr("About &Qt"),  this);
+    QAction * aboutAct = new QAction(QIcon::fromTheme("help-about"), tr("&About"), this);
+    QAction * aboutQtAct = new QAction(QIcon::fromTheme("help-about"), tr("About &Qt"),  this);
 
     //Connecting slots for actions.
     QObject::connect(quitAct,SIGNAL(triggered()), this, SLOT(close()));

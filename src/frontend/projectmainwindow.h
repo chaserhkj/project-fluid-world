@@ -27,16 +27,6 @@ private:
     InputWidget * inputWidget;
     ControlWidget * controlWidget;
     
-    //Actions.
-    //File menu actions.
-    QAction * quitAct;
-    
-    //Help menu actions.
-#ifdef SUDOKU_ENABLED
-    QAction * sudokuGameAct;
-#endif /* SUDOKU_ENABLED */
-    QAction * aboutAct;
-    QAction * aboutQtAct;
 private slots:
     void aboutActivated();
     void aboutQtActivated();
