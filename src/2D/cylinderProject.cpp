@@ -42,8 +42,8 @@ cylinderProject::cylinderProject(const char* location)
     initialize();
     
     /* node properties */
-    for (i=downboundary;i<= upboundary;i++){
-        for (j=leftboundary;j<=rightboundary;j++){
+    for (j=downboundary;j<= upboundary;j++){
+        for (i=leftboundary;i<=rightboundary;i++){
             node = &coordination->access(i,j);
             file >> node->zeta;
             file >> node->psi;
@@ -938,7 +938,7 @@ DataVariant * cylinderProject::getData(Project::DataType type, ...)
             return data;
         case Project::SpotType :
             va_start(ap, type);
-            data = new cylinderDataVariant(type, source->getLine(va_arg(ap,int)));
+            data = new cylinderDataVariant(Project::SpotType, source->getLine(va_arg(ap,int)));
             va_end(ap);
             return data;
         default :
@@ -981,12 +981,13 @@ bool cylinderProject::dumptofile(const char* location)
     file << deltat << std::endl;
     
     /* node properties */
-    for (i=downboundary;i<= upboundary;i++){
-        for (j=leftboundary;j<=rightboundary;j++){
+    for (j=downboundary;j<= upboundary;j++){
+        for (i=leftboundary;i<=rightboundary;i++){
             node = &coordination->access(i,j);
             file << node->zeta << ' ';
             file << node->psi << ' ';
         }
+        file << std::endl;
     }
 
     file << std::endl;

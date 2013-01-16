@@ -19,7 +19,7 @@ public:
 
 class DataVariant
 {
-private:
+protected:
     Project::DataType type;
 public:
     DataVariant(Project::DataType t = Project::NoneType){}

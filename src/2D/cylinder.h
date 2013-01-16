@@ -9,7 +9,6 @@ class cylinderProject;
 class cylinderDataVariant:public DataVariant
 {
 private:
-    Project::DataType type;
     void * data;
     /* including four possibilities 
     double * time;
@@ -18,7 +17,9 @@ private:
     cylinderSpotStain* spot;
     */
 public:
-    cylinderDataVariant(Project::DataType t, void* d):type(t), data(d){}
+    cylinderDataVariant(Project::DataType t, void* d):data(d){
+        type = t;
+    }
     double getX();
     double getY();
     double getZ();
