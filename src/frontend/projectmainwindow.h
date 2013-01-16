@@ -27,10 +27,15 @@ private:
     InputWidget * inputWidget;
     ControlWidget * controlWidget;
 
+    //Pause flag
+    bool isPaused;
 private slots:
     void aboutActivated();
     void aboutQtActivated();
     void startCalculate();
+    void pauseCalculate();
+    void stopCalculate();
+    void afterCalculate();
     void getPreviousGraph();
     void getNextGraph();
 #ifdef SUDOKU_ENABLED

@@ -10,7 +10,7 @@
 #endif /* SUDOKU_ENABLED */
 
 ProjectMainWindow::ProjectMainWindow(QWidget * parent) : QMainWindow(parent),
-    thread(NULL)
+                                                         thread(NULL), isPaused(false)
 {
     //Setting window title.
     this->setWindowTitle("Fluid World");
@@ -51,12 +51,16 @@ ProjectMainWindow::ProjectMainWindow(QWidget * parent) : QMainWindow(parent),
     this->addDockWidget(Qt::RightDockWidgetArea, inputDock);
 
     //Connecting signals for Input Widget, Control Widget and Display Widget
-    QObject::connect(inputWidget, SIGNAL(startClicked()), this,
+    QObject::connect(controlWidget, SIGNAL(startClicked()), this,
                      SLOT(startCalculate()));
     QObject::connect(controlWidget, SIGNAL(previousGraphClicked()), this,
                      SLOT(getPreviousGraph()));
     QObject::connect(controlWidget, SIGNAL(nextGraphClicked()), this,
                      SLOT(getNextGraph()));
+    QObject::connect(controlWidget, SIGNAL(pauseClicked()), this,
+                     SLOT(pauseCalculate()));
+    QObject::connect(controlWidget, SIGNAL(stopClicked()), this,
+                     SLOT(stopCalculate()));
     QObject::connect(controlWidget, SIGNAL(factorChanged(double)), displayWidget,
                      SLOT(setDisplayFactor(double)));
     
@@ -147,18 +151,76 @@ void ProjectMainWindow::aboutQtActivated()
 
 void ProjectMainWindow::startCalculate()
 {
+    if (isPaused)
+    {
+        this->statusBar()->showMessage(tr("Calculating..."));
+        thread->togglePaused();
+        controlWidget->setEnable(ControlWidget::Running);
+        inputWidget->setEnabled(false);
+        isPaused = false;
+        return;
+    }
     // If a thread already exists, stop and delete it.
     if (thread != NULL) {
         thread -> stop();
-        delete thread;
         thread = NULL;
     }
 
-    displayWidget->clear();
     thread = inputWidget->constructThread(this);
+    if (thread==NULL)
+        return;
+    displayWidget->clear();
+    this->statusBar()->showMessage(tr("Calculating..."));
+    controlWidget->setEnable(ControlWidget::Running);
+    inputWidget->setEnabled(false);
+    isPaused = false;
     QObject::connect(thread, SIGNAL(dataGenerated()),
-                     displayWidget, SLOT(updateGraph()));
+                     displayWidget, SLOT(updateData()));
+    QObject::connect(thread, SIGNAL(calculateFinished()),
+                     this, SLOT(afterCalculate()));
+    QObject::connect(thread,SIGNAL(finished()),
+                     thread,SLOT(deleteLater()));
+#ifdef SUDOKU_ENABLED
+    QMessageBox::StandardButton btn = QMessageBox::information(this,
+                                                               tr("Sudoku"),
+                                                               tr("The calculation progress may be long"
+                                                                  "and boring, do you wish to play "
+                                                                  "sudoku game to kill time ?"),
+                                                               QMessageBox::Yes|QMessageBox::No);
+    if (btn == QMessageBox::Yes)
+        this->startSudokuGame();
+#endif /* SUDOKU_ENABLED */    
     thread->start();
+}
+
+void ProjectMainWindow::pauseCalculate()
+{
+    this->statusBar()->showMessage(tr("Calculation Paused"));
+    thread->togglePaused();
+    controlWidget->setEnable(ControlWidget::Paused);
+    inputWidget->setEnabled(false);
+    isPaused = true;
+}
+
+void ProjectMainWindow::stopCalculate()
+{
+    this->statusBar()->showMessage(tr("Ready"));
+    thread->stop();
+    thread = NULL;
+    controlWidget->setEnable(ControlWidget::Normal);
+    inputWidget->setEnabled(true);
+    displayWidget->clear();
+    isPaused = false;
+}
+
+void ProjectMainWindow::afterCalculate()
+{
+    this->statusBar()->showMessage(tr("At Graph No. %1").arg(displayWidget->currentIndex()+1));
+    thread = NULL;
+    controlWidget->setEnable(ControlWidget::Normal);
+    inputWidget->setEnabled(true);
+    isPaused = false;
+    displayWidget->updateGraph();
 }
 
 void ProjectMainWindow::getPreviousGraph()
@@ -167,6 +229,7 @@ void ProjectMainWindow::getPreviousGraph()
     {
         QMessageBox::warning(this, tr("Warning"), tr("This graph is the first one."));
     }
+    this->statusBar()->showMessage(tr("At Graph No. %1").arg(displayWidget->currentIndex()+1));
 }
 
 void ProjectMainWindow::getNextGraph()
@@ -175,6 +238,7 @@ void ProjectMainWindow::getNextGraph()
     {
         QMessageBox::warning(this, tr("Warning"), tr("This graph is the last one."));
     }
+    this->statusBar()->showMessage(tr("At Graph No. %1").arg(displayWidget->currentIndex()+1));
 }
 
 #ifdef DEBUG

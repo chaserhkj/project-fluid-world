@@ -9,7 +9,7 @@ ControlWidget::ControlWidget(QWidget * parent) : QWidget(parent)
 
     //Initializing mode chooser.
     QLabel * modeLabel = new QLabel(tr("Please choose mode:"));
-    QComboBox * modeChooser = new QComboBox;
+    modeChooser = new QComboBox;
     QStringList list;
     int i;
     list << "cylinder";
@@ -20,7 +20,7 @@ ControlWidget::ControlWidget(QWidget * parent) : QWidget(parent)
 
     //Initializing display factor selecter.
     QLabel * spinLabel = new QLabel(tr("Display Factor:"));
-    QDoubleSpinBox * spinBox = new QDoubleSpinBox;
+    spinBox = new QDoubleSpinBox;
     spinBox->setMinimum(0.5);
     spinBox->setMaximum(99.9);
     spinBox->setSingleStep(0.5);
@@ -32,8 +32,8 @@ ControlWidget::ControlWidget(QWidget * parent) : QWidget(parent)
 
     //Initialzing display control buttons.
     QLabel * displayLabel = new QLabel(tr("Display Control:"));
-    QPushButton * previousBtn = new QPushButton(tr("&Previous Graph"));
-    QPushButton * nextBtn = new QPushButton(tr("&Next Graph"));
+    previousBtn = new QPushButton(tr("&Previous Graph"));
+    nextBtn = new QPushButton(tr("&Next Graph"));
     QHBoxLayout * btnLayout = new QHBoxLayout;
     btnLayout->addWidget(previousBtn);
     btnLayout->addWidget(nextBtn);
@@ -44,10 +44,10 @@ ControlWidget::ControlWidget(QWidget * parent) : QWidget(parent)
 
     //Initializing calculation control buttons.
     QLabel * calculationLabel = new QLabel(tr("Calculation Control:"));
-    QPushButton * startBtn = new QPushButton(tr("&Start Calculation"));
-    QPushButton * pauseBtn = new QPushButton(tr("&Pause Calculation"));
+    startBtn = new QPushButton(tr("&Start Calculation"));
+    pauseBtn = new QPushButton(tr("&Pause Calculation"));
     pauseBtn -> setEnabled(false);
-    QPushButton * stopBtn = new QPushButton(tr("S&top Calculation"));
+    stopBtn = new QPushButton(tr("S&top Calculation"));
     stopBtn -> setEnabled(false);
     //Adding them to the layout.
     layout->addWidget(calculationLabel);
@@ -86,4 +86,38 @@ ControlWidget::ControlWidget(QWidget * parent) : QWidget(parent)
 ControlWidget::~ControlWidget()
 {
 
+}
+
+void ControlWidget::setEnable(ControlWidget::EnableStatus s)
+{
+    switch(s)
+    {
+    case Normal:
+        modeChooser->setEnabled(true);
+        spinBox->setEnabled(true);
+        previousBtn->setEnabled(true);
+        nextBtn->setEnabled(true);
+        startBtn->setEnabled(true);
+        pauseBtn->setEnabled(false);
+        stopBtn->setEnabled(false);
+        break;
+    case Running:
+        modeChooser->setEnabled(false);
+        spinBox->setEnabled(false);
+        previousBtn->setEnabled(false);
+        nextBtn->setEnabled(false);
+        startBtn->setEnabled(false);
+        pauseBtn->setEnabled(true);
+        stopBtn->setEnabled(true);
+        break;
+    case Paused:
+        modeChooser->setEnabled(false);
+        spinBox->setEnabled(false);
+        previousBtn->setEnabled(false);
+        nextBtn->setEnabled(false);
+        startBtn->setEnabled(true);
+        pauseBtn->setEnabled(false);
+        stopBtn->setEnabled(true);
+        break;
+    }
 }

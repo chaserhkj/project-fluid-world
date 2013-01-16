@@ -25,9 +25,13 @@ void DisplayWidget::updateData()
     CalThread * thd =
         qobject_cast<ProjectMainWindow * >(this->parent())->getThread();
 
+    if (thd == NULL)
+        return;
+    
     while (!thd->queueIsEmpty()){
         spotStainTable tb = thd->getData();        
         data.append(tb);
+        ++index;
     }
 }
 

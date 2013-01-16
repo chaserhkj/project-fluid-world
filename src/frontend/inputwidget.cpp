@@ -101,31 +101,31 @@ CalThread * InputWidget::constructThread(QObject * parent)
                                                      "Down Boundary"));
         return NULL;
     }
-    int dens = densEdit->text().toDouble(&ok);
+    double dens = densEdit->text().toDouble(&ok);
     if(!ok||dens<=0){
         QMessageBox::warning(this, tr("Warning"), tr("Invalid value:"
                                                      "Density"));
         return NULL;
     }
-    int dxi = dxiEdit->text().toDouble(&ok);
+    double dxi = dxiEdit->text().toDouble(&ok);
     if(!ok||dxi<=0){
         QMessageBox::warning(this, tr("Warning"), tr("Invalid value:"
                                                      "Delta Xi"));
         return NULL;
     }
-    int deta = detaEdit->text().toDouble(&ok);
+    double deta = detaEdit->text().toDouble(&ok);
     if(!ok||deta<=0){
         QMessageBox::warning(this, tr("Warning"), tr("Invalid value:"
                                                      "Delta Eta"));
         return NULL;
     }
-    int dt = dtEdit->text().toDouble(&ok);
+    double dt = dtEdit->text().toDouble(&ok);
     if(!ok||dt<=0){
         QMessageBox::warning(this, tr("Warning"), tr("Invalid value:"
                                                      "Delta t"));
         return NULL;
     }
-    int rey = reyEdit->text().toDouble(&ok);
+    double rey = reyEdit->text().toDouble(&ok);
     if(!ok||rey<=0){
         QMessageBox::warning(this, tr("Warning"), tr("Invalid value:"
                                                      "Reynolds Number"));
