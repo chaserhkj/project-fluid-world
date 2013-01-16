@@ -93,6 +93,9 @@ ProjectMainWindow::ProjectMainWindow(QWidget * parent) : QMainWindow(parent),
 #endif /* SUDOKU_ENABLED */
     helpMenu->addAction(aboutAct);
     helpMenu->addAction(aboutQtAct);
+
+    //Display status bar message.
+    this->statusBar()->setMessage(tr("Ready!"));
 }
 
 ProjectMainWindow::~ProjectMainWindow()
@@ -138,21 +141,17 @@ void ProjectMainWindow::aboutQtActivated()
 
 void ProjectMainWindow::startCalculate()
 {
-    if (thread != NULL)
+    // If a thread already exists, stop and delete it.
+    if (thread != NULL) {
+        thread -> stop();
         delete thread;
+        thread = NULL;
+    }
 
-    thread = new CalThread;
+    thread = new CalThread(this);
     QObject::connect(thread, SIGNAL(dataGenerated()),
                      displayWidget, SLOT(updateGraph()));
-    QObject::connect(thread, SIGNAL(calculateFinished()),
-                     this, SLOT(notifyFinished()));
     thread->start();
-    emit calculateStarted();
-}
-
-void ProjectMainWindow::notifyFinished()
-{
-    QMessageBox::information(this, "Finished!", "Finished!");
 }
 
 #ifdef DEBUG
