@@ -4,7 +4,7 @@ CONFIG += staticlib create_prl link_prl
 TARGET = FW2D
 DESTDIR = ../../lib
 INCLUDEPATH = ../common
-LIBS += -lumfpack -lgomp
+LIBS += -lumfpack -lgomp -lamd -lcholmod -lcolamd -lsuitesparseconfig -lblas
 QMAKE_CXXFLAGS += -fopenmp
 SOURCES = cylinder.cpp \
           cylinderProject.cpp \
