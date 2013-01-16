@@ -13,14 +13,14 @@ class CalThread;
 class DisplayWidget;
 class StatWidget;
 
-class ConfigWidget: public QWidget
+class ConfigWidget : public QWidget
 {
 
     Q_OBJECT;
 
 public:
     ConfigWidget(QWidget * parent = 0);
-    virtual ~ ConfigWidget();
+    virtual ~ConfigWidget();
 public slots:
     void setBlocked(bool b);
 private:

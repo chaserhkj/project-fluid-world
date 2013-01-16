@@ -10,8 +10,11 @@ void pendulum::run()
     int i;
 
     for (i = 0; i < recurrenceDepth; i++) {
-        deltaTheta = (velocity * step + acceleration * step * step / 2) / length;
-        acceleration = (acceleration + -gravity * sin(theta + deltaTheta)) / 2;
+        deltaTheta =
+            (velocity * step + acceleration * step * step /
+             2) / length;
+        acceleration =
+            (acceleration + -gravity * sin(theta + deltaTheta)) / 2;
     }
 
     velocity += acceleration * step;

@@ -9,7 +9,12 @@ private:
 protected:
     double step;
 public:
-    pendulum(double t = 0, double v = 0, double l = 1, double s = 0.1, double ti = 0, int rec = 1):
+    pendulum(double t = 0,
+             double v = 0,
+             double l = 1,
+             double s = 0.1,
+             double ti = 0,
+             int rec = 1) :
         theta(t), velocity(v), length(l), time(ti), recurrenceDepth(rec),
         step(s) {
     }

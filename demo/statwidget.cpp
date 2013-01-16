@@ -1,7 +1,7 @@
 #include "statwidget.h"
 #include <QtGui>
 
-StatWidget::StatWidget(QWidget * parent): QWidget(parent, Qt::Window),
+StatWidget::StatWidget(QWidget * parent) : QWidget(parent, Qt::Window),
     closeFlag(false)
 {
     this->setWindowTitle(tr("Status"));

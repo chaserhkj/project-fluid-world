@@ -69,7 +69,7 @@ InputWidget::InputWidget(QWidget * parent) : QWidget(parent)
     layout->addWidget(singleCycleEdit);
     layout->addWidget(spotCycleLabel);
     layout->addWidget(spotCycleEdit);
-    
+
     //Adding a stretchable space to the  end of the layout
     layout->addStretch();
 }
@@ -78,79 +78,114 @@ CalThread * InputWidget::constructThread(QObject * parent)
 {
     bool ok;
     int l = leftEdit->text().toInt(&ok);
-    if(!ok){
+
+    if (!ok) {
         QMessageBox::warning(this, tr("Warning"), tr("Invalid value:"
-                                                     "Left Boundary"));
-        return NULL;
-    }
-    int r = rightEdit->text().toInt(&ok);
-    if(!ok){
-        QMessageBox::warning(this, tr("Warning"), tr("Invalid value:"
-                                                     "Right Boundary"));
-        return NULL;
-    }
-    int u = upEdit->text().toInt(&ok);
-    if(!ok){
-        QMessageBox::warning(this, tr("Warning"), tr("Invalid value:"
-                                                     "Up Boundary"));
-        return NULL;
-    }
-    int d = downEdit->text().toInt(&ok);
-    if(!ok){
-        QMessageBox::warning(this, tr("Warning"), tr("Invalid value:"
-                                                     "Down Boundary"));
-        return NULL;
-    }
-    double dens = densEdit->text().toDouble(&ok);
-    if(!ok||dens<=0){
-        QMessageBox::warning(this, tr("Warning"), tr("Invalid value:"
-                                                     "Density"));
-        return NULL;
-    }
-    double dxi = dxiEdit->text().toDouble(&ok);
-    if(!ok||dxi<=0){
-        QMessageBox::warning(this, tr("Warning"), tr("Invalid value:"
-                                                     "Delta Xi"));
-        return NULL;
-    }
-    double deta = detaEdit->text().toDouble(&ok);
-    if(!ok||deta<=0){
-        QMessageBox::warning(this, tr("Warning"), tr("Invalid value:"
-                                                     "Delta Eta"));
-        return NULL;
-    }
-    double dt = dtEdit->text().toDouble(&ok);
-    if(!ok||dt<=0){
-        QMessageBox::warning(this, tr("Warning"), tr("Invalid value:"
-                                                     "Delta t"));
-        return NULL;
-    }
-    double rey = reyEdit->text().toDouble(&ok);
-    if(!ok||rey<=0){
-        QMessageBox::warning(this, tr("Warning"), tr("Invalid value:"
-                                                     "Reynolds Number"));
-        return NULL;
-    }
-    int total = totalCycleEdit->text().toInt(&ok);
-    if(!ok||total<=0){
-        QMessageBox::warning(this, tr("Warning"), tr("Invalid value:"
-                                                     "Total Cycle Count"));
-        return NULL;
-    }
-    int single = singleCycleEdit->text().toInt(&ok);
-    if(!ok||single<=0){
-        QMessageBox::warning(this, tr("Warning"), tr("Invalid value:"
-                                                     "Single Cycle Count"));
-        return NULL;
-    }
-    int spot = spotCycleEdit->text().toInt(&ok);
-    if(!ok||spot<=0){
-        QMessageBox::warning(this, tr("Warning"), tr("Invalid value:"
-                                                     "Spot Stain Count"));
+                             "Left Boundary"));
         return NULL;
     }
 
-    return new CalThread(parent, l,r,u,d,dens,dxi,deta,dt,rey,total,single,spot);
+    int r = rightEdit->text().toInt(&ok);
+
+    if (!ok) {
+        QMessageBox::warning(this, tr("Warning"), tr("Invalid value:"
+                             "Right Boundary"));
+        return NULL;
+    }
+
+    int u = upEdit->text().toInt(&ok);
+
+    if (!ok) {
+        QMessageBox::warning(this, tr("Warning"), tr("Invalid value:"
+                             "Up Boundary"));
+        return NULL;
+    }
+
+    int d = downEdit->text().toInt(&ok);
+
+    if (!ok) {
+        QMessageBox::warning(this, tr("Warning"), tr("Invalid value:"
+                             "Down Boundary"));
+        return NULL;
+    }
+
+    double dens = densEdit->text().toDouble(&ok);
+
+    if (!ok || dens <= 0) {
+        QMessageBox::warning(this, tr("Warning"), tr("Invalid value:"
+                             "Density"));
+        return NULL;
+    }
+
+    double dxi = dxiEdit->text().toDouble(&ok);
+
+    if (!ok || dxi <= 0) {
+        QMessageBox::warning(this, tr("Warning"), tr("Invalid value:"
+                             "Delta Xi"));
+        return NULL;
+    }
+
+    double deta = detaEdit->text().toDouble(&ok);
+
+    if (!ok || deta <= 0) {
+        QMessageBox::warning(this, tr("Warning"), tr("Invalid value:"
+                             "Delta Eta"));
+        return NULL;
+    }
+
+    double dt = dtEdit->text().toDouble(&ok);
+
+    if (!ok || dt <= 0) {
+        QMessageBox::warning(this, tr("Warning"), tr("Invalid value:"
+                             "Delta t"));
+        return NULL;
+    }
+
+    double rey = reyEdit->text().toDouble(&ok);
+
+    if (!ok || rey <= 0) {
+        QMessageBox::warning(this, tr("Warning"), tr("Invalid value:"
+                             "Reynolds Number"));
+        return NULL;
+    }
+
+    int total = totalCycleEdit->text().toInt(&ok);
+
+    if (!ok || total <= 0) {
+        QMessageBox::warning(this, tr("Warning"), tr("Invalid value:"
+                             "Total Cycle Count"));
+        return NULL;
+    }
+
+    int single = singleCycleEdit->text().toInt(&ok);
+
+    if (!ok || single <= 0) {
+        QMessageBox::warning(this, tr("Warning"), tr("Invalid value:"
+                             "Single Cycle Count"));
+        return NULL;
+    }
+
+    int spot = spotCycleEdit->text().toInt(&ok);
+
+    if (!ok || spot <= 0) {
+        QMessageBox::warning(this, tr("Warning"), tr("Invalid value:"
+                             "Spot Stain Count"));
+        return NULL;
+    }
+
+    return new CalThread(parent,
+                         l,
+                         r,
+                         u,
+                         d,
+                         dens,
+                         dxi,
+                         deta,
+                         dt,
+                         rey,
+                         total,
+                         single,
+                         spot);
 }
 
 InputWidget::~InputWidget()

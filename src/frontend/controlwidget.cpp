@@ -46,16 +46,16 @@ ControlWidget::ControlWidget(QWidget * parent) : QWidget(parent)
     QLabel * calculationLabel = new QLabel(tr("Calculation Control:"));
     startBtn = new QPushButton(tr("&Start Calculation"));
     pauseBtn = new QPushButton(tr("&Pause Calculation"));
-    pauseBtn -> setEnabled(false);
+    pauseBtn->setEnabled(false);
     stopBtn = new QPushButton(tr("S&top Calculation"));
-    stopBtn -> setEnabled(false);
+    stopBtn->setEnabled(false);
     //Adding them to the layout.
     layout->addWidget(calculationLabel);
     layout->addWidget(startBtn);
     layout->addWidget(pauseBtn);
     layout->addWidget(stopBtn);
-    
-    
+
+
     //Connecting signals for event handling.
     QObject::connect(modeChooser,
                      SIGNAL(currentIndexChanged(int)),
@@ -79,8 +79,8 @@ ControlWidget::ControlWidget(QWidget * parent) : QWidget(parent)
                      this, SIGNAL(pauseClicked()));
     QObject::connect(stopBtn, SIGNAL(clicked()),
                      this, SIGNAL(stopClicked()));
-    
-    
+
+
 }
 
 ControlWidget::~ControlWidget()
@@ -90,8 +90,7 @@ ControlWidget::~ControlWidget()
 
 void ControlWidget::setEnable(ControlWidget::EnableStatus s)
 {
-    switch(s)
-    {
+    switch (s) {
     case Normal:
         modeChooser->setEnabled(true);
         spinBox->setEnabled(true);
@@ -101,6 +100,7 @@ void ControlWidget::setEnable(ControlWidget::EnableStatus s)
         pauseBtn->setEnabled(false);
         stopBtn->setEnabled(false);
         break;
+
     case Running:
         modeChooser->setEnabled(false);
         spinBox->setEnabled(false);
@@ -110,6 +110,7 @@ void ControlWidget::setEnable(ControlWidget::EnableStatus s)
         pauseBtn->setEnabled(true);
         stopBtn->setEnabled(true);
         break;
+
     case Paused:
         modeChooser->setEnabled(false);
         spinBox->setEnabled(false);

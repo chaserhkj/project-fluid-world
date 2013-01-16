@@ -12,7 +12,7 @@ class ControlWidget : public QWidget
 public:
     ControlWidget(QWidget * parent = 0);
     virtual ~ControlWidget();
-    enum EnableStatus{Normal,Running,Paused};
+    enum EnableStatus {Normal, Running, Paused};
     void setEnable(EnableStatus s);
 signals:
     void modeChose(int index);
@@ -24,7 +24,7 @@ signals:
     void stopClicked();
 private:
     QComboBox * modeChooser;
-    QDoubleSpinBox * spinBox;    
+    QDoubleSpinBox * spinBox;
     QPushButton * previousBtn;
     QPushButton * nextBtn;
     QPushButton * startBtn;

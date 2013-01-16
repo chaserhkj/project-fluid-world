@@ -3,7 +3,7 @@
 #include <cmath>
 
 DisplayWidget::DisplayWidget(QWidget * parent,
-                             double position): QWidget(parent, Qt::Window),
+                             double position) : QWidget(parent, Qt::Window),
     closeFlag(false), view(this)
 {
     this->setWindowTitle(tr("Graph"));
@@ -18,7 +18,8 @@ DisplayWidget::DisplayWidget(QWidget * parent,
     double y = cos(position) * 150;
     line = scene.addLine(0, 0, x, y);
     ellipse =
-        scene.addEllipse(x - 5, y - 5, 10, 10, QPen(), QBrush(QColor("Black")));
+        scene.addEllipse(x - 5, y - 5, 10, 10, QPen(),
+                         QBrush(QColor("Black")));
 }
 
 void DisplayWidget::changeGraph(double position)
@@ -29,7 +30,8 @@ void DisplayWidget::changeGraph(double position)
     double y = cos(position) * 150;
     line = scene.addLine(0, 0, x, y);
     ellipse =
-        scene.addEllipse(x - 5, y - 5, 10, 10, QPen(), QBrush(QColor("Black")));
+        scene.addEllipse(x - 5, y - 5, 10, 10, QPen(),
+                         QBrush(QColor("Black")));
 }
 
 void DisplayWidget::setCloseFlag()

@@ -2,9 +2,23 @@
 #include "../2D/cylinder.h"
 #include <QtCore>
 
-CalThread::CalThread(QObject * parent, int l, int r, int u, int d, double dens, double dxi, double deta, double dt, double rey, int total, int single, int spot) : QThread(parent), stopCalled(false), isPaused(false), totalCycleCount(total), singleCycleCount(single), spotCycleCount(spot)
+CalThread::CalThread(QObject * parent,
+                     int l,
+                     int r,
+                     int u,
+                     int d,
+                     double dens,
+                     double dxi,
+                     double deta,
+                     double dt,
+                     double rey,
+                     int total,
+                     int single,
+                     int spot) : QThread(parent), stopCalled(false), isPaused(
+                             false),
+    totalCycleCount(total), singleCycleCount(single), spotCycleCount(spot)
 {
-    pro = new cylinderProject(l,r,u,d,dens,dxi,deta,dt,rey);
+    pro = new cylinderProject(l, r, u, d, dens, dxi, deta, dt, rey);
 }
 
 CalThread::~CalThread()
@@ -23,6 +37,7 @@ void CalThread::start()
 void CalThread::run()
 {
     int j;
+
     for (j = 0; j < totalCycleCount; ++j) {
         int i;
 

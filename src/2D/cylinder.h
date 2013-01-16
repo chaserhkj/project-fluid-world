@@ -39,17 +39,17 @@ public:
 class cylinderNode : public Node, public cylinderTransformer
 {
 public:
-    double hxi;                   /* lame coefficient */
+    double hxi;                       /* lame coefficient */
     double heta;
-    double b0, b1, b2, b3, b4;            /* for calculating psi */
-    double c1, c2, c3, c4, c5, c6, c7, c8, c9, c10;           /* for calculating zeta */
-    double uxi, ueta;             /* velocity in the transformed coordination */
+    double b0, b1, b2, b3, b4;                /* for calculating psi */
+    double c1, c2, c3, c4, c5, c6, c7, c8, c9, c10;               /* for calculating zeta */
+    double uxi, ueta;                 /* velocity in the transformed coordination */
 };
 
 class cylinderSpotStain : public cylinderTransformer
 {
 private:
-    cylinderProject * project;            /* To know if I am out of range */
+    cylinderProject * project;                /* To know if I am out of range */
 public:
     cylinderSpotStain * next;
 
@@ -66,9 +66,9 @@ public:
 class cylinderSpotStainSource
 {
 private:
-    int step;                 /* distance between two nearby sources */
-    int number;                   /* number of sources */
-    cylinderSpotStain ** source;          /* source array */
+    int step;                     /* distance between two nearby sources */
+    int number;                       /* number of sources */
+    cylinderSpotStain ** source;              /* source array */
     cylinderProject * project;
 public:
     cylinderSpotStainSource(cylinderProject * p);
@@ -102,7 +102,7 @@ class cylinderCoordinate
 {
 private:
     int leftboundary, rightboundary, upboundary, downboundary;
-    cylinderNode * coordinate;         /* array storing nodes */
+    cylinderNode * coordinate;             /* array storing nodes */
 public:
     cylinderCoordinate(int l, int r, int u, int d) {
         leftboundary = l;
@@ -124,18 +124,18 @@ public:
 class cylinderProject : public Project
 {
 private:
-    double t;                 /* Physical time */
-    double Re;                    /* 2 * physical Reynolds */
-    cylinderCoordinate * coordination;         /* transformed coordination */
-    cylinderCoordinate * cylinderBoundary;         /* Boundary nodes on the cylinder, 1 means upper half and 0 means lower half */
+    double t;                     /* Physical time */
+    double Re;                        /* 2 * physical Reynolds */
+    cylinderCoordinate * coordination;             /* transformed coordination */
+    cylinderCoordinate * cylinderBoundary;             /* Boundary nodes on the cylinder, 1 means upper half and 0 means lower half */
     int leftboundary, rightboundary, upboundary, downboundary;
-    int leftterminal, rightterminal;          /* Terminals on the cylinder */
-    double density;               /* spotstain density, from 0 to 1 */
-    cylinderSpotStainSource * source;         /* source of spotstains */
+    int leftterminal, rightterminal;              /* Terminals on the cylinder */
+    double density;                   /* spotstain density, from 0 to 1 */
+    cylinderSpotStainSource * source;             /* source of spotstains */
 
-    double deltaxi;             /* delta xi and delta eta */
-    double deltaeta;            /* delta xi and delta eta */
-    double deltat;              /* time step */
+    double deltaxi;                 /* delta xi and delta eta */
+    double deltaeta;                /* delta xi and delta eta */
+    double deltat;                  /* time step */
 
     /* convert 2-D points to 1-D for matrix solver */
     int psiConvert(int i, int j);
@@ -159,7 +159,7 @@ public:
                     double deta = 0.2,
                     double dt = 0.2,
                     double rey = 20);
-    cylinderProject(const char * location);        /* resume from file */
+    cylinderProject(const char * location);            /* resume from file */
     ~cylinderProject();
     /*double getT() {
         return t;

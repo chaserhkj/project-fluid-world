@@ -4,7 +4,7 @@
 #include "statwidget.h"
 #include <QtGui>
 
-ConfigWidget::ConfigWidget(QWidget * parent): QWidget(parent, Qt::Window)
+ConfigWidget::ConfigWidget(QWidget * parent) : QWidget(parent, Qt::Window)
 {
     //Initialize UI objects
     mainlo = new QVBoxLayout;
@@ -78,13 +78,15 @@ void ConfigWidget::start()
 
     if (s > 10) {
         QMessageBox::warning(this, tr("Warning"),
-                             tr("Calculation step must be lesser than 10 ms."));
+                             tr(
+                                 "Calculation step must be lesser than 10 ms."));
         return;
     }
 
     if (s <= 0) {
         QMessageBox::warning(this, tr("Warning"),
-                             tr("Calculation step must be greater than 0 ms"));
+                             tr(
+                                 "Calculation step must be greater than 0 ms"));
         return;
     }
 

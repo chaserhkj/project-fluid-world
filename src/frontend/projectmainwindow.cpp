@@ -10,7 +10,7 @@
 #endif /* SUDOKU_ENABLED */
 
 ProjectMainWindow::ProjectMainWindow(QWidget * parent) : QMainWindow(parent),
-                                                         thread(NULL), isPaused(false)
+    thread(NULL), isPaused(false)
 {
     //Setting window title.
     this->setWindowTitle("Fluid World");
@@ -61,9 +61,10 @@ ProjectMainWindow::ProjectMainWindow(QWidget * parent) : QMainWindow(parent),
                      SLOT(pauseCalculate()));
     QObject::connect(controlWidget, SIGNAL(stopClicked()), this,
                      SLOT(stopCalculate()));
-    QObject::connect(controlWidget, SIGNAL(factorChanged(double)), displayWidget,
+    QObject::connect(controlWidget, SIGNAL(factorChanged(
+            double)), displayWidget,
                      SLOT(setDisplayFactor(double)));
-    
+
     //Initializing actions.
     QAction * quitAct =
         new QAction(QIcon::fromTheme("application-exit"), tr(
@@ -151,8 +152,7 @@ void ProjectMainWindow::aboutQtActivated()
 
 void ProjectMainWindow::startCalculate()
 {
-    if (isPaused)
-    {
+    if (isPaused) {
         this->statusBar()->showMessage(tr("Calculating..."));
         thread->togglePaused();
         controlWidget->setEnable(ControlWidget::Running);
@@ -160,15 +160,18 @@ void ProjectMainWindow::startCalculate()
         isPaused = false;
         return;
     }
+
     // If a thread already exists, stop and delete it.
     if (thread != NULL) {
-        thread -> stop();
+        thread->stop();
         thread = NULL;
     }
 
     thread = inputWidget->constructThread(this);
-    if (thread==NULL)
+
+    if (thread == NULL)
         return;
+
     displayWidget->clear();
     this->statusBar()->showMessage(tr("Calculating..."));
     controlWidget->setEnable(ControlWidget::Running);
@@ -178,18 +181,22 @@ void ProjectMainWindow::startCalculate()
                      displayWidget, SLOT(updateData()));
     QObject::connect(thread, SIGNAL(calculateFinished()),
                      this, SLOT(afterCalculate()));
-    QObject::connect(thread,SIGNAL(finished()),
-                     thread,SLOT(deleteLater()));
+    QObject::connect(thread, SIGNAL(finished()),
+                     thread, SLOT(deleteLater()));
 #ifdef SUDOKU_ENABLED
     QMessageBox::StandardButton btn = QMessageBox::information(this,
-                                                               tr("Sudoku"),
-                                                               tr("The calculation progress may be long"
-                                                                  "and boring, do you wish to play "
-                                                                  "sudoku game to kill time ?"),
-                                                               QMessageBox::Yes|QMessageBox::No);
+                                      tr("Sudoku"),
+                                      tr(
+                                          "The calculation progress may be long"
+                                          "and boring, do you wish to play "
+                                          "sudoku game to kill time ?"),
+                                      QMessageBox::Yes |
+                                      QMessageBox::No);
+
     if (btn == QMessageBox::Yes)
         this->startSudokuGame();
-#endif /* SUDOKU_ENABLED */    
+
+#endif /* SUDOKU_ENABLED */
     thread->start();
 }
 
@@ -215,7 +222,9 @@ void ProjectMainWindow::stopCalculate()
 
 void ProjectMainWindow::afterCalculate()
 {
-    this->statusBar()->showMessage(tr("At Graph No. %1").arg(displayWidget->currentIndex()+1));
+    this->statusBar()->showMessage(tr("At Graph No. %1").arg(displayWidget->
+                                   currentIndex() +
+                                   1));
     thread = NULL;
     controlWidget->setEnable(ControlWidget::Normal);
     inputWidget->setEnabled(true);
@@ -225,20 +234,26 @@ void ProjectMainWindow::afterCalculate()
 
 void ProjectMainWindow::getPreviousGraph()
 {
-    if (!displayWidget->setCurrentIndex(displayWidget->currentIndex()-1))
-    {
-        QMessageBox::warning(this, tr("Warning"), tr("This graph is the first one."));
+    if (!displayWidget->setCurrentIndex(displayWidget->currentIndex() - 1)) {
+        QMessageBox::warning(this, tr("Warning"),
+                             tr("This graph is the first one."));
     }
-    this->statusBar()->showMessage(tr("At Graph No. %1").arg(displayWidget->currentIndex()+1));
+
+    this->statusBar()->showMessage(tr("At Graph No. %1").arg(displayWidget->
+                                   currentIndex() +
+                                   1));
 }
 
 void ProjectMainWindow::getNextGraph()
 {
-    if (!displayWidget->setCurrentIndex(displayWidget->currentIndex()+1))
-    {
-        QMessageBox::warning(this, tr("Warning"), tr("This graph is the last one."));
+    if (!displayWidget->setCurrentIndex(displayWidget->currentIndex() + 1)) {
+        QMessageBox::warning(this, tr("Warning"),
+                             tr("This graph is the last one."));
     }
-    this->statusBar()->showMessage(tr("At Graph No. %1").arg(displayWidget->currentIndex()+1));
+
+    this->statusBar()->showMessage(tr("At Graph No. %1").arg(displayWidget->
+                                   currentIndex() +
+                                   1));
 }
 
 #ifdef DEBUG
@@ -254,7 +269,8 @@ void ProjectMainWindow::startSudokuGame()
     //Explicitly setting it to behave as a window.
     sudoku->setWindowFlags(Qt::Window);
     //Setting its position.
-    sudoku->setGeometry(QStyle::alignedRect(Qt::LeftToRight, Qt::AlignCenter,
+    sudoku->setGeometry(QStyle::alignedRect(Qt::LeftToRight,
+                                            Qt::AlignCenter,
                                             sudoku->size(),
                                             qApp->desktop()->
                                             availableGeometry()));

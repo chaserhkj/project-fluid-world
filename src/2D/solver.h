@@ -5,14 +5,14 @@
 class Solver
 {
 private:
-    int n;         /* must be square */
+    int n;             /* must be square */
     int nz;
     int * Ti, *Tj;
     double * b;
     double * Tx;
     double * solution;
 
-    int counter;         /* so eachtime we input to a different position */
+    int counter;             /* so eachtime we input to a different position */
 public:
     Solver(int num, int nonzero, double * right) : n(num), nz(nonzero), b(right) {
         Ti = new int[nz];

@@ -10,7 +10,7 @@ class QCloseEvent;
 class QGraphicsLineItem;
 class QGraphicsEllipseItem;
 
-class DisplayWidget: public QWidget
+class DisplayWidget : public QWidget
 {
 
     Q_OBJECT;
