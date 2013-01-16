@@ -1,44 +1,42 @@
 %!TEX TS-program = xelatex
 %!TEX encoding = UTF-8 Unicode
 \documentclass[12pt]{article}
-\usepackage[top=1in,bottom=1in,left=1.25in,right=1in]{geometry}
+\usepackage[margin=2cm]{geometry}
 \geometry{a4paper}
 \usepackage{graphicx}
 \usepackage{amssymb}
-\usepackage{fontspec,xltxtra,xunicode}
+\usepackage{fontspec,xltxtra,xunicode,amsmath}
 \defaultfontfeatures{Mapping=tex-text}
-\usepackage{amsmath}
-\setromanfont[Mapping=tex-text]{微软雅黑}
-\XeTeXlinebreaklocale “zh”
-\XeTeXlinebreakskip = 0pt plus 1pt minus 0.1pt 
+\setmainfont{文泉驿正黑}
+\usepackage{xeCJK}
 \usepackage{indentfirst}
 \setlength{\parindent}{2.22em}
 \usepackage{pdfpages}
 \usepackage{listings}
 \lstset{
-	language=C++,
-	keywordstyle=\bfseries\ttfamily\color[rgb]{0,0,1},
-	identifierstyle=\ttfamily,
-	commentstyle=\color[rgb]{0.133,0.545,0.133},
-	stringstyle=\ttfamily\color[rgb]{0.627,0.126,0.941},
-	showstringspaces=false,
-	basicstyle=\small,
-	numberstyle=\footnotesize,
-	numbers=left,
-	stepnumber=1,
-	numbersep=10pt,
-	tabsize=2,
-	breaklines=true,
-	prebreak = \raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
-	breakatwhitespace=false,
-	aboveskip={1.5\baselineskip},
+        language=C++,
+        keywordstyle=\bfseries\ttfamily\color[rgb]{0,0,1},
+        identifierstyle=\ttfamily,
+        commentstyle=\color[rgb]{0.133,0.545,0.133},
+        stringstyle=\ttfamily\color[rgb]{0.627,0.126,0.941},
+        showstringspaces=false,
+        basicstyle=\small,
+        numberstyle=\footnotesize,
+        numbers=left,
+        stepnumber=1,
+        numbersep=10pt,
+        tabsize=2,
+        breaklines=true,
+        prebreak = \raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+        breakatwhitespace=false,
+        aboveskip={1.5\baselineskip},
   columns=fixed,
   upquote=true,
   extendedchars=true,
 % frame=single,
 % backgroundcolor=\color{lbcolor},
 }
-\usepackage[colorlinks,linkcolor=blue,anchorcolor=blue,citecolor=green]{hyperref}
+\usepackage[hidelinks=true]{hyperref}
 \newcommand{\ud}{\mathrm{d}}
 \renewcommand\refname{参考文献}
 \renewcommand{\contentsname}{目录}
@@ -583,24 +581,106 @@ void cylinderProject::calculateNewZeta()
 
 \subsection{前端}
 
+\subsubsection{使用的库 ：Qt}
+Qt\cite{qt}是一个跨平台的C++应用程序开发框架。广泛用于开发GUI程序，这种情况下又
+被称为部件工具箱。也可用于开发非GUI程序，比如控制台工具和服务器。
+
+Qt是自由且开放源代码的软件，在GNU较宽松公共许可证条款下发布。所有版本
+都支持广泛的编译器，包括GCC的C++编译器和Visual Studio。
+
+\subsubsection{主要的类}
+
+在前端程序中较为重要的类有：
+
+\begin{description}
+\item[\underline{ProjectMainWindow}]
+  ProjectMainWindow是Qt类QMainWindow的子类，是图形界面前端的主要组成部
+  分，即主窗口对象。
+\item[\underline{CalThread}]
+  CalThread类是Qt类QThread的子类，是对后端计算进行Qt包装的主类。为了让
+  后端运算不影响前端的访问响应，在这个类里把运算封装到Qt的线程类
+  QThread中，让计算过程在主线程以外的线程运行。
+\item[\underline{DisplayWidget}]
+  DisplayWidget类是Qt类QGraphicsView的子类，是负责将后端生成的数据图像
+  化的主类。这个类使用了OpenGL引擎来渲染作图，也同时负责将后端生成的数
+  据缓存起来用于前端的反复访问。
+\item[\underline{InputWidget}]
+  InputWidget类是一个GUI组件，主要用于收集计算所需要的初始条件并负责把
+  这些初始条件传递给后端用以初始化。
+\item[\underline{ControlWidget}]
+  ControlWidget类是一个GUI组件，主要用于控制图像显示中的相关参数和控制
+  后端计算的具体流程。
+\item[\underline{SudokuWidget}]
+  SudokuWidget是Qt类QWidget的子类，是数独游戏的主窗口。
+\end{description}
+
+\subsection{项目整体组织}
+
+\subsubsection{项目构建管理}
+
+本项目使用qmake作为项目的构建管理工具。
+
+qmake\cite{qt}是一个协助简化跨平台进行专案开发的构建过程的工具程序，Qt附带的工
+具之一 。qmake能够自动生成Makefile、Microsoft Visual Studio 项目文件
+和 xcode 项目文件。不管源代码是否是用Qt写的，都能使用qmake，因此qmake
+能用于很多软件的构建过程。
+
+本项目使用qmake的考虑主要是由于其对Qt的支持是内建的，因此在兼容性方面它应
+当有最好的表现。
+
+\subsubsection{项目结构管理}
+本项目采用了模块化的组织方式。
+
+项目的主体代码在文件夹src/下，组织在各个不同的文件夹里，代表不同的模块。
+每个模块在编译时各自生成静态库文件，保存在lib/下，最后编译main模块时，
+将各模块部分链接在一起生成最终的可执行文件并保存在bin/下。
+
+这样的组织结构使得程序高度灵活化，每一个模块都可以单独拿出作为一个库使
+用，而所有的模块作为库的对外借口文件都保存在include/下。
+
+doc/下保存了项目的全部文档文件，demo/下是项目早期用于验证算法思路的一
+个实验性程序。
+
+src/下的模块有：
+\begin{itemize}
+\item 2D模块，用于计算圆柱体绕流的数据，是后端的主要组成模块。
+\item frontend模块，用于图形化2D模块计算出来的数据，是前端的主要组成模
+  块。
+\item sudoku模块，这是数独游戏的主要后端构成模块，是用纯C语言写的。
+\item sudokugui模块，这是数独游戏的Qt GUI前端模块。
+\end{itemize}
+
+\subsubsection{项目数据管理}
+
+本项目使用git\cite{git}来完成项目的数据管理与版本管理工作，并使用
+googlecode的服务共享代码实现分布式开发。
+
+Git是一个由Linux创始人，Linus Torvalds为了更好地管理linux内核开发而创
+立的分布式版本控制／软件配置管理软件。
+
+
 \section{课题过程及结果分析}
 \subsection{课题完成情况}
 在开学第二次计算概论课上，我们几个人就觉得组成小组，完成课题。由于基础较好，对课题的前景十分乐观。我们挑选了很久项目的主题，最终决定做计算流体力学相关的课题。一来比较有挑战性，二来也切合物理学科。我们信心百倍的完成了开题报告，但在接下来的时间里只是看参考资料，相关书目。真正开始做已经是11月初。由于课题难度之大，直到近日才初步做完，可谓蹉跎。
 
 具体分工来看，徐智怡完成后端的大部分工作。沈钟灵负责数学物理的相关问题、部分后端程序以及项目报告的书写。黄康靖同学则完成了前端的工作。在这个项目上，三人都投入大量时间精力，同时也收获了很多。
 
-最后的效果差强人意，远不及当初那么理想。甚至还存在一些我们暂时无法解决的bug.比如圆球的大小显得很不合适。以下将列出在完成项目过程中我们所遇到的问题，以及项目的一些优点特点。
+最后的效果差强人意，远不及当初那么理想。甚至还存在一些我们暂时无法解决
+的bug.比如圆柱的大小显得很不合适。以下将列出在完成项目过程中我们所遇到的问题，以及项目的一些优点特点。
 \subsection{项目的问题和优点}
 \subsubsection{问题}
 \begin{itemize}
 \item 使用迭代法计算流函数和涡量时不收敛，应该是算法的精度不够高而至。最后我们换了方程的迭代方法，并利用umfpack求解。得到了较好的结果。
 \item 不能从数值上判断收敛，只能从图像上看。在作出前端以后我们才对初始值设定进行了进一步的修正，使得结果有更高可信度。
-
+\item 由于直接调用OpenGL接口做图过于繁琐冗长且难以调试，碍于时间有限的
+  缘故，我们使用了Qt的直接接口辅以Qt自带的OpenGL引擎渲染完成了作图，
+  并且放弃了原先作等流函数图的计划，只作出了流线图。
 
 \end{itemize}
 \subsubsection{亮点}
 \begin{itemize}
-\item
+\item 使用了Git作为项目的版本控制工具，便于检索和比较历史版本，有利于
+  增加开发效率。
 \item 使用了Openmp进行并行计算。OpenMp是由OpenMP Architecture Review Board牵头提出的，并已被广泛接受的，用于共享内存并行系统的多线程程序设计的一套指导性注释(Compiler Directive)。OpenMP支持的编程语言包括C语言、C++和Fortran；而支持OpenMp的编译器包括Sun Compiler，GNU Compiler和Intel Compiler等。OpenMp提供了对并行算法的高层的抽象描述，程序员通过在源代码中加入专用的pragma来指明自己的意图，由此编译器可以自动将程序进行并行化，并在必要之处加入同步互斥以及通信。当选择忽略这些pragma，或者编译器不支持OpenMp时，程序又可退化为通常的程序(一般为串行)，代码仍然可以正常运作，只是不能利用多线程来加速程序执行。
 \item 可以中途存盘(仅后端可以，前端暂未实现）
 
@@ -614,8 +694,8 @@ void cylinderProject::calculateNewZeta()
 (2004)
 \bibitem{intel}Intel Math Kernal Library
 \bibitem{ump}UMPACK User Guide
-\bibitem{qt}Qt 4.7 reference Documentation
-
+\bibitem{qt}Qt 4.8 reference Documentation
+\bibitem{git}Git User Manual
 
 
   \end{thebibliography}
